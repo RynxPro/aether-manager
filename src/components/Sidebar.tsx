@@ -42,7 +42,7 @@ const Sidebar: React.FC<SidebarProps> = ({ currentPage, onPageChange }) => {
             <span className="text-white font-bold text-sm">ZZZ</span>
           </div>
           <div>
-            <h1 className="text-white font-bold text-lg">Aether Manager</h1>
+            <h1 className="text-white font-bold text-lg">Ether Manager</h1>
             <p className="text-gray-400 text-xs">Mod Manager</p>
           </div>
         </div>

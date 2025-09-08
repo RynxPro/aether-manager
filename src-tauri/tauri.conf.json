@@ -1,6 +1,6 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "ether-manager",
+  "productName": "Ether Manager",
   "version": "0.1.0",
   "identifier": "com.ether.manager",
   "build": {
@@ -12,9 +12,9 @@
   "app": {
     "windows": [
       {
-        "title": "ether-manager",
-        "width": 800,
-        "height": 600
+        "title": "Ether Manager",
+        "width": 1400,
+        "height": 900
       }
     ],
     "security": {
