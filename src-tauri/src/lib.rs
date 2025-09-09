@@ -24,9 +24,9 @@ pub struct AppSettings {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ModStats {
-    pub installed_mods: usize,
-    pub active_mods: usize,
-    pub inactive_mods: usize,
+    pub installedMods: usize,
+    pub activeMods: usize,
+    pub inactiveMods: usize,
     pub presets: usize,
 }
 
@@ -220,9 +220,9 @@ async fn get_mod_stats() -> Result<ModStats, String> {
     let inactive_mods = installed_mods - active_mods;
     
     Ok(ModStats {
-        installed_mods,
-        active_mods,
-        inactive_mods,
+        installedMods: installed_mods,
+        activeMods: active_mods,
+        inactiveMods: inactive_mods,
         presets: 0, // TODO: Implement presets functionality
     })
 }

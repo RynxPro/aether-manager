@@ -36,6 +36,7 @@ const DashboardPage: React.FC = () => {
 
   const handleToggleActive = async (modId: string) => {
     await toggleModActive(modId);
+    fetchStats(); // Refresh stats after toggling mod active state
   };
 
   const handleInstallSuccess = () => {
