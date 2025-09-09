@@ -42,7 +42,7 @@ async fn get_mods() -> Result<Vec<Mod>, String> {
 }
 
 #[tauri::command]
-async fn install_mod(filePath: String, title: String, character: Option<String>, description: Option<String>) -> Result<Mod, String> {
+async fn install_mod(filePath: String, title: String, character: Option<String>, description: Option<String>, thumbnail: Option<String>) -> Result<Mod, String> {
     println!("Installing mod: title={}, filePath={}, character={:?}", title, filePath, character);
     
     let mod_id = Uuid::new_v4().to_string();
@@ -99,15 +99,15 @@ async fn install_mod(filePath: String, title: String, character: Option<String>,
         })?;
     
     let new_mod = Mod {
-        id: mod_id.clone(),
+        id: mod_id,
         title,
         description,
-        thumbnail: None,
+        thumbnail,
         is_active: false,
         date_added: now.to_rfc3339(),
         character,
         file_path: destination_path,
-        original_name,
+        original_name: original_name.clone(),
     };
     
     // Save mod metadata

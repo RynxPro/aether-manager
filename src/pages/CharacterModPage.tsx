@@ -65,8 +65,20 @@ const CharacterModPage: React.FC<CharacterModPageProps> = ({
         </button>
 
         <div className="flex items-center space-x-4">
-          <div className="w-16 h-16 bg-gray-700 rounded-lg flex items-center justify-center">
-            <span className="text-4xl">{character.icon}</span>
+          <div className="w-16 h-16 bg-gray-700 rounded-full flex items-center justify-center overflow-hidden border-2 border-gray-600">
+            {('iconUrl' in character && character.iconUrl) ? (
+              <img
+                src={(character as any).iconUrl}
+                alt={character.name}
+                className="w-full h-full object-cover"
+                onError={(e) => {
+                  const img = e.target as HTMLImageElement;
+                  img.style.display = 'none';
+                }}
+              />
+            ) : (
+              <span className="text-2xl">{('icon' in character && character.icon) ? (character as any).icon : '👤'}</span>
+            )}
           </div>
           <div>
             <h1 className="text-3xl font-bold text-white">{character.name}</h1>

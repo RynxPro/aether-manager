@@ -13,12 +13,21 @@ interface Mod {
 interface ModCardProps {
   mod: Mod;
   onToggleActive: (modId: string) => void;
+  onDelete: (modId: string) => void;
   onViewDetails?: (modId: string) => void;
 }
 
-const ModCard: React.FC<ModCardProps> = ({ mod, onToggleActive }) => {
-  const handleToggleActive = () => {
+const ModCard: React.FC<ModCardProps> = ({ mod, onToggleActive, onDelete }) => {
+  const handleToggleActive = (e: React.MouseEvent) => {
+    e.stopPropagation();
     onToggleActive(mod.id);
+  };
+
+  const handleDelete = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (window.confirm(`Are you sure you want to delete "${mod.title}"?`)) {
+      onDelete(mod.id);
+    }
   };
 
 
@@ -45,8 +54,18 @@ const ModCard: React.FC<ModCardProps> = ({ mod, onToggleActive }) => {
           </div>
         )}
         
-        {/* Status Badge */}
-        <div className="absolute top-2 right-2">
+        {/* Status Badge and Delete Button */}
+        <div className="absolute top-2 right-2 flex items-center gap-2">
+          <button
+            onClick={handleDelete}
+            className="p-1.5 rounded-full bg-red-500/20 hover:bg-red-500/30 text-red-400 opacity-0 group-hover:opacity-100 transition-opacity"
+            aria-label="Delete mod"
+            title="Delete mod"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+            </svg>
+          </button>
           <div
             className={`w-3 h-3 rounded-full ${
               mod.isActive ? "bg-green-400" : "bg-gray-500"
@@ -75,16 +94,18 @@ const ModCard: React.FC<ModCardProps> = ({ mod, onToggleActive }) => {
             {new Date(mod.dateAdded).toLocaleDateString()}
           </div>
           
-          <button
-            onClick={handleToggleActive}
-            className={`px-3 py-1 rounded-md text-xs font-medium transition-all duration-200 ${
-              mod.isActive
-                ? "bg-red-500/20 text-red-400 hover:bg-red-500/30"
-                : "bg-green-500/20 text-green-400 hover:bg-green-500/30"
-            }`}
-          >
-            {mod.isActive ? "Disable" : "Enable"}
-          </button>
+          <div className="flex gap-2">
+            <button
+              onClick={handleToggleActive}
+              className={`px-3 py-1 rounded-md text-xs font-medium transition-all duration-200 ${
+                mod.isActive
+                  ? "bg-red-500/20 text-red-400 hover:bg-red-500/30"
+                  : "bg-green-500/20 text-green-400 hover:bg-green-500/30"
+              }`}
+            >
+              {mod.isActive ? "Disable" : "Enable"}
+            </button>
+          </div>
         </div>
       </div>
     </div>

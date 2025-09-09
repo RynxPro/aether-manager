@@ -28,13 +28,23 @@ const StatsCard: React.FC<StatsCardProps> = ({ title, value, icon, color }) => {
 };
 
 const DashboardPage: React.FC = () => {
-  const { mods, loading: modsLoading, toggleModActive, fetchMods } = useMods();
+  const { mods, loading: modsLoading, toggleModActive, deleteMod, fetchMods } = useMods();
   const { stats, loading: statsLoading, fetchStats } = useStats();
   const [showInstallDialog, setShowInstallDialog] = useState(false);
 
   const handleToggleActive = async (modId: string) => {
     await toggleModActive(modId);
     fetchStats(); // Refresh stats after toggling mod active state
+  };
+
+  const handleDeleteMod = async (modId: string) => {
+    try {
+      await deleteMod(modId);
+      await fetchMods(); // Refresh the mods list
+      await fetchStats(); // Refresh stats after deleting mod
+    } catch (error) {
+      console.error('Failed to delete mod:', error);
+    }
   };
 
   const handleInstallSuccess = () => {
@@ -131,6 +141,7 @@ const DashboardPage: React.FC = () => {
               key={mod.id}
               mod={mod}
               onToggleActive={handleToggleActive}
+              onDelete={handleDeleteMod}
             />
           ))}
         </div>

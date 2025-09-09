@@ -17,6 +17,7 @@ const ModInstallDialog: React.FC<ModInstallDialogProps> = ({ isOpen, onClose, on
     character: "",
     description: "",
     filePath: "",
+    thumbnail: "",
   });
   const [error, setError] = useState<string | null>(null);
 
@@ -66,7 +67,8 @@ const ModInstallDialog: React.FC<ModInstallDialogProps> = ({ isOpen, onClose, on
         formData.filePath,
         formData.title.trim(),
         formData.character || undefined,
-        formData.description.trim() || undefined
+        formData.description.trim() || undefined,
+        formData.thumbnail.trim() || undefined
       );
 
       console.log("Installation result:", result);
@@ -79,6 +81,7 @@ const ModInstallDialog: React.FC<ModInstallDialogProps> = ({ isOpen, onClose, on
           character: "",
           description: "",
           filePath: "",
+          thumbnail: "",
         });
         
         if (onSuccess) {
@@ -101,6 +104,7 @@ const ModInstallDialog: React.FC<ModInstallDialogProps> = ({ isOpen, onClose, on
         character: "",
         description: "",
         filePath: "",
+        thumbnail: "",
       });
       setError(null);
       onClose();
@@ -183,6 +187,34 @@ const ModInstallDialog: React.FC<ModInstallDialogProps> = ({ isOpen, onClose, on
                 </option>
               ))}
             </select>
+          </div>
+
+          {/* Thumbnail URL */}
+          <div>
+            <label className="block text-sm font-medium text-gray-300 mb-2">
+              Thumbnail URL (Optional)
+            </label>
+            <input
+              type="url"
+              value={formData.thumbnail}
+              onChange={(e) => setFormData(prev => ({ ...prev, thumbnail: e.target.value }))}
+              placeholder="https://example.com/image.jpg"
+              disabled={loading}
+              className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-500 disabled:opacity-50"
+            />
+            {formData.thumbnail && (
+              <div className="mt-2">
+                <img
+                  src={formData.thumbnail}
+                  alt="Thumbnail preview"
+                  className="w-16 h-16 object-cover rounded-lg border border-gray-600"
+                  onError={(e) => {
+                    const img = e.target as HTMLImageElement;
+                    img.style.display = 'none';
+                  }}
+                />
+              </div>
+            )}
           </div>
 
           {/* Description */}

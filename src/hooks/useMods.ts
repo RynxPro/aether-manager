@@ -68,7 +68,8 @@ export const useMods = () => {
     filePath: string,
     title: string,
     character?: string,
-    description?: string
+    description?: string,
+    thumbnail?: string
   ): Promise<Mod | null> => {
     setLoading(true);
     setError(null);
@@ -78,6 +79,7 @@ export const useMods = () => {
         title,
         character,
         description,
+        thumbnail,
       });
       
       // Convert snake_case to camelCase

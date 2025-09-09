@@ -5,7 +5,8 @@ interface CharacterCardProps {
   character: {
     id: string;
     name: string;
-    icon: string;
+    iconUrl?: string;
+    icon?: string;
     installedMods: number;
     activeMods: number;
     description?: string;
@@ -19,13 +20,25 @@ const CharacterCard: React.FC<CharacterCardProps> = ({
 }) => {
   return (
     <div
-      className="flex flex-col items-center p-4 hover:bg-gray-800/50 rounded-lg transition-all duration-200 cursor-pointer group"
+      className="flex flex-col items-center p-4 rounded-xl transition-all duration-200 cursor-pointer group bg-gray-900/30 backdrop-blur-sm border border-gray-800/50 hover:border-gray-700/50 hover:bg-gray-900/50"
       onClick={() => onClick(character.id)}
     >
       {/* Character Portrait */}
       <div className="relative mb-3">
-        <div className="w-16 h-16 bg-gray-700 rounded-full flex items-center justify-center group-hover:bg-gray-600 transition-colors border-2 border-gray-600">
-          <span className="text-2xl">{character.icon}</span>
+        <div className="w-16 h-16 bg-gray-700 rounded-full flex items-center justify-center overflow-hidden group-hover:bg-gray-600 transition-colors border-2 border-gray-600">
+          {character.iconUrl ? (
+            <img
+              src={character.iconUrl}
+              alt={character.name}
+              className="w-full h-full object-cover"
+              onError={(e) => {
+                const img = e.target as HTMLImageElement;
+                img.style.display = 'none';
+              }}
+            />
+          ) : (
+            <span className="text-2xl">{character.icon || '👤'}</span>
+          )}
         </div>
         
         {/* Status indicators */}
