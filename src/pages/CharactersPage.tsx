@@ -1,4 +1,5 @@
 import React from "react";
+import { useCharacters } from "../hooks/useCharacters";
 
 interface CharacterCardProps {
   character: {
@@ -7,7 +8,7 @@ interface CharacterCardProps {
     icon: string;
     installedMods: number;
     activeMods: number;
-    description: string;
+    description?: string;
   };
   onClick: (id: string) => void;
 }
@@ -33,7 +34,7 @@ const CharacterCard: React.FC<CharacterCardProps> = ({
             {character.name}
           </h3>
           <p className="text-gray-400 text-sm mb-3 line-clamp-2">
-            {character.description}
+            {character.description || `Manage mods for ${character.name}`}
           </p>
 
           {/* Mod Stats */}
@@ -81,62 +82,44 @@ interface CharactersPageProps {
 const CharactersPage: React.FC<CharactersPageProps> = ({
   onCharacterClick,
 }) => {
-  // Mock data - will be replaced with real data from hooks
-  const characters = [
-    {
-      id: "belle",
-      name: "Belle",
-      icon: "👩‍💼",
-      installedMods: 0,
-      activeMods: 0,
-      description:
-        "The energetic and optimistic protagonist of Zenless Zone Zero",
-    },
-    {
-      id: "nicole",
-      name: "Nicole",
-      icon: "👩‍🎨",
-      installedMods: 0,
-      activeMods: 0,
-      description: "A mysterious artist with unique abilities",
-    },
-    {
-      id: "anby",
-      name: "Anby",
-      icon: "👩‍🚀",
-      installedMods: 0,
-      activeMods: 0,
-      description: "A skilled fighter with a cool demeanor",
-    },
-    {
-      id: "billy",
-      name: "Billy",
-      icon: "👨‍💻",
-      installedMods: 0,
-      activeMods: 0,
-      description: "A tech-savvy character with hacking abilities",
-    },
-    {
-      id: "corin",
-      name: "Corin",
-      icon: "👨‍🔬",
-      installedMods: 0,
-      activeMods: 0,
-      description: "A brilliant scientist and researcher",
-    },
-    {
-      id: "ellen",
-      name: "Ellen",
-      icon: "👩‍🎭",
-      installedMods: 0,
-      activeMods: 0,
-      description: "A performer with a flair for the dramatic",
-    },
-  ];
+  const { characters, loading, error } = useCharacters();
 
   const handleCharacterClick = (id: string) => {
     onCharacterClick(id);
   };
+
+  if (loading) {
+    return (
+      <div className="p-8">
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-white mb-2">Characters</h1>
+          <p className="text-gray-400">Browse mods by character</p>
+        </div>
+        <div className="text-center py-12">
+          <div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-gray-400">Loading characters...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="p-8">
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-white mb-2">Characters</h1>
+          <p className="text-gray-400">Browse mods by character</p>
+        </div>
+        <div className="text-center py-12">
+          <div className="w-24 h-24 bg-red-600/20 rounded-full flex items-center justify-center mx-auto mb-4">
+            <span className="text-4xl">❌</span>
+          </div>
+          <h3 className="text-xl font-semibold text-white mb-2">Error loading characters</h3>
+          <p className="text-gray-400">{error}</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="p-8">
