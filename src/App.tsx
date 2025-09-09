@@ -1,7 +1,7 @@
 import { useState } from "react";
 import Sidebar from "./components/Sidebar";
 import DashboardPage from "./pages/DashboardPage";
-import ModPage from "./pages/ModPage";
+import OtherModsPage from "./pages/OtherModsPage";
 import CharactersPage from "./pages/CharactersPage";
 import CharacterModPage from "./pages/CharacterModPage";
 import SettingsPage from "./pages/SettingsPage";
@@ -33,7 +33,7 @@ function App() {
       case "dashboard":
         return <DashboardPage />;
       case "mods":
-        return <ModPage />;
+        return <OtherModsPage />;
       case "characters":
         return <CharactersPage onCharacterClick={handleCharacterClick} />;
       case "character-mod":

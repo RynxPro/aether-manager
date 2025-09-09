@@ -15,9 +15,9 @@ const Sidebar: React.FC<SidebarProps> = ({ currentPage, onPageChange }) => {
     },
     {
       id: "mods",
-      label: "All Mods",
+      label: "Other Mods",
       icon: "🎮",
-      description: "Manage all mods",
+      description: "Mods not tied to characters",
     },
     {
       id: "characters",

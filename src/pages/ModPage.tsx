@@ -64,7 +64,7 @@ const ModCard: React.FC<ModCardProps> = ({ mod, onToggleActive }) => {
   );
 };
 
-const ModPage: React.FC = () => {
+const OtherModsPage: React.FC = () => {
   const [mods] = useState<
     Array<{
       id: string;
@@ -87,8 +87,10 @@ const ModPage: React.FC = () => {
   return (
     <div className="p-8">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-white mb-2">All Mods</h1>
-        <p className="text-gray-400">Manage all your installed mods</p>
+        <h1 className="text-3xl font-bold text-white mb-2">Other Mods</h1>
+        <p className="text-gray-400">
+          Manage mods that don't belong to specific characters
+        </p>
       </div>
 
       {/* Search and Filter Bar */}
@@ -146,4 +148,4 @@ const ModPage: React.FC = () => {
   );
 };
 
-export default ModPage;
+export default OtherModsPage;
