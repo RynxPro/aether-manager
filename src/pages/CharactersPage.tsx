@@ -1,76 +1,6 @@
 import React from "react";
 import { useCharacters } from "../hooks/useCharacters";
-
-interface CharacterCardProps {
-  character: {
-    id: string;
-    name: string;
-    iconUrl?: string;
-    icon?: string;
-    installedMods: number;
-    activeMods: number;
-    description?: string;
-  };
-  onClick: (id: string) => void;
-}
-
-const CharacterCard: React.FC<CharacterCardProps> = ({
-  character,
-  onClick,
-}) => {
-  return (
-    <div
-      className="flex flex-col items-center p-4 rounded-xl transition-all duration-200 cursor-pointer group bg-gray-900/30 backdrop-blur-sm border border-gray-800/50 hover:border-gray-700/50 hover:bg-gray-900/50"
-      onClick={() => onClick(character.id)}
-    >
-      {/* Character Portrait */}
-      <div className="relative mb-3">
-        <div className="w-16 h-16 bg-gray-700 rounded-full flex items-center justify-center overflow-hidden group-hover:bg-gray-600 transition-colors border-2 border-gray-600">
-          {character.iconUrl ? (
-            <img
-              src={character.iconUrl}
-              alt={character.name}
-              className="w-full h-full object-cover"
-              onError={(e) => {
-                const img = e.target as HTMLImageElement;
-                img.style.display = 'none';
-              }}
-            />
-          ) : (
-            <span className="text-2xl">{character.icon || '👤'}</span>
-          )}
-        </div>
-        
-        {/* Status indicators */}
-        <div className="absolute -bottom-1 -right-1 flex space-x-1">
-          {character.installedMods > 0 && (
-            <div className="w-3 h-3 bg-orange-500 rounded-full border border-gray-900"></div>
-          )}
-          {character.activeMods > 0 && (
-            <div className="w-3 h-3 bg-green-500 rounded-full border border-gray-900"></div>
-          )}
-        </div>
-      </div>
-
-      {/* Character Name */}
-      <h3 className="text-white font-medium text-sm mb-2 text-center group-hover:text-blue-400 transition-colors">
-        {character.name}
-      </h3>
-
-      {/* Stats */}
-      <div className="flex items-center space-x-4 text-xs text-gray-400">
-        <div className="flex items-center space-x-1">
-          <span>{character.installedMods}</span>
-          <span>Total</span>
-        </div>
-        <div className="flex items-center space-x-1">
-          <span>{character.activeMods}</span>
-          <span>Active</span>
-        </div>
-      </div>
-    </div>
-  );
-};
+import CharacterCard from "../components/CharacterCard";
 
 interface CharactersPageProps {
   onCharacterClick: (characterId: string) => void;
@@ -84,6 +14,8 @@ const CharactersPage: React.FC<CharactersPageProps> = ({
   const handleCharacterClick = (id: string) => {
     onCharacterClick(id);
   };
+  
+  // Show all characters regardless of mod count
 
   if (loading) {
     return (
@@ -167,7 +99,7 @@ const CharactersPage: React.FC<CharactersPageProps> = ({
         ))}
       </div>
 
-      {/* Empty State (if no characters) */}
+      {/* Empty State (if no characters found) */}
       {characters.length === 0 && (
         <div className="text-center py-12">
           <div className="w-24 h-24 bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-4">
