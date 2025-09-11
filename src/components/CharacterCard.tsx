@@ -27,12 +27,12 @@ const CharacterCard: React.FC<CharacterCardProps> = ({
 
   return (
     <div
-      className={`flex flex-col items-center p-3 sm:p-4 rounded-xl transition-all duration-200 cursor-pointer group bg-gray-900/30 backdrop-blur-sm border border-gray-800/50 hover:border-gray-700/50 hover:bg-gray-900/50 h-full w-full ${className}`}
+      className={`flex flex-col items-center p-3 sm:p-4 rounded-xl transition-all duration-200 cursor-pointer group bg-[var(--moon-surface)] backdrop-blur-sm border border-[var(--moon-border)] hover:border-[var(--moon-glow-violet)] hover:shadow-[0_0_12px_var(--moon-glow-violet)] h-full w-full ${className}`}
       onClick={handleClick}
     >
       {/* Character Portrait */}
       <div className="relative mb-2 sm:mb-3 w-full aspect-square max-w-[80px] mx-auto">
-        <div className="w-full h-full bg-gray-700 rounded-full flex items-center justify-center overflow-hidden group-hover:bg-gray-600 transition-colors border-2 border-gray-600">
+        <div className="w-full h-full bg-[var(--moon-bg)] rounded-full flex items-center justify-center overflow-hidden border-2 border-[var(--moon-glow-violet)] group-hover:border-[var(--moon-accent)] transition-colors">
           {character.iconUrl ? (
             <img
               src={character.iconUrl}
@@ -66,7 +66,7 @@ const CharacterCard: React.FC<CharacterCardProps> = ({
       </div>
 
       {/* Character Name */}
-      <h3 className="text-white font-medium text-xs sm:text-sm mb-1 sm:mb-2 text-center group-hover:text-blue-400 transition-colors line-clamp-1 px-1 w-full">
+      <h3 className="font-medium text-xs sm:text-sm mb-1 sm:mb-2 text-center text-[var(--moon-text)] group-hover:text-[var(--moon-glow-violet)] transition-colors line-clamp-1 px-1 w-full">
         {character.name}
       </h3>
 
