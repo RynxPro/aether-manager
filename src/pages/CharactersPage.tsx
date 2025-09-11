@@ -3,7 +3,13 @@ import { useCharacters } from "../hooks/useCharacters";
 import CharacterCard from "../components/CharacterCard";
 
 // Sort options type
-type SortOption = "name-asc" | "name-desc" | "mods-asc" | "mods-desc" | "active-asc" | "active-desc";
+type SortOption =
+  | "name-asc"
+  | "name-desc"
+  | "mods-asc"
+  | "mods-desc"
+  | "active-asc"
+  | "active-desc";
 
 // Sort option labels
 const sortOptions = [
@@ -37,22 +43,22 @@ const CharactersPage: React.FC<CharactersPageProps> = ({
   const filteredAndSortedCharacters = useMemo(() => {
     // Filter characters based on search query
     let result = [...characters];
-    
+
     if (searchQuery.trim()) {
       const query = searchQuery.toLowerCase().trim();
-      result = result.filter(character => {
+      result = result.filter((character) => {
         // Search by name (case insensitive)
         if (character.name.toLowerCase().includes(query)) return true;
-        
+
         // Search by attribute (e.g., 'fire', 'ice')
         if (character.attribute.toLowerCase().includes(query)) return true;
-        
+
         // Search by specialty (e.g., 'attack', 'defense')
         if (character.specialty.toLowerCase().includes(query)) return true;
-        
+
         // Search by rank (e.g., 'a', 's')
         if (character.rank.toLowerCase() === query) return true;
-        
+
         return false;
       });
     }
@@ -60,17 +66,17 @@ const CharactersPage: React.FC<CharactersPageProps> = ({
     // Sort characters based on selected sort option
     return result.sort((a, b) => {
       switch (sortBy) {
-        case 'name-asc':
+        case "name-asc":
           return a.name.localeCompare(b.name);
-        case 'name-desc':
+        case "name-desc":
           return b.name.localeCompare(a.name);
-        case 'mods-asc':
+        case "mods-asc":
           return a.installedMods - b.installedMods;
-        case 'mods-desc':
+        case "mods-desc":
           return b.installedMods - a.installedMods;
-        case 'active-asc':
+        case "active-asc":
           return a.activeMods - b.activeMods;
-        case 'active-desc':
+        case "active-desc":
           return b.activeMods - a.activeMods;
         default:
           return 0;
@@ -84,8 +90,8 @@ const CharactersPage: React.FC<CharactersPageProps> = ({
 
   if (loading) {
     return (
-      <div className="w-full max-w-[1800px] mx-auto px-8 sm:px-12 lg:px-20 py-6">
-        <div className="mb-10">
+      <div className="w-full max-w-[1800px] mx-auto px-8 sm:px-12 lg:px-20 py-4">
+        <div className="mb-8">
           <h1 className="text-3xl font-bold text-[var(--moon-text)] mb-2">
             Characters
           </h1>
@@ -101,8 +107,8 @@ const CharactersPage: React.FC<CharactersPageProps> = ({
 
   if (error) {
     return (
-      <div className="w-full max-w-[1800px] mx-auto px-8 sm:px-12 lg:px-20 py-6">
-        <div className="mb-10">
+      <div className="w-full max-w-[1800px] mx-auto px-8 sm:px-12 lg:px-20 py-4">
+        <div className="mb-8">
           <h1 className="text-3xl font-bold text-[var(--moon-text)] mb-2">
             Characters
           </h1>
@@ -122,16 +128,16 @@ const CharactersPage: React.FC<CharactersPageProps> = ({
   }
 
   return (
-    <div className="w-full max-w-[1800px] mx-auto px-8 sm:px-12 lg:px-20 py-6">
-      <div className="mb-10">
+    <div className="w-full max-w-[1800px] mx-auto px-8 sm:px-12 lg:px-20 py-4">
+      <div className="mb-8">
         <h1 className="text-3xl font-bold text-[var(--moon-text)] mb-2">
           Characters
         </h1>
         <p className="text-[var(--moon-muted)]">Browse mods by character</p>
       </div>
 
-      <div className="mb-12 max-w-4xl mx-auto px-4">
-        <div className="flex flex-col sm:flex-row gap-4">
+      <div className="sticky top-0 z-10 bg-[var(--moon-bg)]/90 backdrop-blur-md border-b border-[var(--moon-border)] mb-8 px-4 py-8">
+        <div className="max-w-4xl mx-auto flex flex-col sm:flex-row gap-4 sm:items-center">
           {/* Search Bar */}
           <div className="flex-1">
             <div className="relative">
@@ -157,14 +163,17 @@ const CharactersPage: React.FC<CharactersPageProps> = ({
               </svg>
             </div>
           </div>
-          
+
           {/* Sort Dropdown */}
-          <div className="w-full sm:w-64">
-            <div className="relative">
+          <div className="w-full sm:w-64 flex flex-col sm:flex-row sm:items-center gap-2">
+            <label className="text-sm text-[var(--moon-muted)] sm:mr-2">
+              Sort by:
+            </label>
+            <div className="relative flex-1 sm:flex-none">
               <select
                 value={sortBy}
                 onChange={handleSortChange}
-                className="w-full appearance-none px-4 py-2 pr-10 bg-[var(--moon-surface)] border border-[var(--moon-border)] rounded-lg text-white focus:outline-none focus:border-[var(--moon-glow-violet)] focus:ring-2 focus:ring-[var(--moon-glow-violet)]"
+                className="w-full appearance-none px-3 py-1.5 pr-8 bg-[var(--moon-surface)] border border-[var(--moon-border)] rounded-lg text-sm text-white focus:outline-none focus:border-[var(--moon-glow-violet)] focus:ring-2 focus:ring-[var(--moon-glow-violet)] transition-colors"
               >
                 {sortOptions.map((option) => (
                   <option key={option.value} value={option.value}>
@@ -172,26 +181,37 @@ const CharactersPage: React.FC<CharactersPageProps> = ({
                   </option>
                 ))}
               </select>
-              <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-400">
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              <div className="pointer-events-none absolute inset-y-0 right-2 flex items-center text-gray-400">
+                <svg
+                  className="w-4 h-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M19 9l-7 7-7-7"
+                  />
                 </svg>
               </div>
             </div>
           </div>
         </div>
-        
+
         {searchQuery && (
-          <p className="text-sm text-[var(--moon-muted)] mt-2 text-center sm:text-left">
-            Showing {filteredAndSortedCharacters.length} {filteredAndSortedCharacters.length === 1 ? 'result' : 'results'}
+          <p className="text-sm text-[var(--moon-muted)] mt-1.5 text-center sm:text-left">
+            Showing {filteredAndSortedCharacters.length}{" "}
+            {filteredAndSortedCharacters.length === 1 ? "result" : "results"}
           </p>
         )}
       </div>
 
       {/* Characters Grid */}
-      <div className="w-full">
+      <div className="w-full mt-8">
         {filteredAndSortedCharacters.length > 0 ? (
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6 w-full">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-5 w-full">
             {filteredAndSortedCharacters.map((character) => (
               <CharacterCard
                 key={character.id}
