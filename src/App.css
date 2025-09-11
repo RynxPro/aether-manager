@@ -8,7 +8,7 @@
 
   color: #f6f6f6;
 
-  --bg: #1f2025; /* main app background */
+  --bg: #191a1f; /* main app background (from phone screens) */
   --surface: #303035; /* cards / panels */
   --accent: #6d27a1; /* main purple */
   --accent-bright: #ca5fff; /* bright purple for strong CTAs (use sparingly) */
