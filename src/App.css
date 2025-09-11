@@ -1,48 +1,55 @@
 @import "tailwindcss";
 
+/* 🌙 MoonLight Theme Variables */
 :root {
-  font-family: Inter, Avenir, Helvetica, Arial, sans-serif;
-  font-size: 16px;
-  line-height: 24px;
-  font-weight: 400;
-
-  color: #f6f6f6;
-
-  --bg: #191a1f; /* main app background (from phone screens) */
-  --surface: #303035; /* cards / panels */
-  --accent: #6d27a1; /* main purple */
-  --accent-bright: #ca5fff; /* bright purple for strong CTAs (use sparingly) */
-  --text: #f3f4f6; /* primary text (near white) */
-  --text-muted: #9ca3af; /* secondary / helper text */
-  --border: #2e2e36; /* subtle divider / stroke */
-
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  -webkit-text-size-adjust: 100%;
+  --moon-bg: #0a0f1c;
+  --moon-surface: #141a2a;
+  --moon-glow-violet: #7a5af8;
+  --moon-glow-cyan: #4dd0e1;
+  --moon-accent: #9c6eff;
+  --moon-on: #4ade80;
+  --moon-off: #f87171;
+  --moon-text: #e4e9f5;
+  --moon-muted: #8a92b2;
+  --moon-border: #1e2233;
 }
 
-* {
-  box-sizing: border-box;
-  background: none !important;
-  background-image: none !important;
-  background-color: transparent !important;
+/* Global defaults */
+html,
+body,
+#root {
+  height: 100%;
 }
 
 body {
-  margin: 0;
-  padding: 0;
-  background: var(--bg) !important;
-  color: var(--text);
-  background-image: none !important;
-  background-color: var(--bg) !important;
-  -webkit-print-color-adjust: exact;
-  print-color-adjust: exact;
+  background-color: var(--moon-bg);
+  color: var(--moon-text);
+  font-family: "Inter", system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-#root {
-  height: 100vh;
-  width: 100vw;
-  background-color: var(--bg);
+/* Utilities */
+.text-muted {
+  color: var(--moon-muted);
+}
+
+.card {
+  background-color: var(--moon-surface);
+  border: 1px solid var(--moon-border);
+  border-radius: 12px;
+  padding: 1rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+}
+
+.btn-primary {
+  background-color: var(--moon-accent);
+  color: var(--moon-text);
+  border-radius: 8px;
+  padding: 0.5rem 1rem;
+  font-weight: 500;
+}
+
+.btn-primary:hover {
+  background-color: var(--moon-glow-violet);
 }

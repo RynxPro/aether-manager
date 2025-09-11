@@ -53,9 +53,11 @@ function App() {
   };
 
   return (
-    <div className="flex h-screen bg-gradient-to-br from-gray-950 via-gray-900 to-gray-950">
+    <div className="flex h-screen bg-[var(--moon-bg)]">
       <Sidebar currentPage={currentPage} onPageChange={handlePageChange} />
-      <main className="flex-1 overflow-y-auto backdrop-blur-sm">{renderPage()}</main>
+      <main className="flex-1 overflow-y-auto backdrop-blur-sm px-6">
+        {renderPage()}
+      </main>
     </div>
   );
 }

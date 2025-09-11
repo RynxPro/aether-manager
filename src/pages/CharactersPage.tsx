@@ -14,19 +14,21 @@ const CharactersPage: React.FC<CharactersPageProps> = ({
   const handleCharacterClick = (id: string) => {
     onCharacterClick(id);
   };
-  
+
   // Show all characters regardless of mod count
 
   if (loading) {
     return (
-      <div className="p-8">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-white mb-2">Characters</h1>
-          <p className="text-gray-400">Browse mods by character</p>
+      <div className="w-full max-w-[1800px] mx-auto px-8 sm:px-12 lg:px-20 py-6">
+        <div className="mb-10">
+          <h1 className="text-3xl font-bold text-[var(--moon-text)] mb-2">
+            Characters
+          </h1>
+          <p className="text-[var(--moon-muted)]">Browse mods by character</p>
         </div>
         <div className="text-center py-12">
           <div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-400">Loading characters...</p>
+          <p className="text-[var(--moon-muted)]">Loading characters...</p>
         </div>
       </div>
     );
@@ -34,43 +36,42 @@ const CharactersPage: React.FC<CharactersPageProps> = ({
 
   if (error) {
     return (
-      <div className="p-8">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-white mb-2">Characters</h1>
-          <p className="text-gray-400">Browse mods by character</p>
+      <div className="w-full max-w-[1800px] mx-auto px-8 sm:px-12 lg:px-20 py-6">
+        <div className="mb-10">
+          <h1 className="text-3xl font-bold text-[var(--moon-text)] mb-2">
+            Characters
+          </h1>
+          <p className="text-[var(--moon-muted)]">Browse mods by character</p>
         </div>
         <div className="text-center py-12">
           <div className="w-24 h-24 bg-red-600/20 rounded-full flex items-center justify-center mx-auto mb-4">
             <span className="text-4xl">❌</span>
           </div>
-          <h3 className="text-xl font-semibold text-white mb-2">Error loading characters</h3>
-          <p className="text-gray-400">{error}</p>
+          <h3 className="text-xl font-semibold text-[var(--moon-text)] mb-2">
+            Error loading characters
+          </h3>
+          <p className="text-[var(--moon-muted)]">{error}</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="p-8">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-white mb-2">Characters</h1>
-        <div className="flex items-center justify-between">
-          <p className="text-gray-400">Browse mods by character</p>
-          <div className="flex items-center space-x-2 text-sm text-gray-400">
-            <span className="flex items-center space-x-1">
-              <span>📁 Drag & drop mods anywhere to import</span>
-            </span>
-          </div>
-        </div>
+    <div className="w-full max-w-[1800px] mx-auto px-8 sm:px-12 lg:px-20 py-6">
+      <div className="mb-10">
+        <h1 className="text-3xl font-bold text-[var(--moon-text)] mb-2">
+          Characters
+        </h1>
+        <p className="text-[var(--moon-muted)]">Browse mods by character</p>
       </div>
 
       {/* Search Bar */}
-      <div className="mb-8">
-        <div className="relative max-w-md">
+      <div className="mb-12 max-w-md mx-auto">
+        <div className="relative">
           <input
             type="text"
             placeholder="Search by name, attribute, or specialty..."
-            className="w-full px-4 py-2 pl-10 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-500"
+            className="w-full px-4 py-2 pl-10 bg-[var(--moon-surface)] border border-[var(--moon-border)] rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-[var(--moon-glow-violet)] focus:ring-2 focus:ring-[var(--moon-glow-violet)]"
           />
           <svg
             className="absolute left-3 top-2.5 w-4 h-4 text-gray-400"
@@ -89,7 +90,7 @@ const CharactersPage: React.FC<CharactersPageProps> = ({
       </div>
 
       {/* Characters Grid */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-8 gap-6">
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6 w-full">
         {characters.map((character) => (
           <CharacterCard
             key={character.id}
@@ -102,13 +103,13 @@ const CharactersPage: React.FC<CharactersPageProps> = ({
       {/* Empty State (if no characters found) */}
       {characters.length === 0 && (
         <div className="text-center py-12">
-          <div className="w-24 h-24 bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-4">
+          <div className="w-24 h-24 bg-[var(--moon-surface)] rounded-full flex items-center justify-center mx-auto mb-4">
             <span className="text-4xl">👥</span>
           </div>
-          <h3 className="text-xl font-semibold text-white mb-2">
+          <h3 className="text-xl font-semibold text-[var(--moon-text)] mb-2">
             No characters found
           </h3>
-          <p className="text-gray-400">
+          <p className="text-[var(--moon-muted)]">
             Characters will appear here once mods are installed
           </p>
         </div>
