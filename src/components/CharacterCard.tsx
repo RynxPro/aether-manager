@@ -1,5 +1,49 @@
 import React from "react";
 
+// Import attribute icons
+import auricInkIcon from "../assets/attributes/Icon_Auric_Ink.webp";
+import electricIcon from "../assets/attributes/Icon_Electric.webp";
+import etherIcon from "../assets/attributes/Icon_Ether.webp";
+import fireIcon from "../assets/attributes/Icon_Fire.webp";
+import frostIcon from "../assets/attributes/Icon_Frost.webp";
+import iceIcon from "../assets/attributes/Icon_Ice.webp";
+import physicalIcon from "../assets/attributes/Icon_Physical.webp";
+
+// Import rank icons
+import rankAIcon from "../assets/ranks/Icon_AgentRank_A.webp";
+import rankSIcon from "../assets/ranks/Icon_AgentRank_S-2.webp";
+
+// Import specialty icons
+import attackIcon from "../assets/specialty/Icon_Attack.webp";
+import defenseIcon from "../assets/specialty/Icon_Defense.webp";
+import supportIcon from "../assets/specialty/Icon_Support.webp";
+import anomalyIcon from "../assets/specialty/Icon_Anomaly.webp";
+
+// Map attributes to their corresponding icons
+const attributeIcons: Record<string, string> = {
+  auric_ink: auricInkIcon,
+  electric: electricIcon,
+  ether: etherIcon,
+  fire: fireIcon,
+  frost: frostIcon,
+  ice: iceIcon,
+  physical: physicalIcon,
+};
+
+// Map ranks to their corresponding icons
+const rankIcons: Record<string, string> = {
+  A: rankAIcon,
+  S: rankSIcon,
+};
+
+// Map specialties to their corresponding icons
+const specialtyIcons: Record<string, string> = {
+  attack: attackIcon,
+  defense: defenseIcon,
+  support: supportIcon,
+  balanced: anomalyIcon, // Using anomaly icon as a fallback for balanced
+};
+
 export interface CharacterCardProps {
   character: {
     id: string;
@@ -9,6 +53,9 @@ export interface CharacterCardProps {
     installedMods: number;
     activeMods: number;
     description?: string;
+    attribute: string;
+    rank: string;
+    specialty: string;
   };
   onClick?: (id: string) => void;
   className?: string;
@@ -65,19 +112,73 @@ const CharacterCard: React.FC<CharacterCardProps> = ({
         </div>
       </div>
 
-      {/* Character Name */}
-      <h3 className="font-medium text-xs sm:text-sm mb-1 sm:mb-2 text-center text-[var(--moon-text)] group-hover:text-[var(--moon-glow-violet)] transition-colors line-clamp-1 px-1 w-full">
-        {character.name}
-      </h3>
+      {/* Character Name and Icons */}
+      <div className="w-full flex flex-col items-center">
+        <h3 className="font-medium text-xs sm:text-sm mb-5 text-center text-[var(--moon-text)] group-hover:text-[var(--moon-glow-violet)] transition-colors line-clamp-1 px-1 w-full">
+          {character.name}
+        </h3>
+
+        {/* Attribute, Rank, and Specialty Icons */}
+        <div className="flex items-center justify-center space-x-2 mb-2">
+          {/* Attribute Icon */}
+          {character.attribute && attributeIcons[character.attribute] && (
+            <div className="w-5 h-5 bg-transparent" title={character.attribute}>
+              <img
+                src={attributeIcons[character.attribute]}
+                alt={character.attribute}
+                className="w-full h-full object-contain"
+              />
+            </div>
+          )}
+
+          {/* Rank Icon */}
+          {character.rank && rankIcons[character.rank] && (
+            <div
+              className="w-5 h-5 bg-transparent"
+              title={`Rank ${character.rank}`}
+            >
+              <img
+                src={rankIcons[character.rank]}
+                alt={`Rank ${character.rank}`}
+                className="w-full h-full object-contain"
+              />
+            </div>
+          )}
+
+          {/* Specialty Icon */}
+          {character.specialty && specialtyIcons[character.specialty] && (
+            <div className="w-5 h-5 bg-transparent" title={character.specialty}>
+              <img
+                src={specialtyIcons[character.specialty]}
+                alt={character.specialty}
+                className="w-full h-full object-contain"
+              />
+            </div>
+          )}
+        </div>
+      </div>
 
       {/* Stats */}
-      <div className="flex items-center justify-center space-x-2 sm:space-x-4 text-xs text-gray-400 w-full">
-        <div className="flex items-center space-x-1" title="Total mods">
-          <span>{character.installedMods}</span>
+      <div className="mt-3 flex items-center justify-center space-x-3 sm:space-x-5 text-xs w-full">
+        {/* Total Mods */}
+        <div
+          className="flex items-center space-x-1 px-2 py-1 rounded-md bg-[var(--moon-surface)] border border-[var(--moon-border)] text-[var(--moon-muted)]"
+          title="Total mods"
+        >
+          <span className="font-semibold text-[var(--moon-text)]">
+            {character.installedMods}
+          </span>
           <span>Total</span>
         </div>
-        <div className="flex items-center space-x-1" title="Active mods">
-          <span>{character.activeMods}</span>
+
+        {/* Active Mods */}
+        <div
+          className="flex items-center space-x-1 px-2 py-1 rounded-md bg-[var(--moon-surface)] border border-[var(--moon-border)] text-[var(--moon-muted)]"
+          title="Active mods"
+        >
+          <span className="font-semibold text-[var(--moon-on)]">
+            {character.activeMods}
+          </span>
           <span>Active</span>
         </div>
       </div>
