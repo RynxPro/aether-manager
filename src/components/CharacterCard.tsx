@@ -118,48 +118,52 @@ const CharacterCard: React.FC<CharacterCardProps> = ({
           {character.name}
         </h3>
 
-        {/* Attribute, Rank, and Specialty Icons */}
-        <div className="flex items-center justify-center space-x-1.5 mb-1">
-          {/* Attribute Icon */}
-          {character.attribute && attributeIcons[character.attribute] && (
-            <div className="w-5 h-5 bg-transparent" title={character.attribute}>
-              <img
-                src={attributeIcons[character.attribute]}
-                alt={character.attribute}
-                className="w-full h-full object-contain"
-              />
-            </div>
-          )}
+        {/* Only show attributes if not Belle or Wise */}
+        {!['belle', 'wise'].includes(character.id.toLowerCase()) && (
+          <div className="flex items-center justify-center space-x-1.5 mb-1">
+            {/* Attribute Icon */}
+            {character.attribute && attributeIcons[character.attribute] && (
+              <div className="w-5 h-5 bg-transparent" title={character.attribute}>
+                <img
+                  src={attributeIcons[character.attribute]}
+                  alt={character.attribute}
+                  className="w-full h-full object-contain"
+                />
+              </div>
+            )}
 
-          {/* Rank Icon */}
-          {character.rank && rankIcons[character.rank] && (
-            <div
-              className="w-5 h-5 bg-transparent"
-              title={`Rank ${character.rank}`}
-            >
-              <img
-                src={rankIcons[character.rank]}
-                alt={`Rank ${character.rank}`}
-                className="w-full h-full object-contain"
-              />
-            </div>
-          )}
+            {/* Rank Icon */}
+            {character.rank && rankIcons[character.rank] && (
+              <div
+                className="w-5 h-5 bg-transparent"
+                title={`Rank ${character.rank}`}
+              >
+                <img
+                  src={rankIcons[character.rank]}
+                  alt={`Rank ${character.rank}`}
+                  className="w-full h-full object-contain"
+                />
+              </div>
+            )}
 
-          {/* Specialty Icon */}
-          {character.specialty && specialtyIcons[character.specialty] && (
-            <div className="w-5 h-5 bg-transparent" title={character.specialty}>
-              <img
-                src={specialtyIcons[character.specialty]}
-                alt={character.specialty}
-                className="w-full h-full object-contain"
-              />
-            </div>
-          )}
-        </div>
+            {/* Specialty Icon */}
+            {character.specialty && specialtyIcons[character.specialty] && (
+              <div className="w-5 h-5 bg-transparent" title={character.specialty}>
+                <img
+                  src={specialtyIcons[character.specialty]}
+                  alt={character.specialty}
+                  className="w-full h-full object-contain"
+                />
+              </div>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Stats */}
-      <div className="mt-1.5 flex items-center justify-center space-x-2 text-xs w-full">
+      <div className={`flex items-center justify-center space-x-2 text-xs w-full ${
+        !['belle', 'wise'].includes(character.id.toLowerCase()) ? 'mt-1.5' : 'mt-7'
+      }`}>
         {/* Total Mods */}
         <div
           className="flex items-center space-x-1 px-1.5 py-0.5 rounded-md bg-[var(--moon-surface)] border border-[var(--moon-border)] text-[var(--moon-muted)] text-[0.7rem]"
