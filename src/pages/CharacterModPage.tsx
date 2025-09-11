@@ -56,12 +56,12 @@ const CharacterModPage: React.FC<CharacterModPageProps> = ({
   };
 
   return (
-    <div className="p-8">
+    <div className="max-w-[1800px] mx-auto px-8 sm:px-12 lg:px-20 py-4">
       {/* Header with Back Button */}
       <div className="mb-8">
         <button
           onClick={onBack}
-          className="flex items-center space-x-2 text-gray-400 hover:text-white transition-colors mb-4"
+          className="flex items-center space-x-2 text-[var(--moon-muted)] hover:text-[var(--moon-glow-violet)] hover:drop-shadow-[0_0_6px_var(--moon-glow-violet)] transition-colors mb-4"
         >
           <svg
             className="w-5 h-5"
@@ -79,8 +79,8 @@ const CharacterModPage: React.FC<CharacterModPageProps> = ({
           <span>Back to Characters</span>
         </button>
 
-        <div className="flex items-center space-x-4">
-          <div className="w-16 h-16 bg-gray-700 rounded-full flex items-center justify-center overflow-hidden border-2 border-gray-600">
+        <div className="flex pt-2 items-center space-x-4">
+          <div className="w-25 h-25 rounded-full flex items-center justify-center overflow-hidden border-2 border-[var(--moon-border)]">
             {"iconUrl" in character && character.iconUrl ? (
               <img
                 src={(character as any).iconUrl}
@@ -92,7 +92,7 @@ const CharacterModPage: React.FC<CharacterModPageProps> = ({
                 }}
               />
             ) : (
-              <span className="text-2xl">
+              <span className="text-3xl">
                 {"icon" in character && character.icon
                   ? (character as any).icon
                   : "👤"}
@@ -100,60 +100,81 @@ const CharacterModPage: React.FC<CharacterModPageProps> = ({
             )}
           </div>
           <div>
-            <h1 className="text-3xl font-bold text-white">{character.name}</h1>
-            <p className="text-gray-400">Manage mods for {character.name}</p>
+            <h1 className="text-4xl font-extrabold text-[var(--moon-text)] tracking-tight mb-1">
+              {character.name}
+            </h1>
+            <p className="text-lg text-[var(--moon-muted)]">
+              Manage mods for {character.name}
+            </p>
           </div>
         </div>
       </div>
 
       {/* Action Bar */}
-      <div className="mb-6 flex flex-col sm:flex-row gap-4">
-        <div className="flex-1">
-          <input
-            type="text"
-            placeholder="Search mods..."
-            className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-500"
-          />
-        </div>
-        <button
-          onClick={handleUploadMod}
-          className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors flex items-center space-x-2"
-        >
-          <svg
-            className="w-5 h-5"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
+      <div className="sticky top-0 z-10 bg-[var(--moon-bg)]/90 backdrop-blur-md border-b border-[var(--moon-border)] mb-8 px-4 py-8">
+        <div className="max-w-5xl mx-auto flex flex-col sm:flex-row gap-4 sm:items-center">
+          <div className="flex-1">
+            <div className="relative">
+              <input
+                type="text"
+                placeholder="Search mods..."
+                className="w-full px-3 py-1.5 pl-10 bg-[var(--moon-surface)] border border-[var(--moon-border)] rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-[var(--moon-glow-violet)] focus:ring-2 focus:ring-[var(--moon-glow-violet)]"
+              />
+              <svg
+                className="absolute left-3 top-2.5 w-4 h-4 text-[var(--moon-muted)]"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M21 21l-4.35-4.35M17 10a7 7 0 11-14 0 7 7 0 0114 0z"
+                />
+              </svg>
+            </div>
+          </div>
+          <button
+            onClick={handleUploadMod}
+            className="px-6 py-2 bg-[var(--moon-accent)] hover:bg-[var(--moon-glow-violet)] text-white rounded-lg font-medium transition-colors flex items-center space-x-2"
           >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M12 4v16m8-8H4"
-            />
-          </svg>
-          <span>Upload Mod</span>
-        </button>
+            <svg
+              className="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M12 4v16m8-8H4"
+              />
+            </svg>
+            <span>Upload Mod</span>
+          </button>
+        </div>
       </div>
 
       {/* Loading State */}
       {loading ? (
         <div className="text-center py-12">
-          <div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-400">Loading mods...</p>
+          <div className="w-8 h-8 border-4 border-[var(--moon-glow-violet)] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-[var(--moon-muted)]">Loading mods...</p>
         </div>
       ) : error ? (
         <div className="text-center py-12">
-          <div className="w-24 h-24 bg-red-600/20 rounded-full flex items-center justify-center mx-auto mb-4">
+          <div className="w-24 h-24 bg-red-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
             <span className="text-4xl">❌</span>
           </div>
-          <h3 className="text-xl font-semibold text-white mb-2">
+          <h3 className="text-xl font-semibold text-[var(--moon-text)] mb-2">
             Error loading mods
           </h3>
-          <p className="text-gray-400">{error}</p>
+          <p className="text-[var(--moon-muted)]">{error}</p>
         </div>
       ) : characterMods.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
           {characterMods.map((mod) => (
             <ModCard
               key={mod.id}
@@ -165,20 +186,33 @@ const CharacterModPage: React.FC<CharacterModPageProps> = ({
         </div>
       ) : (
         <div className="text-center py-12">
-          <div className="w-24 h-24 bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-4">
+          <div className="w-24 h-24 bg-[var(--moon-surface)] border border-[var(--moon-border)] rounded-full flex items-center justify-center mx-auto mb-4">
             <span className="text-4xl">🎮</span>
           </div>
-          <h3 className="text-xl font-semibold text-white mb-2">
+          <h3 className="text-xl font-semibold text-[var(--moon-text)] mb-2">
             No mods for {character.name}
           </h3>
-          <p className="text-gray-400 mb-6">
+          <p className="text-[var(--moon-muted)] mb-6">
             Upload your first mod to get started
           </p>
           <button
             onClick={handleUploadMod}
-            className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors"
+            className="px-6 py-3 bg-[var(--moon-accent)] hover:bg-[var(--moon-glow-violet)] text-white rounded-lg font-medium transition-colors flex items-center space-x-2"
           >
-            Upload Mod
+            <svg
+              className="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M12 4v16m8-8H4"
+              />
+            </svg>
+            <span>Upload Mod</span>
           </button>
         </div>
       )}
