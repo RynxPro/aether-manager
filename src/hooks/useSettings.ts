@@ -1,8 +1,8 @@
-import { useState, useEffect } from 'react';
-import { invoke } from '@tauri-apps/api/core';
+import { useState, useEffect } from "react";
+import { invoke } from "@tauri-apps/api/core";
 
 export interface AppSettings {
-  zzmiModsPath?: string;   // Path to zzmi/mods folder for active mods
+  zzmiModsPath?: string; // Path to zzmi/mods folder for active mods
 }
 
 export const useSettings = () => {
@@ -14,7 +14,7 @@ export const useSettings = () => {
     setLoading(true);
     setError(null);
     try {
-      const result = await invoke<any>('get_settings');
+      const result = await invoke<any>("get_settings");
       // Convert snake_case from Rust to camelCase for React
       setSettings({
         zzmiModsPath: result.zzmi_mods_path,
@@ -34,8 +34,8 @@ export const useSettings = () => {
       const rustSettings = {
         zzmi_mods_path: newSettings.zzmiModsPath,
       };
-      
-      await invoke('update_settings', { settings: rustSettings });
+
+      await invoke("update_settings", { settings: rustSettings });
       setSettings(newSettings);
       return true;
     } catch (err) {
@@ -50,7 +50,7 @@ export const useSettings = () => {
     setLoading(true);
     setError(null);
     try {
-      const result = await invoke<string | null>('select_folder', { title });
+      const result = await invoke<string | null>("select_folder", { title });
       return result;
     } catch (err) {
       setError(err as string);

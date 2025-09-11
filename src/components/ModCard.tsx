@@ -30,7 +30,6 @@ const ModCard: React.FC<ModCardProps> = ({ mod, onToggleActive, onDelete }) => {
     }
   };
 
-
   return (
     <div className="bg-gray-900/30 backdrop-blur-sm rounded-xl border border-gray-800/50 overflow-hidden hover:border-gray-700/50 hover:bg-gray-900/50 transition-all duration-300 group">
       {/* Thumbnail */}
@@ -42,7 +41,8 @@ const ModCard: React.FC<ModCardProps> = ({ mod, onToggleActive, onDelete }) => {
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
             onError={(e) => {
               const target = e.target as HTMLImageElement;
-              target.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23374151'/%3E%3Ctext x='50' y='50' text-anchor='middle' dy='.3em' fill='%236B7280' font-family='Arial' font-size='12'%3ENo Image%3C/text%3E%3C/svg%3E";
+              target.src =
+                "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23374151'/%3E%3Ctext x='50' y='50' text-anchor='middle' dy='.3em' fill='%236B7280' font-family='Arial' font-size='12'%3ENo Image%3C/text%3E%3C/svg%3E";
             }}
           />
         ) : (
@@ -53,7 +53,7 @@ const ModCard: React.FC<ModCardProps> = ({ mod, onToggleActive, onDelete }) => {
             </div>
           </div>
         )}
-        
+
         {/* Status Badge and Delete Button */}
         <div className="absolute top-2 right-2 flex items-center gap-2">
           <button
@@ -62,8 +62,19 @@ const ModCard: React.FC<ModCardProps> = ({ mod, onToggleActive, onDelete }) => {
             aria-label="Delete mod"
             title="Delete mod"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-3.5 w-3.5"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+              />
             </svg>
           </button>
           <div
@@ -80,12 +91,10 @@ const ModCard: React.FC<ModCardProps> = ({ mod, onToggleActive, onDelete }) => {
         <h3 className="text-white font-medium text-sm mb-1 line-clamp-1 group-hover:text-blue-400 transition-colors">
           {mod.title}
         </h3>
-        
+
         {/* Character */}
         {mod.character && (
-          <p className="text-gray-400 text-xs mb-2">
-            {mod.character}
-          </p>
+          <p className="text-gray-400 text-xs mb-2">{mod.character}</p>
         )}
 
         {/* Actions */}
@@ -93,7 +102,7 @@ const ModCard: React.FC<ModCardProps> = ({ mod, onToggleActive, onDelete }) => {
           <div className="text-xs text-gray-500">
             {new Date(mod.dateAdded).toLocaleDateString()}
           </div>
-          
+
           <div className="flex gap-2">
             <button
               onClick={handleToggleActive}

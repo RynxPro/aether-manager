@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { invoke } from '@tauri-apps/api/core';
+import { useState, useEffect } from "react";
+import { invoke } from "@tauri-apps/api/core";
 
 // Frontend type (camelCase)
 export interface ModStats {
@@ -23,7 +23,7 @@ export const useStats = () => {
     setLoading(true);
     setError(null);
     try {
-      const result = await invoke<ModStats>('get_mod_stats');
+      const result = await invoke<ModStats>("get_mod_stats");
       // Rust backend now returns camelCase directly
       setStats(result);
     } catch (err) {

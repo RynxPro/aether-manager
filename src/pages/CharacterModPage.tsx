@@ -16,31 +16,36 @@ const CharacterModPage: React.FC<CharacterModPageProps> = ({
   const { characters } = useCharacters();
 
   // Filter mods for this specific character
-  const characterMods = mods?.filter(mod => mod.character === characterId) || [];
+  const characterMods =
+    mods?.filter((mod) => mod.character === characterId) || [];
 
   // Find character data
-  const character = characters.find(c => c.id === characterId) || {
+  const character = characters.find((c) => c.id === characterId) || {
     id: characterId,
     name: "Unknown Character",
     icon: "❓",
     installedMods: 0,
-    activeMods: 0
+    activeMods: 0,
   };
 
   const handleToggleActive = async (modId: string) => {
     try {
       await toggleModActive(modId);
     } catch (err) {
-      console.error('Failed to toggle mod active state:', err);
+      console.error("Failed to toggle mod active state:", err);
     }
   };
 
   const handleDelete = async (modId: string) => {
-    if (window.confirm('Are you sure you want to delete this mod? This action cannot be undone.')) {
+    if (
+      window.confirm(
+        "Are you sure you want to delete this mod? This action cannot be undone."
+      )
+    ) {
       try {
         await deleteMod(modId);
       } catch (err) {
-        console.error('Failed to delete mod:', err);
+        console.error("Failed to delete mod:", err);
       }
     }
   };
@@ -76,18 +81,22 @@ const CharacterModPage: React.FC<CharacterModPageProps> = ({
 
         <div className="flex items-center space-x-4">
           <div className="w-16 h-16 bg-gray-700 rounded-full flex items-center justify-center overflow-hidden border-2 border-gray-600">
-            {('iconUrl' in character && character.iconUrl) ? (
+            {"iconUrl" in character && character.iconUrl ? (
               <img
                 src={(character as any).iconUrl}
                 alt={character.name}
                 className="w-full h-full object-cover"
                 onError={(e) => {
                   const img = e.target as HTMLImageElement;
-                  img.style.display = 'none';
+                  img.style.display = "none";
                 }}
               />
             ) : (
-              <span className="text-2xl">{('icon' in character && character.icon) ? (character as any).icon : '👤'}</span>
+              <span className="text-2xl">
+                {"icon" in character && character.icon
+                  ? (character as any).icon
+                  : "👤"}
+              </span>
             )}
           </div>
           <div>
@@ -138,7 +147,9 @@ const CharacterModPage: React.FC<CharacterModPageProps> = ({
           <div className="w-24 h-24 bg-red-600/20 rounded-full flex items-center justify-center mx-auto mb-4">
             <span className="text-4xl">❌</span>
           </div>
-          <h3 className="text-xl font-semibold text-white mb-2">Error loading mods</h3>
+          <h3 className="text-xl font-semibold text-white mb-2">
+            Error loading mods
+          </h3>
           <p className="text-gray-400">{error}</p>
         </div>
       ) : characterMods.length > 0 ? (

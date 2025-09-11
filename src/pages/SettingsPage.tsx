@@ -2,7 +2,8 @@ import React, { useState, useEffect } from "react";
 import { useSettings } from "../hooks/useSettings";
 
 const SettingsPage: React.FC = () => {
-  const { settings, loading, error, updateSettings, selectFolder } = useSettings();
+  const { settings, loading, error, updateSettings, selectFolder } =
+    useSettings();
   const [localSettings, setLocalSettings] = useState({
     zzmiModsPath: "",
     autoStart: false,
@@ -14,7 +15,7 @@ const SettingsPage: React.FC = () => {
 
   // Update local settings when settings from hook change
   useEffect(() => {
-    setLocalSettings(prev => ({
+    setLocalSettings((prev) => ({
       ...prev,
       zzmiModsPath: settings.zzmiModsPath || "",
     }));
@@ -34,14 +35,16 @@ const SettingsPage: React.FC = () => {
   const handleSaveSettings = async () => {
     setSaving(true);
     setSaveMessage(null);
-    
+
     const success = await updateSettings({
       zzmiModsPath: localSettings.zzmiModsPath,
     });
-    
+
     setSaving(false);
-    setSaveMessage(success ? "Settings saved successfully!" : "Failed to save settings.");
-    
+    setSaveMessage(
+      success ? "Settings saved successfully!" : "Failed to save settings."
+    );
+
     // Clear message after 3 seconds
     setTimeout(() => setSaveMessage(null), 3000);
   };
@@ -65,13 +68,18 @@ const SettingsPage: React.FC = () => {
       <div className="max-w-2xl space-y-8">
         {/* Game Configuration */}
         <div className="bg-gray-800 rounded-lg border border-gray-700 p-6">
-          <h2 className="text-xl font-semibold text-white mb-4">Game Configuration</h2>
+          <h2 className="text-xl font-semibold text-white mb-4">
+            Game Configuration
+          </h2>
           <div className="space-y-6">
             {/* App Data Info */}
             <div className="bg-gray-700/50 rounded-lg p-4">
-              <h3 className="text-sm font-medium text-gray-300 mb-2">Mod Storage</h3>
+              <h3 className="text-sm font-medium text-gray-300 mb-2">
+                Mod Storage
+              </h3>
               <p className="text-xs text-gray-400">
-                Mods are automatically stored in the app's managed folder. No configuration needed.
+                Mods are automatically stored in the app's managed folder. No
+                configuration needed.
               </p>
             </div>
 
@@ -97,7 +105,8 @@ const SettingsPage: React.FC = () => {
                 </button>
               </div>
               <p className="text-xs text-gray-500 mt-1">
-                Set this to automatically copy active mods to your game's zzmi/mods folder
+                Set this to automatically copy active mods to your game's
+                zzmi/mods folder
               </p>
             </div>
           </div>
@@ -169,7 +178,10 @@ const SettingsPage: React.FC = () => {
               <select
                 value={localSettings.theme}
                 onChange={(e) =>
-                  setLocalSettings((prev) => ({ ...prev, theme: e.target.value }))
+                  setLocalSettings((prev) => ({
+                    ...prev,
+                    theme: e.target.value,
+                  }))
                 }
                 className="px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-blue-500"
               >
@@ -204,13 +216,15 @@ const SettingsPage: React.FC = () => {
             <p className="text-red-400 text-sm">{error}</p>
           </div>
         )}
-        
+
         {saveMessage && (
-          <div className={`border rounded-lg p-4 ${
-            saveMessage.includes('success') 
-              ? 'bg-green-600/20 border-green-600/30 text-green-400' 
-              : 'bg-red-600/20 border-red-600/30 text-red-400'
-          }`}>
+          <div
+            className={`border rounded-lg p-4 ${
+              saveMessage.includes("success")
+                ? "bg-green-600/20 border-green-600/30 text-green-400"
+                : "bg-red-600/20 border-red-600/30 text-red-400"
+            }`}
+          >
             <p className="text-sm">{saveMessage}</p>
           </div>
         )}
@@ -228,7 +242,7 @@ const SettingsPage: React.FC = () => {
                 Saving...
               </>
             ) : (
-              'Save Settings'
+              "Save Settings"
             )}
           </button>
           <button

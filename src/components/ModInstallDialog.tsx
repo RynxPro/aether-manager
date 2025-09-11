@@ -8,10 +8,14 @@ interface ModInstallDialogProps {
   onSuccess?: () => void;
 }
 
-const ModInstallDialog: React.FC<ModInstallDialogProps> = ({ isOpen, onClose, onSuccess }) => {
+const ModInstallDialog: React.FC<ModInstallDialogProps> = ({
+  isOpen,
+  onClose,
+  onSuccess,
+}) => {
   const { installMod, loading } = useMods();
   const { characters } = useCharacters();
-  
+
   const [formData, setFormData] = useState({
     title: "",
     character: "",
@@ -23,16 +27,16 @@ const ModInstallDialog: React.FC<ModInstallDialogProps> = ({ isOpen, onClose, on
 
   const handleFolderSelect = async () => {
     try {
-      const { invoke } = await import('@tauri-apps/api/core');
-      const selected = await invoke<string | null>('select_mod_folder');
-      
+      const { invoke } = await import("@tauri-apps/api/core");
+      const selected = await invoke<string | null>("select_mod_folder");
+
       if (selected) {
-        setFormData(prev => ({ ...prev, filePath: selected }));
-        
+        setFormData((prev) => ({ ...prev, filePath: selected }));
+
         // Auto-generate title from folder name if not set
         if (!formData.title) {
-          const foldername = selected.split('/').pop() || '';
-          setFormData(prev => ({ ...prev, title: foldername }));
+          const foldername = selected.split("/").pop() || "";
+          setFormData((prev) => ({ ...prev, title: foldername }));
         }
       }
     } catch (err) {
@@ -60,9 +64,9 @@ const ModInstallDialog: React.FC<ModInstallDialogProps> = ({ isOpen, onClose, on
         filePath: formData.filePath,
         title: formData.title.trim(),
         character: formData.character || undefined,
-        description: formData.description.trim() || undefined
+        description: formData.description.trim() || undefined,
       });
-      
+
       const result = await installMod(
         formData.filePath,
         formData.title.trim(),
@@ -73,7 +77,7 @@ const ModInstallDialog: React.FC<ModInstallDialogProps> = ({ isOpen, onClose, on
 
       console.log("Installation result:", result);
       console.log("Result type:", typeof result);
-      
+
       if (result) {
         // Reset form
         setFormData({
@@ -83,7 +87,7 @@ const ModInstallDialog: React.FC<ModInstallDialogProps> = ({ isOpen, onClose, on
           filePath: "",
           thumbnail: "",
         });
-        
+
         if (onSuccess) {
           onSuccess();
         }
@@ -123,8 +127,18 @@ const ModInstallDialog: React.FC<ModInstallDialogProps> = ({ isOpen, onClose, on
             disabled={loading}
             className="text-gray-400 hover:text-white transition-colors disabled:opacity-50"
           >
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            <svg
+              className="w-6 h-6"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M6 18L18 6M6 6l12 12"
+              />
             </svg>
           </button>
         </div>
@@ -138,7 +152,9 @@ const ModInstallDialog: React.FC<ModInstallDialogProps> = ({ isOpen, onClose, on
             <div className="flex gap-2">
               <input
                 type="text"
-                value={formData.filePath ? formData.filePath.split('/').pop() : ''}
+                value={
+                  formData.filePath ? formData.filePath.split("/").pop() : ""
+                }
                 placeholder="No folder selected"
                 readOnly
                 className="flex-1 px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none"
@@ -162,7 +178,9 @@ const ModInstallDialog: React.FC<ModInstallDialogProps> = ({ isOpen, onClose, on
             <input
               type="text"
               value={formData.title}
-              onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
+              onChange={(e) =>
+                setFormData((prev) => ({ ...prev, title: e.target.value }))
+              }
               placeholder="Enter mod title"
               disabled={loading}
               className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-500 disabled:opacity-50"
@@ -176,12 +194,14 @@ const ModInstallDialog: React.FC<ModInstallDialogProps> = ({ isOpen, onClose, on
             </label>
             <select
               value={formData.character}
-              onChange={(e) => setFormData(prev => ({ ...prev, character: e.target.value }))}
+              onChange={(e) =>
+                setFormData((prev) => ({ ...prev, character: e.target.value }))
+              }
               disabled={loading}
               className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-blue-500 disabled:opacity-50"
             >
               <option value="">No specific character</option>
-              {characters.map(char => (
+              {characters.map((char) => (
                 <option key={char.id} value={char.id}>
                   {char.icon} {char.name}
                 </option>
@@ -197,7 +217,9 @@ const ModInstallDialog: React.FC<ModInstallDialogProps> = ({ isOpen, onClose, on
             <input
               type="url"
               value={formData.thumbnail}
-              onChange={(e) => setFormData(prev => ({ ...prev, thumbnail: e.target.value }))}
+              onChange={(e) =>
+                setFormData((prev) => ({ ...prev, thumbnail: e.target.value }))
+              }
               placeholder="https://example.com/image.jpg"
               disabled={loading}
               className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-500 disabled:opacity-50"
@@ -210,7 +232,7 @@ const ModInstallDialog: React.FC<ModInstallDialogProps> = ({ isOpen, onClose, on
                   className="w-16 h-16 object-cover rounded-lg border border-gray-600"
                   onError={(e) => {
                     const img = e.target as HTMLImageElement;
-                    img.style.display = 'none';
+                    img.style.display = "none";
                   }}
                 />
               </div>
@@ -224,7 +246,12 @@ const ModInstallDialog: React.FC<ModInstallDialogProps> = ({ isOpen, onClose, on
             </label>
             <textarea
               value={formData.description}
-              onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+              onChange={(e) =>
+                setFormData((prev) => ({
+                  ...prev,
+                  description: e.target.value,
+                }))
+              }
               placeholder="Enter mod description"
               rows={3}
               disabled={loading}
