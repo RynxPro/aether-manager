@@ -12,11 +12,11 @@ const CharacterModPage: React.FC<CharacterModPageProps> = ({
   characterId,
   onBack,
 }) => {
-  const { mods, loading, error, toggleModActive } = useMods();
+  const { mods, loading, error, toggleModActive, deleteMod } = useMods();
   const { characters } = useCharacters();
 
   // Filter mods for this specific character
-  const characterMods = mods.filter(mod => mod.character === characterId);
+  const characterMods = mods?.filter(mod => mod.character === characterId) || [];
 
   // Find character data
   const character = characters.find(c => c.id === characterId) || {
@@ -27,11 +27,21 @@ const CharacterModPage: React.FC<CharacterModPageProps> = ({
     activeMods: 0
   };
 
-  const handleToggleActive = async (id: string) => {
+  const handleToggleActive = async (modId: string) => {
     try {
-      await toggleModActive(id);
-    } catch (error) {
-      console.error('Failed to toggle mod:', error);
+      await toggleModActive(modId);
+    } catch (err) {
+      console.error('Failed to toggle mod active state:', err);
+    }
+  };
+
+  const handleDelete = async (modId: string) => {
+    if (window.confirm('Are you sure you want to delete this mod? This action cannot be undone.')) {
+      try {
+        await deleteMod(modId);
+      } catch (err) {
+        console.error('Failed to delete mod:', err);
+      }
     }
   };
 
@@ -138,6 +148,7 @@ const CharacterModPage: React.FC<CharacterModPageProps> = ({
               key={mod.id}
               mod={mod}
               onToggleActive={handleToggleActive}
+              onDelete={handleDelete}
             />
           ))}
         </div>

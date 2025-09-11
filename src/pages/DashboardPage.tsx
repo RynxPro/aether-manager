@@ -8,19 +8,24 @@ interface StatsCardProps {
   title: string;
   value: number;
   icon: string;
-  color: string;
 }
 
-const StatsCard: React.FC<StatsCardProps> = ({ title, value, icon, color }) => {
+const StatsCard: React.FC<StatsCardProps> = ({ title, value, icon }) => {
   return (
-    <div className="bg-gray-900/30 backdrop-blur-sm rounded-xl p-4 border border-gray-800/50 hover:border-gray-700/50 hover:bg-gray-900/50 transition-all duration-300">
+    <div className="bg-[var(--surface)] rounded-xl p-4 border border-[var(--border)] hover:border-[var(--accent)] transition-all duration-200 shadow-sm">
       <div className="flex items-center justify-between">
         <div>
-          <h3 className="text-gray-400 text-xs font-medium uppercase tracking-wide">{title}</h3>
-          <p className="text-xl font-semibold text-white mt-1">{value}</p>
+          <h3 className="text-[var(--muted)] text-xs font-medium uppercase tracking-wide">
+            {title}
+          </h3>
+          <p className="text-xl font-semibold text-[var(--text)] mt-1">
+            {value}
+          </p>
         </div>
-        <div className={`w-8 h-8 rounded-lg ${color}/20 flex items-center justify-center`}>
-          <span className="text-lg">{icon}</span>
+        <div
+          className={`w-8 h-8 rounded-lg bg-[var(--accent-weak)] flex items-center justify-center`}
+        >
+          <span className="text-lg text-[var(--accent)]">{icon}</span>
         </div>
       </div>
     </div>
@@ -28,7 +33,13 @@ const StatsCard: React.FC<StatsCardProps> = ({ title, value, icon, color }) => {
 };
 
 const DashboardPage: React.FC = () => {
-  const { mods, loading: modsLoading, toggleModActive, deleteMod, fetchMods } = useMods();
+  const {
+    mods,
+    loading: modsLoading,
+    toggleModActive,
+    deleteMod,
+    fetchMods,
+  } = useMods();
   const { stats, loading: statsLoading, fetchStats } = useStats();
   const [showInstallDialog, setShowInstallDialog] = useState(false);
 
@@ -43,7 +54,7 @@ const DashboardPage: React.FC = () => {
       await fetchMods(); // Refresh the mods list
       await fetchStats(); // Refresh stats after deleting mod
     } catch (error) {
-      console.error('Failed to delete mod:', error);
+      console.error("Failed to delete mod:", error);
     }
   };
 
@@ -53,17 +64,21 @@ const DashboardPage: React.FC = () => {
   };
 
   return (
-    <div className="p-6">
+    <div className="p-6 bg-[var(--bg)] min-h-screen">
       <div className="mb-6">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-semibold text-white mb-1">Mods</h1>
-            <p className="text-gray-400 text-sm">
+            <h1 className="text-2xl font-semibold text-[var(--text)] mb-1">
+              Mods
+            </h1>
+            <p className="text-[var(--muted)] text-sm">
               Manage your mod collection
             </p>
           </div>
-          <div className="flex items-center space-x-2 text-sm text-gray-400">
-            <span>📁 Drag & drop mods anywhere to import</span>
+          <div className="flex items-center space-x-2 text-sm text-[var(--muted)]">
+            <span className="bg-[var(--surface)] px-3 py-1.5 rounded-lg border border-[var(--border)]">
+              📁 Drag & drop mods anywhere to import
+            </span>
           </div>
         </div>
       </div>
@@ -74,25 +89,21 @@ const DashboardPage: React.FC = () => {
           title="Total"
           value={statsLoading ? 0 : stats.installedMods}
           icon="📦"
-          color="bg-blue-500"
         />
         <StatsCard
           title="Active"
           value={statsLoading ? 0 : stats.activeMods}
           icon="✅"
-          color="bg-green-500"
         />
         <StatsCard
           title="Inactive"
           value={statsLoading ? 0 : stats.inactiveMods}
           icon="⏸️"
-          color="bg-yellow-500"
         />
         <StatsCard
           title="Presets"
           value={statsLoading ? 0 : stats.presets}
           icon="🎛️"
-          color="bg-purple-500"
         />
       </div>
 
@@ -103,7 +114,7 @@ const DashboardPage: React.FC = () => {
             <input
               type="text"
               placeholder="Search mods..."
-              className="w-full px-4 py-2 pl-10 bg-gray-900/30 backdrop-blur-sm border border-gray-800/50 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-blue-500/50"
+              className="w-full px-4 py-2.5 pl-10 bg-[var(--surface)] border border-[var(--border)] rounded-xl text-[var(--text)] placeholder-[var(--muted)] focus:outline-none focus:border-[var(--accent)] focus:ring-1 focus:ring-[var(--accent-weak)] transition-colors"
             />
             <svg
               className="absolute left-3 top-2.5 w-4 h-4 text-gray-400"
@@ -121,7 +132,7 @@ const DashboardPage: React.FC = () => {
           </div>
           <button
             onClick={() => setShowInstallDialog(true)}
-            className="px-4 py-2 bg-blue-500/20 hover:bg-blue-500/30 text-blue-400 rounded-xl font-medium text-sm transition-all duration-200 border border-blue-500/30"
+            className="px-4 py-2.5 bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white rounded-xl font-medium text-sm transition-all duration-200 border border-[var(--accent)] hover:shadow-[0_0_0_4px_var(--accent-weak)]"
           >
             + Add Mod
           </button>
@@ -131,8 +142,8 @@ const DashboardPage: React.FC = () => {
       {/* Mods Grid */}
       {modsLoading ? (
         <div className="text-center py-12">
-          <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-400">Loading mods...</p>
+          <div className="w-8 h-8 border-4 border-[var(--accent)] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-[var(--muted)]">Loading mods...</p>
         </div>
       ) : mods.length > 0 ? (
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4">
@@ -147,11 +158,11 @@ const DashboardPage: React.FC = () => {
         </div>
       ) : (
         <div className="text-center py-12">
-          <div className="w-16 h-16 bg-gray-800/50 rounded-full flex items-center justify-center mx-auto mb-4">
+          <div className="w-16 h-16 bg-[var(--surface)] rounded-full flex items-center justify-center mx-auto mb-4 border border-[var(--border)]">
             <span className="text-2xl">🎮</span>
           </div>
-          <p className="text-gray-400 mb-2">No mods installed yet</p>
-          <p className="text-gray-500 text-sm">
+          <p className="text-[var(--muted)] mb-2">No mods installed yet</p>
+          <p className="text-[var(--muted)] text-sm">
             Start by adding some mods to see them here
           </p>
         </div>

@@ -7,7 +7,14 @@
   font-weight: 400;
 
   color: #f6f6f6;
-  background-color: #0a0a0a;
+
+  --bg: #1f2025; /* main app background */
+  --surface: #303035; /* cards / panels */
+  --accent: #6d27a1; /* main purple */
+  --accent-bright: #ca5fff; /* bright purple for strong CTAs (use sparingly) */
+  --text: #f3f4f6; /* primary text (near white) */
+  --text-muted: #9ca3af; /* secondary / helper text */
+  --border: #2e2e36; /* subtle divider / stroke */
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -18,16 +25,24 @@
 
 * {
   box-sizing: border-box;
+  background: none !important;
+  background-image: none !important;
+  background-color: transparent !important;
 }
 
 body {
   margin: 0;
   padding: 0;
-  background-color: #0a0a0a;
-  color: #f6f6f6;
+  background: var(--bg) !important;
+  color: var(--text);
+  background-image: none !important;
+  background-color: var(--bg) !important;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
 }
 
 #root {
   height: 100vh;
   width: 100vw;
+  background-color: var(--bg);
 }
