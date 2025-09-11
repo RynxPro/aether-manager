@@ -41,6 +41,9 @@ const specialtyIcons: Record<string, string> = {
   attack: attackIcon,
   defense: defenseIcon,
   support: supportIcon,
+  anomaly: anomalyIcon,
+  rupture: anomalyIcon,
+  stun: anomalyIcon,
   balanced: anomalyIcon, // Using anomaly icon as a fallback for balanced
 };
 
@@ -95,21 +98,7 @@ const CharacterCard: React.FC<CharacterCardProps> = ({
           )}
         </div>
 
-        {/* Status indicators */}
-        <div className="absolute -bottom-1 -right-1 flex space-x-1">
-          {character.installedMods > 0 && (
-            <div
-              className="w-3 h-3 bg-[var(--moon-accent)] rounded-full border border-[var(--moon-border)]"
-              title={`${character.installedMods} mods installed`}
-            />
-          )}
-          {character.activeMods > 0 && (
-            <div
-              className="w-3 h-3 bg-[var(--moon-on)] rounded-full border border-[var(--moon-border)]"
-              title={`${character.activeMods} active mods`}
-            />
-          )}
-        </div>
+        {/* Status indicators removed as per request */}
       </div>
 
       {/* Character Name and Icons */}
@@ -119,11 +108,14 @@ const CharacterCard: React.FC<CharacterCardProps> = ({
         </h3>
 
         {/* Only show attributes if not Belle or Wise */}
-        {!['belle', 'wise'].includes(character.id.toLowerCase()) && (
+        {!["belle", "wise"].includes(character.id.toLowerCase()) && (
           <div className="flex items-center justify-center space-x-1.5 mb-1">
             {/* Attribute Icon */}
             {character.attribute && attributeIcons[character.attribute] && (
-              <div className="w-5 h-5 bg-transparent" title={character.attribute}>
+              <div
+                className="w-5 h-5 bg-transparent"
+                title={character.attribute}
+              >
                 <img
                   src={attributeIcons[character.attribute]}
                   alt={character.attribute}
@@ -148,7 +140,10 @@ const CharacterCard: React.FC<CharacterCardProps> = ({
 
             {/* Specialty Icon */}
             {character.specialty && specialtyIcons[character.specialty] && (
-              <div className="w-5 h-5 bg-transparent" title={character.specialty}>
+              <div
+                className="w-5 h-5 bg-transparent"
+                title={character.specialty}
+              >
                 <img
                   src={specialtyIcons[character.specialty]}
                   alt={character.specialty}
@@ -161,9 +156,13 @@ const CharacterCard: React.FC<CharacterCardProps> = ({
       </div>
 
       {/* Stats */}
-      <div className={`flex items-center justify-center space-x-2 text-xs w-full ${
-        !['belle', 'wise'].includes(character.id.toLowerCase()) ? 'mt-1.5' : 'mt-7'
-      }`}>
+      <div
+        className={`flex items-center justify-center space-x-2 text-xs w-full ${
+          !["belle", "wise"].includes(character.id.toLowerCase())
+            ? "mt-1.5"
+            : "mt-7"
+        }`}
+      >
         {/* Total Mods */}
         <div
           className="flex items-center space-x-1 px-1.5 py-0.5 rounded-md bg-[var(--moon-surface)] border border-[var(--moon-border)] text-[var(--moon-muted)] text-[0.7rem]"
