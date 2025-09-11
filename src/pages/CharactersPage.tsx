@@ -92,10 +92,12 @@ const CharactersPage: React.FC<CharactersPageProps> = ({
     return (
       <div className="w-full max-w-[1800px] mx-auto px-8 sm:px-12 lg:px-20 py-4">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-[var(--moon-text)] mb-2">
-            Characters
+          <h1 className="text-4xl font-extrabold text-[var(--moon-text)] tracking-tight mb-2">
+            Character Library
           </h1>
-          <p className="text-[var(--moon-muted)]">Browse mods by character</p>
+          <p className="text-lg text-[var(--moon-muted)]">
+            Manage and explore your characters' mods
+          </p>
         </div>
         <div className="text-center py-12">
           <div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
@@ -109,10 +111,12 @@ const CharactersPage: React.FC<CharactersPageProps> = ({
     return (
       <div className="w-full max-w-[1800px] mx-auto px-8 sm:px-12 lg:px-20 py-4">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-[var(--moon-text)] mb-2">
-            Characters
+          <h1 className="text-4xl font-extrabold text-[var(--moon-text)] tracking-tight mb-2">
+            Character Library
           </h1>
-          <p className="text-[var(--moon-muted)]">Browse mods by character</p>
+          <p className="text-lg text-[var(--moon-muted)]">
+            Manage and explore your characters' mods
+          </p>
         </div>
         <div className="text-center py-12">
           <div className="w-24 h-24 bg-red-600/20 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -130,10 +134,12 @@ const CharactersPage: React.FC<CharactersPageProps> = ({
   return (
     <div className="w-full max-w-[1800px] mx-auto px-8 sm:px-12 lg:px-20 py-4">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-[var(--moon-text)] mb-2">
-          Characters
+        <h1 className="text-4xl font-extrabold text-[var(--moon-text)] tracking-tight mb-2">
+          Character Library
         </h1>
-        <p className="text-[var(--moon-muted)]">Browse mods by character</p>
+        <p className="text-lg text-[var(--moon-muted)]">
+          Manage and explore your characters' mods
+        </p>
       </div>
 
       <div className="sticky top-0 z-10 bg-[var(--moon-bg)]/90 backdrop-blur-md border-b border-[var(--moon-border)] mb-8 px-4 py-8">
