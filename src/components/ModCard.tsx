@@ -31,17 +31,17 @@ const ModCard: React.FC<ModCardProps> = ({ mod, onToggleActive, onDelete }) => {
   };
 
   return (
-    <div 
-      className="bg-gray-900/30 backdrop-blur-sm rounded-xl border border-gray-800/50 overflow-hidden hover:border-gray-700/50 hover:bg-gray-900/50 transition-all duration-300 group flex flex-col h-full w-full min-w-[280px] max-w-[320px] flex-shrink-0"
-      style={{ flex: '0 0 auto' }}
+    <div
+      className="bg-gray-900/30 backdrop-blur-sm rounded-xl border border-gray-800/50 overflow-hidden group flex flex-col h-full w-full min-w-[280px] max-w-[320px] flex-shrink-0 hover:border-gray-700/50 hover:bg-gray-900/50 transition-all"
+      style={{ flex: "0 0 auto" }}
     >
       {/* Thumbnail */}
-      <div className="relative h-40 bg-gray-800/30 overflow-hidden">
+      <div className="relative h-38 rounded-t-xl bg-gray-800/30 overflow-hidden">
         {mod.thumbnail ? (
           <img
             src={mod.thumbnail}
             alt={mod.title}
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+            className="w-full h-full object-cover group-hover:scale-105 transition-all duration-500"
             onError={(e) => {
               const target = e.target as HTMLImageElement;
               target.src =
@@ -61,13 +61,13 @@ const ModCard: React.FC<ModCardProps> = ({ mod, onToggleActive, onDelete }) => {
         <div className="absolute top-2 right-2 flex items-center gap-2">
           <button
             onClick={handleDelete}
-            className="p-1.5 rounded-full bg-red-500/20 hover:bg-red-500/30 text-red-400 opacity-0 group-hover:opacity-100 transition-opacity"
+            className="p-2 rounded-md bg-red-500/20 hover:bg-red-500/30 text-red-400 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"
             aria-label="Delete mod"
             title="Delete mod"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              className="h-3.5 w-3.5"
+              className="h-4 w-4"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -81,23 +81,25 @@ const ModCard: React.FC<ModCardProps> = ({ mod, onToggleActive, onDelete }) => {
             </svg>
           </button>
           <div
-            className={`w-3 h-3 rounded-full ${
+            className={`rounded-full ${
               mod.isActive ? "bg-green-400" : "bg-gray-500"
-            }`}
+            } w-3.5 h-3.5`}
           />
         </div>
       </div>
 
       {/* Content */}
-      <div className="p-3">
+      <div className="p-4">
         {/* Title */}
-        <h3 className="text-white font-medium text-sm mb-1 line-clamp-1 group-hover:text-blue-400 transition-colors">
+        <h3 className="text-white font-semibold text-sm mb-1 line-clamp-2 group-hover:text-blue-400 transition-colors">
           {mod.title}
         </h3>
 
         {/* Character */}
         {mod.character && (
-          <p className="text-gray-400 text-xs mb-2">{mod.character}</p>
+          <p className="text-xs text-gray-400 line-clamp-1 mb-1">
+            {mod.character}
+          </p>
         )}
 
         {/* Actions */}
@@ -109,7 +111,7 @@ const ModCard: React.FC<ModCardProps> = ({ mod, onToggleActive, onDelete }) => {
           <div className="flex gap-2">
             <button
               onClick={handleToggleActive}
-              className={`px-3 py-1 rounded-md text-xs font-medium transition-all duration-200 ${
+              className={`rounded-md px-3 py-1 text-xs font-medium transition-all duration-200 ${
                 mod.isActive
                   ? "bg-red-500/20 text-red-400 hover:bg-red-500/30"
                   : "bg-green-500/20 text-green-400 hover:bg-green-500/30"
