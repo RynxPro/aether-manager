@@ -77,7 +77,8 @@ const CharacterCard: React.FC<CharacterCardProps> = ({
 
   return (
     <div
-      className={`flex flex-col items-center p-3 rounded-xl transition-all duration-200 cursor-pointer group bg-[var(--moon-surface)] backdrop-blur-sm border border-[var(--moon-border)] hover:border-[var(--moon-glow-violet)] hover:shadow-[0_0_12px_var(--moon-glow-violet)] h-full w-full ${className}`}
+      className={`flex flex-col items-center p-3 rounded-xl transition-all duration-200 cursor-pointer group bg-[var(--moon-surface)] backdrop-blur-sm border border-[var(--moon-border)] hover:border-[var(--moon-glow-violet)] hover:shadow-[0_0_12px_var(--moon-glow-violet)] h-full w-full min-w-[120px] flex-shrink-0 ${className}`}
+      style={{ flex: '0 0 auto' }}
       onClick={handleClick}
     >
       {/* Character Portrait */}

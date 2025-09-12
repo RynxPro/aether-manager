@@ -31,7 +31,10 @@ const ModCard: React.FC<ModCardProps> = ({ mod, onToggleActive, onDelete }) => {
   };
 
   return (
-    <div className="bg-gray-900/30 backdrop-blur-sm rounded-xl border border-gray-800/50 overflow-hidden hover:border-gray-700/50 hover:bg-gray-900/50 transition-all duration-300 group">
+    <div 
+      className="bg-gray-900/30 backdrop-blur-sm rounded-xl border border-gray-800/50 overflow-hidden hover:border-gray-700/50 hover:bg-gray-900/50 transition-all duration-300 group flex flex-col h-full w-full min-w-[280px] max-w-[320px] flex-shrink-0"
+      style={{ flex: '0 0 auto' }}
+    >
       {/* Thumbnail */}
       <div className="relative h-40 bg-gray-800/30 overflow-hidden">
         {mod.thumbnail ? (
