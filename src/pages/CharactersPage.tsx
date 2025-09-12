@@ -239,16 +239,24 @@ const CharactersPage: React.FC<CharactersPageProps> = ({
             </p>
           </div>
         ) : (
-          <div className="text-center py-12">
-            <div className="w-24 h-24 bg-[var(--moon-surface)] rounded-full flex items-center justify-center mx-auto mb-4">
-              <span className="text-4xl">🔍</span>
+          <div className="text-center py-16 px-4">
+            <div className="w-20 h-20 rounded-full bg-[var(--moon-surface)] flex items-center justify-center mb-6 border-2 border-dashed border-[var(--moon-glow-violet)] mx-auto">
+              <svg className="w-10 h-10 text-[var(--moon-glow-violet)]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
             </div>
-            <h3 className="text-xl font-semibold text-[var(--moon-text)] mb-2">
-              No matching characters found
-            </h3>
-            <p className="text-[var(--moon-muted)]">
-              Try a different search term
+            <h3 className="text-xl font-semibold text-[var(--moon-text)] mb-2">No characters found</h3>
+            <p className="text-[var(--moon-muted)] max-w-md mx-auto">
+              No characters match "{searchQuery}". Try a different search term.
             </p>
+            {searchQuery && (
+              <button
+                onClick={() => setSearchQuery('')}
+                className="mt-6 px-4 py-2 text-sm font-medium text-[var(--moon-accent)] hover:text-[var(--moon-glow-violet)] transition-colors"
+              >
+                Clear search
+              </button>
+            )}
           </div>
         )}
       </div>
