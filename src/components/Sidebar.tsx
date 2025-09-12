@@ -59,7 +59,7 @@ const Sidebar: React.FC<SidebarProps> = ({ currentPage, onPageChange }) => {
   return (
     <>
       <div
-        className={`fixed md:relative h-screen bg-[var(--moon-surface-elevated)] border-r border-[var(--moon-border)] flex flex-col transition-all duration-300 ease-in-out z-50 w-64 shadow-lg left-0`}
+        className={`fixed md:relative h-screen bg-[var(--moon-surface)] backdrop-blur-sm border-r border-[var(--moon-border)] flex flex-col transition-all duration-300 ease-in-out z-50 w-64 shadow-lg left-0`}
       >
         {/* Header */}
         <div
@@ -67,7 +67,7 @@ const Sidebar: React.FC<SidebarProps> = ({ currentPage, onPageChange }) => {
         >
           <div className={`flex items-center justify-between`}>
             <div className="flex items-center space-x-3 overflow-hidden">
-              <div className="w-10 h-10 bg-[var(--moon-accent)] rounded-full flex items-center justify-center flex-shrink-0">
+              <div className="w-10 h-10 bg-gradient-to-br from-[var(--moon-accent)] to-[var(--moon-glow-violet)] rounded-full flex items-center justify-center flex-shrink-0 shadow-lg">
                 <span className="text-white font-bold text-sm">M</span>
               </div>
               <div className="overflow-hidden">
@@ -94,24 +94,24 @@ const Sidebar: React.FC<SidebarProps> = ({ currentPage, onPageChange }) => {
 
         {/* Navigation */}
         <nav className="flex-1 overflow-y-auto overflow-x-hidden py-4 px-2">
-          <ul className="space-y-1">
+          <ul className="space-y-2">
             {navigationItems.map((item) => (
               <li key={item.id} className="relative">
                 <button
                   onClick={() => handleNavigation(item)}
-                  className={`w-full flex items-center px-4 py-3 gap-3 rounded-md text-sm font-medium transition-all duration-200 group/nav-item ${
+                  className={`w-full flex items-center px-4 py-3 gap-3 rounded-xl text-sm font-medium transition-all duration-200 group/nav-item ${
                     currentPage === item.id
-                      ? "bg-[var(--moon-accent)]/10 text-[var(--moon-accent)] font-semibold"
-                      : "text-[var(--moon-muted)] hover:bg-[var(--moon-surface)]/60 hover:text-[var(--moon-text)]"
-                  }`}
+                      ? "bg-[var(--moon-accent)]/10 text-[var(--moon-accent)] font-semibold border border-[var(--moon-glow-violet)]/30"
+                      : "text-[var(--moon-muted)] hover:bg-[var(--moon-surface-hover)] hover:text-[var(--moon-text)] border border-transparent"
+                  } hover:border-[var(--moon-glow-violet)]/50 hover:shadow-[0_0_8px_var(--moon-glow-violet)/20]`}
                   title={item.label}
                 >
                   <div
-                    className={`p-1.5 rounded-md ${
+                    className={`p-1.5 rounded-lg ${
                       currentPage === item.id
                         ? "bg-[var(--moon-accent)]/20"
-                        : "bg-[var(--moon-surface-elevated)]"
-                    } group-hover/nav-item:bg-[var(--moon-accent)]/20 transition-colors`}
+                        : "bg-[var(--moon-bg)]"
+                    } group-hover/nav-item:bg-[var(--moon-accent)]/20 transition-all duration-200`}
                   >
                     {React.cloneElement(item.icon, {
                       className: `w-4 h-4 ${
@@ -137,8 +137,8 @@ const Sidebar: React.FC<SidebarProps> = ({ currentPage, onPageChange }) => {
         <div className={`border-t border-[var(--moon-border)] p-4 mt-auto`}>
           <div className={`flex items-center justify-between`}>
             <div className="flex items-center overflow-hidden">
-              <div className="w-9 h-9 rounded-full bg-[var(--moon-accent)]/10 flex items-center justify-center flex-shrink-0">
-                <span className="text-[var(--moon-accent)] text-sm font-medium">
+              <div className="w-9 h-9 rounded-full bg-[var(--moon-bg)] border border-[var(--moon-border)] flex items-center justify-center flex-shrink-0 group-hover:border-[var(--moon-glow-violet)] transition-colors">
+                <span className="text-[var(--moon-text)] text-sm font-medium group-hover:text-[var(--moon-glow-violet)] transition-colors">
                   U
                 </span>
               </div>
