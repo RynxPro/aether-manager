@@ -16,10 +16,21 @@ const CharacterModPage: React.FC<CharacterModPageProps> = ({
   const { mods, loading, error, toggleModActive, deleteMod, fetchMods } = useMods();
   const { characters } = useCharacters();
   const [showInstallDialog, setShowInstallDialog] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
 
-  // Filter mods for this specific character
-  const characterMods =
-    mods?.filter((mod) => mod.character === characterId) || [];
+  // Filter mods for this specific character and search query
+  const characterMods = React.useMemo(() => {
+    return (mods || [])
+      .filter((mod) => mod.character === characterId)
+      .filter((mod) => {
+        if (!searchQuery.trim()) return true;
+        const query = searchQuery.toLowerCase();
+        return (
+          mod.title.toLowerCase().includes(query) ||
+          (mod.description && mod.description.toLowerCase().includes(query))
+        );
+      });
+  }, [mods, characterId, searchQuery]);
 
   // Find character data
   const character = characters.find((c) => c.id === characterId) || {
@@ -133,6 +144,8 @@ const CharacterModPage: React.FC<CharacterModPageProps> = ({
               <input
                 type="text"
                 placeholder="Search mods..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full px-3 py-1.5 pl-10 bg-[var(--moon-surface)] border border-[var(--moon-border)] rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-[var(--moon-glow-violet)] focus:ring-2 focus:ring-[var(--moon-glow-violet)]"
               />
               <svg
