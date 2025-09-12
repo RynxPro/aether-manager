@@ -80,24 +80,27 @@ const CharacterModPage: React.FC<CharacterModPageProps> = ({
         </button>
 
         <div className="flex pt-2 items-center space-x-4">
-          <div className="w-25 h-25 rounded-full flex items-center justify-center overflow-hidden border-2 border-[var(--moon-border)]">
-            {"iconUrl" in character && character.iconUrl ? (
-              <img
-                src={(character as any).iconUrl}
-                alt={character.name}
-                className="w-full h-full object-cover"
-                onError={(e) => {
-                  const img = e.target as HTMLImageElement;
-                  img.style.display = "none";
-                }}
-              />
-            ) : (
-              <span className="text-3xl">
-                {"icon" in character && character.icon
-                  ? (character as any).icon
-                  : "👤"}
-              </span>
-            )}
+          <div className="relative w-20 h-20">
+            <div className="w-full h-full rounded-full flex items-center justify-center overflow-hidden border-2 border-[var(--moon-glow-violet)] group-hover:border-[var(--moon-accent)] transition-colors bg-[var(--moon-bg)]">
+              {"iconUrl" in character && character.iconUrl ? (
+                <img
+                  src={(character as any).iconUrl}
+                  alt={character.name}
+                  className="w-full h-full object-cover"
+                  onError={(e) => {
+                    const img = e.target as HTMLImageElement;
+                    img.style.display = "none";
+                  }}
+                />
+              ) : (
+                <span className="text-3xl">
+                  {"icon" in character && character.icon
+                    ? (character as any).icon
+                    : "👤"}
+                </span>
+              )}
+            </div>
+            <div className="absolute -inset-1 rounded-full bg-[var(--moon-glow-violet)] opacity-20 group-hover:opacity-30 blur-md -z-10 transition-opacity"></div>
           </div>
           <div>
             <h1 className="text-4xl font-extrabold text-[var(--moon-text)] tracking-tight mb-1">
