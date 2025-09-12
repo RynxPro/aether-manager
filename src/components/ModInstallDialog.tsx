@@ -18,25 +18,28 @@ const ModInstallDialog: React.FC<ModInstallDialogProps> = ({
   initialCharacterId = ""
 }) => {
   const { installMod, loading } = useMods();
-  const { characters } = useCharacters();
+  const { characters, loading: loadingCharacters } = useCharacters();
 
   const [formData, setFormData] = useState({
     title: "",
-    character: initialCharacterId,
+    character: "",
     description: "",
     filePath: "",
     thumbnail: "",
   });
 
-  // Update character if initialCharacterId changes
+  // Update character when initialCharacterId or characters change
   React.useEffect(() => {
-    if (initialCharacterId) {
-      setFormData(prev => ({
-        ...prev,
-        character: initialCharacterId
-      }));
+    if (initialCharacterId && !loadingCharacters) {
+      const characterExists = characters.some(c => c.id === initialCharacterId);
+      if (characterExists) {
+        setFormData(prev => ({
+          ...prev,
+          character: initialCharacterId
+        }));
+      }
     }
-  }, [initialCharacterId]);
+  }, [initialCharacterId, characters, loadingCharacters]);
   const [error, setError] = useState<string | null>(null);
 
   const handleFolderSelect = async () => {
@@ -237,17 +240,22 @@ const ModInstallDialog: React.FC<ModInstallDialogProps> = ({
                 <Listbox.Label className="block text-sm font-medium text-[var(--moon-text)] mb-2">
                   Character (Optional)
                 </Listbox.Label>
-                <Listbox.Button className="relative w-full cursor-default rounded-lg bg-[var(--moon-surface-elevated)] py-2.5 pl-3 pr-10 text-left shadow-md focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--moon-accent)] sm:text-sm border border-[var(--moon-border)]">
+                <Listbox.Button className="relative w-full cursor-default rounded-lg bg-[var(--moon-surface-elevated)] py-2.5 pl-3 pr-10 text-left shadow-md focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--moon-accent)] sm:text-sm border border-[var(--moon-border)] disabled:opacity-60 disabled:cursor-not-allowed"
+                disabled={loading || loadingCharacters}>
                   <div className="flex items-center">
-                    {formData.character ? (
+                    {loadingCharacters ? (
+                      <span className="text-[var(--moon-muted)]">Loading characters...</span>
+                    ) : formData.character ? (
                       <>
-                        <img
-                          src={characters.find(c => c.id === formData.character)?.iconUrl}
-                          alt=""
-                          className="h-5 w-5 flex-shrink-0 rounded-full"
-                        />
+                        {characters.find(c => c.id === formData.character)?.iconUrl && (
+                          <img
+                            src={characters.find(c => c.id === formData.character)?.iconUrl}
+                            alt=""
+                            className="h-5 w-5 flex-shrink-0 rounded-full"
+                          />
+                        )}
                         <span className="ml-3 block truncate">
-                          {characters.find(c => c.id === formData.character)?.name}
+                          {characters.find(c => c.id === formData.character)?.name || 'Unknown Character'}
                         </span>
                       </>
                     ) : (
