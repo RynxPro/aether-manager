@@ -188,19 +188,31 @@ const CharacterModPage: React.FC<CharacterModPageProps> = ({
           ))}
         </div>
       ) : (
-        <div className="text-center py-12">
-          <div className="w-24 h-24 bg-[var(--moon-surface)] border border-[var(--moon-border)] rounded-full flex items-center justify-center mx-auto mb-4">
-            <span className="text-4xl">🎮</span>
+        <div className="flex flex-col items-center justify-center py-16 px-4 text-center">
+          <div className="w-20 h-20 rounded-full bg-[var(--moon-surface)] border-2 border-dashed border-[var(--moon-glow-violet)] flex items-center justify-center mb-6">
+            <svg
+              className="w-10 h-10 text-[var(--moon-glow-violet)]"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={1.5}
+                d="M12 4v16m8-8H4"
+              />
+            </svg>
           </div>
-          <h3 className="text-xl font-semibold text-[var(--moon-text)] mb-2">
-            No mods for {character.name}
+          <h3 className="text-2xl font-semibold text-[var(--moon-text)] mb-3">
+            No Mods Found for {character.name}
           </h3>
-          <p className="text-[var(--moon-muted)] mb-6">
-            Upload your first mod to get started
+          <p className="text-[var(--moon-muted)] max-w-md mb-8">
+            You haven't added any mods for {character.name} yet. Upload your first mod to enhance your game experience.
           </p>
           <button
             onClick={handleUploadMod}
-            className="px-6 py-3 bg-[var(--moon-accent)] hover:bg-[var(--moon-glow-violet)] text-white rounded-lg font-medium transition-colors flex items-center space-x-2"
+            className="px-8 py-3 bg-[var(--moon-accent)] hover:bg-[var(--moon-glow-violet)] text-white rounded-lg font-medium transition-all duration-200 flex items-center space-x-2 shadow-lg hover:shadow-[var(--moon-glow-violet)]/20"
           >
             <svg
               className="w-5 h-5"
