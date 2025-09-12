@@ -133,42 +133,7 @@ const Sidebar: React.FC<SidebarProps> = ({ currentPage, onPageChange }) => {
           </ul>
         </nav>
 
-        {/* Footer */}
-        <div className={`border-t border-[var(--moon-border)] p-4 mt-auto`}>
-          <div className={`flex items-center justify-between`}>
-            <div className="flex items-center overflow-hidden">
-              <div className="w-9 h-9 rounded-full bg-[var(--moon-bg)] border border-[var(--moon-border)] flex items-center justify-center flex-shrink-0 group-hover:border-[var(--moon-glow-violet)] transition-colors">
-                <span className="text-[var(--moon-text)] text-sm font-medium group-hover:text-[var(--moon-glow-violet)] transition-colors">
-                  U
-                </span>
-              </div>
-              <div className="ml-3 overflow-hidden">
-                <p className="text-sm font-semibold text-[var(--moon-text)] whitespace-nowrap">
-                  User
-                </p>
-                <p className="text-xs italic text-[var(--moon-muted)] whitespace-nowrap">
-                  Free Plan
-                </p>
-              </div>
-            </div>
-            <button className="text-[var(--moon-muted)] hover:text-[var(--moon-text)] transition-colors">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-4 w-4"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M19 9l-7 7-7-7"
-                />
-              </svg>
-            </button>
-          </div>
-        </div>
+        {/* Removed account section */}
       </div>
     </>
   );
