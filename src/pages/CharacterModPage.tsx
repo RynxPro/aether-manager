@@ -1,7 +1,8 @@
-import React from "react";
+import React, { useState } from "react";
 import { useMods } from "../hooks/useMods";
 import { useCharacters } from "../hooks/useCharacters";
 import ModCard from "../components/ModCard";
+import ModInstallDialog from "../components/ModInstallDialog";
 
 interface CharacterModPageProps {
   characterId: string;
@@ -12,8 +13,9 @@ const CharacterModPage: React.FC<CharacterModPageProps> = ({
   characterId,
   onBack,
 }) => {
-  const { mods, loading, error, toggleModActive, deleteMod } = useMods();
+  const { mods, loading, error, toggleModActive, deleteMod, fetchMods } = useMods();
   const { characters } = useCharacters();
+  const [showInstallDialog, setShowInstallDialog] = useState(false);
 
   // Filter mods for this specific character
   const characterMods =
@@ -51,12 +53,22 @@ const CharacterModPage: React.FC<CharacterModPageProps> = ({
   };
 
   const handleUploadMod = () => {
-    console.log(`Upload new mod for character ${characterId}`);
-    // Will be implemented with actual file upload logic
+    setShowInstallDialog(true);
+  };
+
+  const handleInstallSuccess = async () => {
+    await fetchMods(); // Refresh the mods list after installation
   };
 
   return (
     <div className="max-w-[1800px] mx-auto px-8 sm:px-12 lg:px-20 py-4">
+      {/* Install Dialog */}
+      <ModInstallDialog
+        isOpen={showInstallDialog}
+        onClose={() => setShowInstallDialog(false)}
+        onSuccess={handleInstallSuccess}
+        initialCharacterId={characterId}
+      />
       {/* Header with Back Button */}
       <div className="mb-8">
         <button
@@ -208,7 +220,8 @@ const CharacterModPage: React.FC<CharacterModPageProps> = ({
             No Mods Found for {character.name}
           </h3>
           <p className="text-[var(--moon-muted)] max-w-md mb-8">
-            You haven't added any mods for {character.name} yet. Upload your first mod to enhance your game experience.
+            You haven't added any mods for {character.name} yet. Upload your
+            first mod to enhance your game experience.
           </p>
           <button
             onClick={handleUploadMod}
