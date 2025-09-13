@@ -3,6 +3,7 @@ import ModCard from "../components/ModCard";
 import ModInstallDialog from "../components/ModInstallDialog";
 import { useMods } from "../hooks/useMods";
 import { useStats } from "../hooks/useStats";
+import { cnButton } from "../styles/buttons";
 
 interface StatsCardProps {
   title: string;
@@ -132,7 +133,7 @@ const DashboardPage: React.FC = () => {
           </div>
           <button
             onClick={() => setShowInstallDialog(true)}
-            className="px-4 py-2.5 bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white rounded-xl font-medium text-sm transition-all duration-200 border border-[var(--accent)] hover:shadow-[0_0_0_4px_var(--accent-weak)]"
+            className={cnButton({ variant: 'primary', size: 'md', className: 'text-sm' })}
           >
             + Add Mod
           </button>

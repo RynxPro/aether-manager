@@ -3,6 +3,7 @@ import { useMods } from "../hooks/useMods";
 import { useCharacters } from "../hooks/useCharacters";
 import ModCard from "../components/ModCard";
 import ModInstallDialog from "../components/ModInstallDialog";
+import { cnButton } from "../styles/buttons";
 
 interface CharacterModPageProps {
   characterId: string;
@@ -165,7 +166,7 @@ const CharacterModPage: React.FC<CharacterModPageProps> = ({
           </div>
           <button
             onClick={handleUploadMod}
-            className="px-6 py-2 bg-[var(--moon-accent)] hover:bg-[var(--moon-glow-violet)] text-white rounded-lg font-medium transition-colors flex items-center space-x-2"
+            className={cnButton({ variant: 'primary', className: 'flex items-center space-x-2' })}
           >
             <svg
               className="w-5 h-5"
@@ -256,7 +257,7 @@ const CharacterModPage: React.FC<CharacterModPageProps> = ({
           </p>
           <button
             onClick={handleUploadMod}
-            className="px-8 py-3 bg-[var(--moon-accent)] hover:bg-[var(--moon-glow-violet)] text-white rounded-lg font-medium transition-all duration-200 flex items-center space-x-2 shadow-lg hover:shadow-[var(--moon-glow-violet)]/20"
+            className={cnButton({ variant: 'primary', size: 'xl', className: 'flex items-center space-x-2' })}
           >
             <svg
               className="w-5 h-5"

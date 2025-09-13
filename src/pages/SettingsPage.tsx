@@ -1,12 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useSettings } from "../hooks/useSettings";
-import {
-  FiFolder,
-  FiSave,
-  FiRefreshCw,
-  FiCheckCircle,
-  FiAlertCircle,
-} from "react-icons/fi";
+import { FiFolder, FiSave, FiRefreshCw, FiCheckCircle, FiAlertCircle } from "react-icons/fi";
+import { cnButton } from "../styles/buttons";
 
 interface SettingsState {
   zzmiModsPath: string;
@@ -157,7 +152,7 @@ const SettingsPage: React.FC = () => {
                 />
                 <button
                   onClick={handleBrowseZzmiFolder}
-                  className="px-8 py-3 bg-[var(--moon-accent)] hover:bg-[var(--moon-glow-violet)] text-white rounded-lg font-medium transition-all duration-200 flex items-center space-x-2 shadow-lg hover:shadow-[var(--moon-glow-violet)]/20"
+                  className={cnButton({ variant: 'primary', size: 'md', className: 'whitespace-nowrap' })}
                 >
                   <FiFolder className="w-4 h-4" />
                   Browse
@@ -175,14 +170,14 @@ const SettingsPage: React.FC = () => {
         <div className="flex flex-col sm:flex-row justify-end gap-3 pt-2">
           <button
             onClick={handleResetSettings}
-            className="px-6 py-2.5 border border-[var(--moon-border)] text-[var(--moon-text)] rounded-lg hover:bg-[var(--moon-surface-hover)] transition-colors flex-1 sm:flex-none"
+            className={cnButton({ variant: 'secondary', size: 'lg', className: 'flex-1 sm:flex-none' })}
           >
             Reset to Defaults
           </button>
           <button
             onClick={handleSaveSettings}
             disabled={saving}
-            className="px-8 py-3 bg-[var(--moon-accent)] hover:bg-[var(--moon-glow-violet)] text-white rounded-lg font-medium transition-all duration-200 flex items-center space-x-2 shadow-lg hover:shadow-[var(--moon-glow-violet)]/20"
+            className={cnButton({ variant: 'primary', size: 'xl', className: 'flex items-center space-x-2', disabled: saving })}
           >
             {saving ? (
               <>
