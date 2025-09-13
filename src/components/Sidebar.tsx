@@ -28,7 +28,7 @@ const Sidebar: React.FC<SidebarProps> = ({ currentPage, onPageChange }) => {
   const navigationItems = [
     {
       id: "dashboard",
-      label: "Mods",
+      label: "Dashboard",
       icon: <HomeIcon className="w-5 h-5" />,
       path: "/",
     },
