@@ -1,119 +1,199 @@
-import React, { useState } from "react";
+import React, { useState, useMemo, useCallback } from "react";
 import ModCard from "../components/ModCard";
 import ModInstallDialog from "../components/ModInstallDialog";
 import { useCharacters } from "../hooks/useCharacters";
 import { useMods } from "../hooks/useMods";
+// Import UI components from their respective files
+import LoadingSpinner from "../components/characters/LoadingSpinner";
+import ErrorState from "../components/characters/ErrorState";
+import EmptyState from "../components/characters/EmptyState";
+import SearchBar from "../components/characters/SearchBar";
+import SortDropdown from "../components/characters/SortDropdown";
+import PageContainer, { PageHeader } from "../components/characters/PageContainer";
+
+type SortOption = {
+  value: string;
+  label: string;
+};
+
+// Sort option labels
+const SORT_OPTIONS: SortOption[] = [
+  { value: "name-asc", label: "Name (A-Z)" },
+  { value: "name-desc", label: "Name (Z-A)" },
+  { value: "active", label: "Active First" },
+  { value: "inactive", label: "Inactive First" },
+];
+
+type SortOptionType = (typeof SORT_OPTIONS)[number]["value"];
 
 const OtherModsPage: React.FC = () => {
-  const { getOtherMods, loading } = useCharacters();
+  const { getOtherMods, loading, error } = useCharacters();
   const { toggleModActive, fetchMods } = useMods();
-  const [searchTerm, setSearchTerm] = useState("");
-  const [statusFilter, setStatusFilter] = useState("all");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [sortBy, setSortBy] = useState<SortOptionType>("name-asc");
   const [showInstallDialog, setShowInstallDialog] = useState(false);
 
   const otherMods = getOtherMods();
 
-  // Filter mods based on search and status
-  const filteredMods = otherMods.filter((mod) => {
-    const matchesSearch =
-      mod.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (mod.description &&
-        mod.description.toLowerCase().includes(searchTerm.toLowerCase()));
-    const matchesStatus =
-      statusFilter === "all" ||
-      (statusFilter === "active" && mod.isActive) ||
-      (statusFilter === "inactive" && !mod.isActive);
-    return matchesSearch && matchesStatus;
-  });
+  const filteredAndSortedMods = useMemo(() => {
+    if (!otherMods) return [];
 
-  const handleToggleActive = async (id: string) => {
-    await toggleModActive(id);
-  };
+    // Filter mods based on search query
+    let result = [...otherMods];
 
-  const handleInstallSuccess = () => {
-    fetchMods();
-  };
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase().trim();
+      result = result.filter((mod) => {
+        return (
+          mod.title.toLowerCase().includes(query) ||
+          (mod.description && mod.description.toLowerCase().includes(query))
+        );
+      });
+    }
+
+    // Sort mods based on selected sort option
+    return result.sort((a, b) => {
+      switch (sortBy) {
+        case "name-asc":
+          return a.title.localeCompare(b.title);
+        case "name-desc":
+          return b.title.localeCompare(a.title);
+        case "active":
+          return (a.isActive === b.isActive) ? 0 : a.isActive ? -1 : 1;
+        case "inactive":
+          return (a.isActive === b.isActive) ? 0 : a.isActive ? 1 : -1;
+        default:
+          return 0;
+      }
+    });
+  }, [otherMods, searchQuery, sortBy]);
+
+  const handleToggleActive = useCallback(async (id: string) => {
+    try {
+      await toggleModActive(id);
+    } catch (err) {
+      console.error("Failed to toggle mod active state:", err);
+    }
+  }, [toggleModActive]);
+
+  const handleDeleteMod = useCallback(async (id: string) => {
+    try {
+      // TODO: Implement actual delete functionality
+      console.log("Delete mod:", id);
+    } catch (err) {
+      console.error("Failed to delete mod:", err);
+    }
+  }, []);
+
+
+  const handleSearchChange = useCallback((value: string) => {
+    setSearchQuery(value);
+  }, []);
+
+  const handleSortChange = useCallback((value: string) => {
+    setSortBy(value as SortOptionType);
+  }, []);
+
+  // Loading state
+  if (loading) {
+    return (
+      <PageContainer>
+        <PageHeader
+          title="Other Mods"
+          description="Manage mods not assigned to specific characters"
+        />
+        <div className="py-16">
+          <LoadingSpinner />
+        </div>
+      </PageContainer>
+    );
+  }
+
+  // Error state
+  if (error) {
+    return (
+      <PageContainer>
+        <PageHeader
+          title="Other Mods"
+          description="Manage mods not assigned to specific characters"
+        />
+        <ErrorState 
+          error={error} 
+          onRetry={fetchMods} 
+        />
+      </PageContainer>
+    );
+  }
 
   return (
-    <div className="p-8">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-white mb-2">Other Mods</h1>
-        <p className="text-gray-400">
-          Manage mods not assigned to specific characters
-        </p>
-      </div>
+    <PageContainer>
+      <PageHeader
+        title="Other Mods"
+        description="Manage mods not assigned to specific characters"
+      >
+        <button
+          onClick={() => setShowInstallDialog(true)}
+          className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
+        >
+          Install Mod
+        </button>
+      </PageHeader>
 
-      {/* Search and Filter Bar */}
+      {/* Search and Sort Bar */}
       <div className="mb-6 flex flex-col sm:flex-row gap-4">
         <div className="flex-1">
-          <input
-            type="text"
+          <SearchBar
             placeholder="Search mods..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-500"
+            value={searchQuery}
+            onChange={handleSearchChange}
           />
         </div>
-        <div className="flex gap-2">
-          <select
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
-            className="px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-blue-500"
-          >
-            <option value="all">All Status</option>
-            <option value="active">Active</option>
-            <option value="inactive">Inactive</option>
-          </select>
+        <div className="w-full sm:w-64">
+          <SortDropdown
+            options={SORT_OPTIONS}
+            value={sortBy}
+            onChange={handleSortChange}
+          />
         </div>
       </div>
 
       {/* Mods Grid */}
-      {loading ? (
-        <div className="text-center py-8">
-          <div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-400">Loading mods...</p>
-        </div>
-      ) : filteredMods.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-          {filteredMods.map((mod) => (
+      {filteredAndSortedMods.length > 0 ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {filteredAndSortedMods.map((mod) => (
             <ModCard
               key={mod.id}
               mod={mod}
               onToggleActive={handleToggleActive}
+              onDelete={handleDeleteMod}
             />
           ))}
         </div>
       ) : (
-        <div className="text-center py-12">
-          <div className="w-24 h-24 bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-4">
-            <span className="text-4xl">🎮</span>
-          </div>
-          <h3 className="text-xl font-semibold text-white mb-2">
-            {searchTerm || statusFilter !== "all"
+        <EmptyState
+          icon="🎮"
+          title={
+            searchQuery || sortBy !== "name-asc"
               ? "No matching mods found"
-              : "No other mods found"}
-          </h3>
-          <p className="text-gray-400 mb-6">
-            {searchTerm || statusFilter !== "all"
+              : "No mods found"
+          }
+          description={
+            searchQuery || sortBy !== "name-asc"
               ? "Try adjusting your search or filter criteria"
-              : "Mods not assigned to characters will appear here"}
-          </p>
-          <button
-            onClick={() => setShowInstallDialog(true)}
-            className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors"
-          >
-            Add New Mod
-          </button>
-        </div>
+              : "Mods not assigned to characters will appear here"
+          }
+        />
       )}
-
       {/* Install Dialog */}
       <ModInstallDialog
         isOpen={showInstallDialog}
         onClose={() => setShowInstallDialog(false)}
-        onSuccess={handleInstallSuccess}
+        onSuccess={() => {
+          fetchMods();
+          setShowInstallDialog(false);
+        }}
       />
-    </div>
+    </PageContainer>
   );
 };
 
