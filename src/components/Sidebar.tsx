@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import {
   HomeIcon,
   UsersIcon,
-  DocumentTextIcon,
   Cog6ToothIcon,
   XMarkIcon,
 } from "@heroicons/react/24/outline";
@@ -37,12 +36,6 @@ const Sidebar: React.FC<SidebarProps> = ({ currentPage, onPageChange }) => {
       label: "Characters",
       icon: <UsersIcon className="w-5 h-5" />,
       path: "/characters",
-    },
-    {
-      id: "presets",
-      label: "Presets",
-      icon: <DocumentTextIcon className="w-5 h-5" />,
-      path: "/presets",
     },
     {
       id: "settings",
