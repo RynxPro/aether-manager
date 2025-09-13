@@ -30,7 +30,7 @@ const ModInstallDialog: React.FC<ModInstallDialogProps> = ({
 
   // Update character when initialCharacterId or characters change
   React.useEffect(() => {
-    if (initialCharacterId && !loadingCharacters) {
+    if (initialCharacterId && !loadingCharacters && formData.character !== initialCharacterId) {
       const characterExists = characters.some(c => c.id === initialCharacterId);
       if (characterExists) {
         setFormData(prev => ({
@@ -39,7 +39,7 @@ const ModInstallDialog: React.FC<ModInstallDialogProps> = ({
         }));
       }
     }
-  }, [initialCharacterId, characters, loadingCharacters]);
+  }, [initialCharacterId, characters, loadingCharacters, formData.character]);
   const [error, setError] = useState<string | null>(null);
 
   const handleFolderSelect = async () => {

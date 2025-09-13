@@ -4,11 +4,15 @@ import {
   UsersIcon,
   Cog6ToothIcon,
   XMarkIcon,
+  Square3Stack3DIcon,
 } from "@heroicons/react/24/outline";
 
+// Import the PageType from App.tsx to ensure consistency
+type PageType = 'dashboard' | 'mods' | 'characters' | 'character-mod' | 'settings';
+
 interface SidebarProps {
-  currentPage: string;
-  onPageChange: (page: string) => void;
+  currentPage: PageType;
+  onPageChange: (page: PageType) => void;
 }
 
 const Sidebar: React.FC<SidebarProps> = ({ currentPage, onPageChange }) => {
@@ -26,27 +30,41 @@ const Sidebar: React.FC<SidebarProps> = ({ currentPage, onPageChange }) => {
 
   const navigationItems = [
     {
-      id: "dashboard",
+      id: "dashboard" as const,
       label: "Dashboard",
       icon: <HomeIcon className="w-5 h-5" />,
       path: "/",
     },
     {
-      id: "characters",
+      id: "mods" as const,
+      label: "Other Mods",
+      icon: <Square3Stack3DIcon className="w-5 h-5" />,
+      path: "/mods",
+    },
+    {
+      id: "characters" as const,
       label: "Characters",
       icon: <UsersIcon className="w-5 h-5" />,
       path: "/characters",
     },
     {
-      id: "settings",
+      id: "settings" as const,
       label: "Settings",
       icon: <Cog6ToothIcon className="w-5 h-5" />,
       path: "/settings",
     },
   ];
 
-  const handleNavigation = (item: (typeof navigationItems)[0]) => {
-    onPageChange(item.id);
+  const handleNavigation = (item: (typeof navigationItems)[number]) => {
+    try {
+      // Only change page if it's different from current
+      if (item.id !== currentPage) {
+        console.log(`Navigating to: ${item.id}`);
+        onPageChange(item.id);
+      }
+    } catch (error) {
+      console.error('Navigation error:', error);
+    }
   };
 
   return (

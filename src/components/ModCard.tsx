@@ -1,11 +1,12 @@
 import React, { useCallback, useMemo } from "react";
 import { Mod } from "@/types/mod";
+import { cnButton } from "@/styles/buttons";
 
 // SVG Icons
 const DeleteIcon = () => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
-    className="h-3.5 w-3.5"
+    className="h-4 w-4"
     viewBox="0 0 20 20"
     fill="currentColor"
   >
@@ -19,17 +20,52 @@ const DeleteIcon = () => (
 
 const ImagePlaceholderIcon = () => (
   <svg
-    className="w-6 h-6 text-[var(--moon-muted)]"
+    className="w-8 h-8 text-[var(--moon-muted)]"
     fill="none"
     stroke="currentColor"
     viewBox="0 0 24 24"
+    strokeWidth="1.5"
   >
     <path
       strokeLinecap="round"
       strokeLinejoin="round"
-      strokeWidth={1.5}
-      d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+      d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z"
     />
+  </svg>
+);
+
+const EyeIcon = ({ open = true }) => (
+  <svg
+    className="w-4 h-4"
+    fill="none"
+    stroke="currentColor"
+    viewBox="0 0 24 24"
+  >
+    {open ? (
+      <>
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth={2}
+          d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+        />
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth={2}
+          d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+        />
+      </>
+    ) : (
+      <>
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth={2}
+          d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"
+        />
+      </>
+    )}
   </svg>
 );
 
@@ -55,19 +91,21 @@ const ModThumbnail: React.FC<{ thumbnail?: string; alt: string }> = ({
 
   if (thumbnail) {
     return (
-      <img
-        src={thumbnail}
-        alt={alt}
-        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-        onError={handleImageError}
-      />
+      <div className="w-full h-40 overflow-hidden">
+        <img
+          src={thumbnail}
+          alt={alt}
+          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+          onError={handleImageError}
+        />
+      </div>
     );
   }
 
   return (
-    <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-[var(--moon-bg)] to-[#0f1320]">
+    <div className="w-full h-40 flex items-center justify-center bg-gradient-to-br from-[var(--moon-bg)] to-[#0f1320]">
       <div className="text-center p-4">
-        <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-[var(--moon-surface)] flex items-center justify-center">
+        <div className="w-16 h-16 mx-auto mb-3 rounded-xl bg-[var(--moon-surface)] flex items-center justify-center">
           <ImagePlaceholderIcon />
         </div>
         <span className="text-xs text-[var(--moon-muted)]">
@@ -80,13 +118,16 @@ const ModThumbnail: React.FC<{ thumbnail?: string; alt: string }> = ({
 
 const StatusIndicator: React.FC<{ isActive: boolean }> = ({ isActive }) => (
   <div
-    className={`w-2.5 h-2.5 rounded-full border border-[var(--moon-border)] ${
-      isActive
-        ? "bg-green-500 shadow-[0_0_8px_rgba(74,222,128,0.6)]"
-        : "bg-gray-600"
+    className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+      isActive 
+        ? "bg-green-500/10 text-green-400" 
+        : "bg-[var(--moon-surface)] text-[var(--moon-muted)]"
     }`}
     title={isActive ? "Active" : "Inactive"}
-  />
+  >
+    <span className={`w-1.5 h-1.5 rounded-full mr-1.5 ${isActive ? 'bg-green-400' : 'bg-[var(--moon-muted)]'}`}></span>
+    {isActive ? 'Active' : 'Inactive'}
+  </div>
 );
 
 const DeleteButton: React.FC<{ onClick: (e: React.MouseEvent) => void }> = ({
@@ -94,7 +135,11 @@ const DeleteButton: React.FC<{ onClick: (e: React.MouseEvent) => void }> = ({
 }) => (
   <button
     onClick={onClick}
-    className="p-1.5 rounded-md bg-[rgba(0,0,0,0.7)] backdrop-blur-sm text-red-400 opacity-0 group-hover:opacity-100 transition-all hover:bg-red-500/30 hover:scale-110"
+    className={cnButton({
+      variant: 'ghost',
+      size: 'sm',
+      className: 'opacity-0 group-hover:opacity-100 transition-all hover:bg-red-500/10 hover:text-red-400',
+    })}
     aria-label="Delete mod"
     title="Delete mod"
   >
@@ -108,13 +153,16 @@ const ToggleButton: React.FC<{
 }> = ({ isActive, onClick }) => (
   <button
     onClick={onClick}
-    className={`px-3 py-1.5 text-xs font-medium rounded-md transition-all duration-200 ${
-      isActive
-        ? "bg-red-500/15 text-red-400 hover:bg-red-500/25"
-        : "bg-green-500/15 text-green-400 hover:bg-green-500/25"
-    }`}
+    className={cnButton({
+      variant: isActive ? 'primary' : 'secondary',
+      size: 'sm',
+      className: 'flex items-center gap-1.5',
+    })}
+    aria-label={isActive ? "Deactivate mod" : "Activate mod"}
+    title={isActive ? "Deactivate mod" : "Activate mod"}
   >
-    {isActive ? "Deactivate" : "Activate"}
+    <EyeIcon open={isActive} />
+    <span>{isActive ? 'Active' : 'Inactive'}</span>
   </button>
 );
 

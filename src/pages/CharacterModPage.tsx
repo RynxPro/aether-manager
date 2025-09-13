@@ -72,6 +72,23 @@ const CharacterModPage: React.FC<CharacterModPageProps> = ({
     await fetchMods(); // Refresh the mods list after installation
   };
 
+  const [isNavigating, setIsNavigating] = React.useState(false);
+
+  const handleBackClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (isNavigating) return;
+    
+    setIsNavigating(true);
+    try {
+      onBack();
+    } catch (error) {
+      console.error('Error during navigation:', error);
+    } finally {
+      // Reset after a short delay to ensure navigation completes
+      setTimeout(() => setIsNavigating(false), 1000);
+    }
+  };
+
   return (
     <div className="max-w-[1800px] mx-auto px-8 sm:px-12 lg:px-20 py-4">
       {/* Install Dialog */}
@@ -84,8 +101,9 @@ const CharacterModPage: React.FC<CharacterModPageProps> = ({
       {/* Header with Back Button */}
       <div className="mb-8">
         <button
-          onClick={onBack}
-          className="flex items-center space-x-2 text-[var(--moon-muted)] hover:text-[var(--moon-glow-violet)] hover:drop-shadow-[0_0_6px_var(--moon-glow-violet)] transition-colors mb-4"
+          onClick={handleBackClick}
+          disabled={isNavigating}
+          className="flex items-center space-x-2 text-[var(--moon-muted)] hover:text-[var(--moon-glow-violet)] hover:drop-shadow-[0_0_6px_var(--moon-glow-violet)] transition-colors mb-4 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <svg
             className="w-5 h-5"
