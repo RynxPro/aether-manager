@@ -134,18 +134,6 @@ const CharactersPage: React.FC<CharactersPageProps> = ({ onCharacterClick }) => 
         className="mb-6"
       />
 
-      {/* Character Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        {filteredAndSortedCharacters.map((character) => (
-          <CharacterCard
-            key={character.id}
-            character={character}
-            onClick={handleCharacterClickInternal}
-            className="transition-all duration-300 hover:scale-[1.02] hover:shadow-lg"
-          />
-        ))}
-      </div>
-
       {/* Sticky Search & Sort Bar */}
       <div className="sticky top-0 z-10 bg-[var(--moon-bg)]/90 backdrop-blur-sm border-b border-[var(--moon-border)] -mx-6 px-6 pb-4 pt-2 mb-6">
         <div className="flex flex-col sm:flex-row gap-4 w-full max-w-[1800px] mx-auto">
@@ -200,43 +188,42 @@ const CharactersPage: React.FC<CharactersPageProps> = ({ onCharacterClick }) => 
 
         {/* Character Grid */}
         <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4 sm:gap-5">
-          {filteredAndSortedCharacters.map((character) => (
-            <CharacterCard
-              key={character.id}
-              character={character}
-              onClick={handleCharacterClickInternal}
-              className="transition-all duration-300 hover:scale-[1.02] hover:shadow-lg"
-            />
-          ))}
-        </div>
-
-        {/* Empty search results */}
-        {filteredAndSortedCharacters.length === 0 && (
-          <div className="col-span-full flex flex-col items-center justify-center py-16 px-4 text-center border-2 border-dashed border-[var(--moon-border)] rounded-xl bg-[var(--moon-surface)]/50 mt-6">
-            <div className="w-20 h-20 rounded-full bg-[var(--moon-surface)] flex items-center justify-center mb-6 border-2 border-dashed border-[var(--moon-glow-violet)]">
-              <svg className="w-10 h-10 text-[var(--moon-glow-violet)]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-            </div>
-            <h3 className="text-xl font-semibold text-[var(--moon-text)] mb-2">No characters found</h3>
-            <p className="text-[var(--moon-muted)] max-w-md mb-6">
-              {searchQuery 
-                ? `No characters match "${searchQuery}". Try a different search term.`
-                : 'No characters are currently available.'}
-            </p>
-            {searchQuery && (
-              <button
-                onClick={() => setSearchQuery('')}
-                className="px-4 py-2 text-sm font-medium text-white bg-[var(--moon-accent)] hover:bg-[var(--moon-accent-hover)] rounded-lg transition-colors flex items-center gap-2"
-              >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+          {filteredAndSortedCharacters.length > 0 ? (
+            filteredAndSortedCharacters.map((character) => (
+              <CharacterCard
+                key={character.id}
+                character={character}
+                onClick={handleCharacterClickInternal}
+                className="transition-all duration-300 hover:scale-[1.02] hover:shadow-lg"
+              />
+            ))
+          ) : (
+            <div className="col-span-full flex flex-col items-center justify-center py-16 px-4 text-center border-2 border-dashed border-[var(--moon-border)] rounded-xl bg-[var(--moon-surface)]/50">
+              <div className="w-20 h-20 rounded-full bg-[var(--moon-surface)] flex items-center justify-center mb-6 border-2 border-dashed border-[var(--moon-glow-violet)]">
+                <svg className="w-10 h-10 text-[var(--moon-glow-violet)]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
-                Reset search
-              </button>
-            )}
-          </div>
-        )}
+              </div>
+              <h3 className="text-xl font-semibold text-[var(--moon-text)] mb-2">No characters found</h3>
+              <p className="text-[var(--moon-muted)] max-w-md mb-6">
+                {searchQuery 
+                  ? `No characters match "${searchQuery}". Try a different search term.`
+                  : 'No characters are currently available.'}
+              </p>
+              {searchQuery && (
+                <button
+                  onClick={() => setSearchQuery('')}
+                  className="px-4 py-2 text-sm font-medium text-white bg-[var(--moon-accent)] hover:bg-[var(--moon-accent-hover)] rounded-lg transition-colors flex items-center gap-2"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                  </svg>
+                  Reset search
+                </button>
+              )}
+            </div>
+          )}
+        </div>
       </div>
     </PageContainer>
   );
