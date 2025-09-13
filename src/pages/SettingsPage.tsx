@@ -95,11 +95,11 @@ const SettingsPage: React.FC = () => {
   }
 
   return (
-    <div className="p-6 max-w-5xl mx-auto">
-      <div className="mb-8">
-        <div className="flex items-center mb-2">
+    <div className="p-6 max-w-5xl mx-auto space-y-8">
+      <div className="flex items-center mb-2">
+        <div className="bg-gradient-to-br from-purple-500/30 to-blue-600/30 p-2.5 rounded-xl mr-3">
           <svg
-            className="w-8 h-8 text-purple-400 mr-3"
+            className="w-8 h-8 text-purple-400"
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
@@ -117,22 +117,22 @@ const SettingsPage: React.FC = () => {
               d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
             />
           </svg>
-          <h1 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-purple-400 to-purple-400 bg-clip-text text-transparent">
-            Settings
-          </h1>
         </div>
-        <p className="text-gray-400 ml-11">
-          Customize your Aether Manager experience
-        </p>
+        <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-purple-400 to-blue-600 bg-clip-text text-transparent">
+          Settings
+        </h1>
       </div>
+      <p className="text-gray-300 ml-11">
+        Customize your Aether Manager experience
+      </p>
 
       {/* Status Message */}
       {message && (
         <div
-          className={`mb-6 p-4 rounded-xl backdrop-blur-sm border ${
+          className={`mb-6 p-4 rounded-xl backdrop-blur-md border ${
             message.type === "success"
-              ? "bg-green-900/30 border-green-800/50"
-              : "bg-red-900/30 border-red-800/50"
+              ? "bg-green-900/30 border-green-500/30"
+              : "bg-red-900/30 border-red-500/30"
           } shadow-lg transform transition-all duration-300 ease-in-out`}
         >
           <div className="flex items-center animate-fade-in">
@@ -156,14 +156,14 @@ const SettingsPage: React.FC = () => {
 
       <div className="space-y-6">
         {/* Game Path Settings */}
-        <div className="bg-gray-800/50 backdrop-blur-sm rounded-2xl border border-gray-700/50 overflow-hidden transition-all duration-300 hover:border-gray-600/50 shadow-xl">
+        <div className="bg-gray-800/50 backdrop-blur-sm rounded-2xl border border-gray-700/50 overflow-hidden transition-all duration-300 hover:border-purple-500/40 shadow-xl">
           <div className="p-6">
             <div className="flex items-start mb-6">
-              <div className="p-2.5 rounded-xl bg-gradient-to-br from-purple-500/20 to-purple-600/20 text-purple-400 mr-4 mt-0.5">
+              <div className="p-2.5 rounded-xl bg-gradient-to-br from-purple-500/20 to-blue-600/20 text-purple-300 mr-4 mt-0.5">
                 <FiFolder className="h-5 w-5" />
               </div>
               <div>
-                <h2 className="text-xl font-bold bg-gradient-to-r from-purple-300 to-purple-400 bg-clip-text text-transparent">
+                <h2 className="text-xl font-bold bg-gradient-to-r from-purple-300 to-blue-400 bg-clip-text text-transparent shadow-inner">
                   Game Paths
                 </h2>
                 <p className="text-sm text-gray-400 mt-1">
@@ -174,13 +174,13 @@ const SettingsPage: React.FC = () => {
 
             <div className="space-y-6">
               {/* Mod Storage Info */}
-              <div className="bg-gradient-to-r from-purple-500/5 to-purple-500/10 rounded-xl p-4 border border-gray-700/30 backdrop-blur-sm">
+              <div className="bg-gradient-to-r from-purple-500/5 to-blue-600/10 rounded-xl p-4 border border-gray-700/30 backdrop-blur-sm">
                 <div className="flex items-start">
-                  <div className="p-1.5 rounded-lg bg-purple-500/20 text-purple-400 mr-3 mt-0.5 flex-shrink-0">
+                  <div className="p-1.5 rounded-lg bg-gradient-to-r from-purple-500/20 to-blue-600/20 text-purple-300 mr-3 mt-0.5 flex-shrink-0">
                     <FiInfo className="h-4 w-4" />
                   </div>
                   <div>
-                    <h3 className="text-sm font-semibold text-purple-300 mb-1">
+                    <h3 className="text-sm font-semibold text-purple-300 mb-1 bg-gradient-to-r from-purple-300 to-blue-400 bg-clip-text text-transparent shadow-inner">
                       Mod Storage
                     </h3>
                     <p className="text-xs text-gray-400 leading-relaxed">
@@ -199,7 +199,7 @@ const SettingsPage: React.FC = () => {
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
                   <label className="block text-sm font-medium text-gray-200 flex items-center">
-                    <span className="bg-purple-500/10 text-purple-400 text-xs px-2 py-0.5 rounded-full mr-2">
+                    <span className="bg-gradient-to-r from-purple-500/10 to-blue-600/10 text-purple-300 text-xs px-2 py-0.5 rounded-full mr-2">
                       RECOMMENDED
                     </span>
                     ZZMI Mods Folder
@@ -216,7 +216,7 @@ const SettingsPage: React.FC = () => {
                       value={localSettings.zzmiModsPath}
                       onChange={(e) => handleZzmiPathChange(e.target.value)}
                       placeholder="C:\\Games\\ZenlessZoneZero\\zzmi\\mods"
-                      className="w-full px-4 py-3 bg-gray-700/30 border border-gray-600/50 rounded-xl text-sm text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500/30 transition-all duration-200 backdrop-blur-sm group-hover:border-gray-500/50"
+                      className="w-full px-5 py-3.5 bg-gray-700/30 border border-gray-600/50 rounded-xl text-sm text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500/60 focus:border-blue-500/40 transition-all duration-200 backdrop-blur-sm group-hover:border-gray-500/50"
                     />
                     {localSettings.zzmiModsPath && (
                       <button
@@ -242,15 +242,15 @@ const SettingsPage: React.FC = () => {
                   </div>
                   <button
                     onClick={handleBrowseZzmiFolder}
-                    className="px-4 py-3 bg-gradient-to-br from-purple-500 to-purple-600 hover:from-purple-400 hover:to-purple-500 text-white rounded-xl text-sm font-medium transition-all duration-200 flex items-center shadow-lg shadow-purple-500/20 hover:shadow-purple-500/30 disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none"
+                    className="btn-primary px-4 py-3 text-white rounded-lg text-sm font-medium transition-all duration-200 flex items-center shadow-lg shadow-purple-600/40 hover:shadow-blue-700/40 disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none"
                     disabled={saving}
                   >
                     <FiFolder className="h-4 w-4 mr-1.5" />
                     <span>Browse</span>
                   </button>
                 </div>
-                <p className="text-xs text-gray-500 mt-2 ml-1">
-                  <span className="inline-block w-1.5 h-1.5 rounded-full bg-purple-400/50 mr-1.5"></span>
+                <p className="text-xs text-gray-400 mt-2 ml-1">
+                  <span className="inline-block w-1.5 h-1.5 rounded-full bg-gradient-to-r from-purple-400 to-blue-600 mr-1.5"></span>
                   Set this to your game's zzmi/mods folder to enable one-click
                   mod activation
                 </p>
@@ -259,11 +259,11 @@ const SettingsPage: React.FC = () => {
           </div>
 
           {/* Action Buttons */}
-          <div className="bg-gradient-to-r from-gray-800/30 to-gray-800/10 px-6 py-4 border-t border-gray-700/30 flex justify-end space-x-3 backdrop-blur-sm">
+          <div className="bg-gradient-to-r from-gray-800/30 to-gray-800/10 px-6 py-5 border-t border-gray-700/30 flex justify-end space-x-3 backdrop-blur-sm">
             <button
               onClick={handleResetSettings}
               disabled={saving}
-              className="px-5 py-2.5 text-sm font-medium text-gray-300 hover:text-white bg-gray-700/30 hover:bg-gray-700/50 rounded-xl transition-all duration-200 border border-gray-600/50 disabled:opacity-50 disabled:cursor-not-allowed flex items-center group"
+              className="btn-secondary px-6 py-3 text-sm font-medium text-gray-300 hover:text-white rounded-lg transition-all duration-200 border border-gray-600/50 disabled:opacity-50 disabled:cursor-not-allowed flex items-center group"
             >
               <FiRefreshCw className="h-4 w-4 mr-1.5 transition-transform group-hover:rotate-180 duration-500" />
               <span>Reset</span>
@@ -271,7 +271,7 @@ const SettingsPage: React.FC = () => {
             <button
               onClick={handleSaveSettings}
               disabled={saving}
-              className="px-5 py-2.5 text-sm font-medium text-white bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-400 hover:to-purple-500 rounded-xl transition-all duration-200 flex items-center shadow-lg shadow-purple-500/20 hover:shadow-purple-500/30 disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none group"
+              className="btn-primary px-6 py-3 text-sm font-medium text-white rounded-lg transition-all duration-200 flex items-center shadow-lg shadow-purple-600/50 hover:shadow-blue-700/50 disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none group"
             >
               {saving ? (
                 <>

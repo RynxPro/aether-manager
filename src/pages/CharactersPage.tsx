@@ -1,266 +1,193 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useCallback } from "react";
 import { useCharacters } from "../hooks/useCharacters";
 import CharacterCard from "../components/CharacterCard";
-
-// Sort options type
-type SortOption =
-  | "name-asc"
-  | "name-desc"
-  | "mods-asc"
-  | "mods-desc"
-  | "active-asc"
-  | "active-desc";
+import { 
+  LoadingSpinner, 
+  ErrorState, 
+  EmptyState, 
+  SearchBar, 
+  SortDropdown, 
+  PageContainer,
+  PageHeader,
+  type SortOption
+} from "../components/characters";
 
 // Sort option labels
-const sortOptions = [
+const SORT_OPTIONS: SortOption[] = [
   { value: "name-asc", label: "Name (A-Z)" },
   { value: "name-desc", label: "Name (Z-A)" },
   { value: "mods-desc", label: "Most Mods" },
   { value: "mods-asc", label: "Fewest Mods" },
   { value: "active-desc", label: "Most Active" },
   { value: "active-asc", label: "Fewest Active" },
-] as const;
+];
+
+type SortOptionType = typeof SORT_OPTIONS[number]['value'];
 
 interface CharactersPageProps {
   onCharacterClick: (characterId: string) => void;
 }
 
-const CharactersPage: React.FC<CharactersPageProps> = ({
-  onCharacterClick,
-}) => {
+const CharactersPage: React.FC<CharactersPageProps> = ({ onCharacterClick }) => {
   const { characters, loading, error } = useCharacters();
   const [searchQuery, setSearchQuery] = useState("");
-  const [sortBy, setSortBy] = useState<SortOption>("name-asc");
+  const [sortBy, setSortBy] = useState<SortOptionType>("name-asc");
 
-  const handleCharacterClick = (id: string) => {
+  const handleCharacterClickInternal = useCallback((id: string) => {
     onCharacterClick(id);
-  };
-
-  const handleSortChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setSortBy(e.target.value as SortOption);
-  };
+  }, [onCharacterClick]);
 
   const filteredAndSortedCharacters = useMemo(() => {
+    if (!characters) return [];
+    
     // Filter characters based on search query
     let result = [...characters];
 
     if (searchQuery.trim()) {
       const query = searchQuery.toLowerCase().trim();
       result = result.filter((character) => {
-        // Search by name (case insensitive)
-        if (character.name.toLowerCase().includes(query)) return true;
-
-        // Search by attribute (e.g., 'fire', 'ice')
-        if (character.attribute.toLowerCase().includes(query)) return true;
-
-        // Search by specialty (e.g., 'attack', 'defense')
-        if (character.specialty.toLowerCase().includes(query)) return true;
-
-        // Search by rank (e.g., 'a', 's')
-        if (character.rank.toLowerCase() === query) return true;
-
-        return false;
+        return (
+          character.name.toLowerCase().includes(query) ||
+          character.attribute.toLowerCase().includes(query) ||
+          character.specialty.toLowerCase().includes(query) ||
+          character.rank.toLowerCase() === query
+        );
       });
     }
 
     // Sort characters based on selected sort option
     return result.sort((a, b) => {
       switch (sortBy) {
-        case "name-asc":
-          return a.name.localeCompare(b.name);
-        case "name-desc":
-          return b.name.localeCompare(a.name);
-        case "mods-asc":
-          return a.installedMods - b.installedMods;
-        case "mods-desc":
-          return b.installedMods - a.installedMods;
-        case "active-asc":
-          return a.activeMods - b.activeMods;
-        case "active-desc":
-          return b.activeMods - a.activeMods;
-        default:
-          return 0;
+        case "name-asc": return a.name.localeCompare(b.name);
+        case "name-desc": return b.name.localeCompare(a.name);
+        case "mods-asc": return a.installedMods - b.installedMods;
+        case "mods-desc": return b.installedMods - a.installedMods;
+        case "active-asc": return a.activeMods - b.activeMods;
+        case "active-desc": return b.activeMods - a.activeMods;
+        default: return 0;
       }
     });
   }, [characters, searchQuery, sortBy]);
 
-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchQuery(e.target.value);
-  };
+  const handleSearchChange = useCallback((value: string) => {
+    setSearchQuery(value);
+  }, []);
 
+  const handleSortChange = useCallback((value: string) => {
+    setSortBy(value as SortOptionType);
+  }, []);
+
+  // Loading state
   if (loading) {
     return (
-      <div className="w-full max-w-[1800px] mx-auto px-8 sm:px-12 lg:px-20 py-4">
-        <div className="mb-8">
-          <h1 className="text-4xl font-extrabold text-[var(--moon-text)] tracking-tight mb-2">
-            Character Library
-          </h1>
-          <p className="text-lg text-[var(--moon-muted)]">
-            Manage and explore your characters' mods
-          </p>
+      <PageContainer>
+        <PageHeader 
+          title="Character Library"
+          description="Manage and explore your characters' mods"
+        />
+        <div className="py-16">
+          <LoadingSpinner message="Loading characters..." />
         </div>
-        <div className="text-center py-12">
-          <div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-[var(--moon-muted)]">Loading characters...</p>
-        </div>
-      </div>
+      </PageContainer>
     );
   }
 
+  // Error state
   if (error) {
     return (
-      <div className="w-full max-w-[1800px] mx-auto px-8 sm:px-12 lg:px-20 py-4">
-        <div className="mb-8">
-          <h1 className="text-4xl font-extrabold text-[var(--moon-text)] tracking-tight mb-2">
-            Character Library
-          </h1>
-          <p className="text-lg text-[var(--moon-muted)]">
-            Manage and explore your characters' mods
-          </p>
-        </div>
-        <div className="text-center py-12">
-          <div className="w-24 h-24 bg-red-600/20 rounded-full flex items-center justify-center mx-auto mb-4">
-            <span className="text-4xl">❌</span>
-          </div>
-          <h3 className="text-xl font-semibold text-[var(--moon-text)] mb-2">
-            Error loading characters
-          </h3>
-          <p className="text-[var(--moon-muted)]">{error}</p>
-        </div>
-      </div>
+      <PageContainer>
+        <PageHeader 
+          title="Character Library"
+          description="Manage and explore your characters' mods"
+        />
+        <ErrorState 
+          error={error} 
+          onRetry={() => window.location.reload()} 
+        />
+      </PageContainer>
     );
   }
 
+  // Empty state
+  if (characters.length === 0) {
+    return (
+      <PageContainer>
+        <PageHeader 
+          title="Character Library"
+          description="Manage and explore your characters' mods"
+        />
+        <EmptyState
+          title="No Characters Found"
+          description="You don't have any characters with mods installed yet."
+          icon="🎮"
+        />
+      </PageContainer>
+    );
+  }
+
+  // Main content
   return (
-    <div className="w-full max-w-[1800px] mx-auto px-8 sm:px-12 lg:px-20 py-4">
-      <div className="mb-8">
-        <h1 className="text-4xl font-extrabold text-[var(--moon-text)] tracking-tight mb-2">
-          Character Library
-        </h1>
-        <p className="text-lg text-[var(--moon-muted)]">
-          Manage and explore your characters' mods
-        </p>
-      </div>
-
-      <div className="sticky top-0 z-10 bg-[var(--moon-bg)]/90 backdrop-blur-md border-b border-[var(--moon-border)] mb-8 px-4 py-8">
-        <div className="max-w-4xl mx-auto flex flex-col sm:flex-row gap-4 sm:items-center">
-          {/* Search Bar */}
-          <div className="flex-1">
-            <div className="relative">
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={handleSearchChange}
-                placeholder="Search by name, attribute, or specialty..."
-                className="w-full px-4 py-2 pl-10 bg-[var(--moon-surface)] border border-[var(--moon-border)] rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-[var(--moon-glow-violet)] focus:ring-2 focus:ring-[var(--moon-glow-violet)]"
-              />
-              <svg
-                className="absolute left-3 top-2.5 w-4 h-4 text-gray-400"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                />
-              </svg>
-            </div>
-          </div>
-
-          {/* Sort Dropdown */}
-          <div className="w-full sm:w-64 flex flex-col sm:flex-row sm:items-center gap-2">
-            <label className="text-sm text-[var(--moon-muted)] sm:mr-2">
-              Sort by:
-            </label>
-            <div className="relative flex-1 sm:flex-none">
-              <select
-                value={sortBy}
-                onChange={handleSortChange}
-                className="w-full appearance-none px-3 py-1.5 pr-8 bg-[var(--moon-surface)] border border-[var(--moon-border)] rounded-lg text-sm text-white focus:outline-none focus:border-[var(--moon-glow-violet)] focus:ring-2 focus:ring-[var(--moon-glow-violet)] transition-colors"
-              >
-                {sortOptions.map((option) => (
-                  <option key={option.value} value={option.value}>
-                    {option.label}
-                  </option>
-                ))}
-              </select>
-              <div className="pointer-events-none absolute inset-y-0 right-2 flex items-center text-gray-400">
-                <svg
-                  className="w-4 h-4"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M19 9l-7 7-7-7"
-                  />
-                </svg>
-              </div>
-            </div>
-          </div>
+    <PageContainer>
+      <PageHeader 
+        title="Character Library"
+        description="Manage and explore your characters' mods"
+      >
+        <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto mt-4 sm:mt-0">
+          <SearchBar
+            value={searchQuery}
+            onChange={handleSearchChange}
+            placeholder="Search characters..."
+            className="w-full sm:w-64"
+          />
+          <SortDropdown
+            options={SORT_OPTIONS}
+            value={sortBy}
+            onChange={handleSortChange}
+            className="w-full sm:w-48"
+          />
         </div>
+      </PageHeader>
 
-        {searchQuery && (
-          <p className="text-sm text-[var(--moon-muted)] mt-1.5 text-center sm:text-left">
-            Showing {filteredAndSortedCharacters.length}{" "}
-            {filteredAndSortedCharacters.length === 1 ? "result" : "results"}
-          </p>
-        )}
-      </div>
-
-      {/* Characters Grid */}
-      <div className="w-full mt-8">
-        {filteredAndSortedCharacters.length > 0 ? (
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-5 w-full">
-            {filteredAndSortedCharacters.map((character) => (
-              <CharacterCard
-                key={character.id}
-                character={character}
-                onClick={handleCharacterClick}
-              />
-            ))}
-          </div>
-        ) : characters.length === 0 ? (
-          <div className="text-center py-12">
-            <div className="w-24 h-24 bg-[var(--moon-surface)] rounded-full flex items-center justify-center mx-auto mb-4">
-              <span className="text-4xl">👥</span>
-            </div>
-            <h3 className="text-xl font-semibold text-[var(--moon-text)] mb-2">
-              No characters found
-            </h3>
-            <p className="text-[var(--moon-muted)]">
-              No characters are available
-            </p>
-          </div>
-        ) : (
-          <div className="text-center py-16 px-4">
-            <div className="w-20 h-20 rounded-full bg-[var(--moon-surface)] flex items-center justify-center mb-6 border-2 border-dashed border-[var(--moon-glow-violet)] mx-auto">
+      <div className="mb-8">
+        <div className="text-sm text-gray-400 mb-2">
+          Showing {filteredAndSortedCharacters.length} {filteredAndSortedCharacters.length === 1 ? 'character' : 'characters'}
+          {searchQuery && ` matching "${searchQuery}"`}
+        </div>
+        
+        {filteredAndSortedCharacters.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-16 px-4 text-center">
+            <div className="w-20 h-20 rounded-full bg-[var(--moon-surface)] flex items-center justify-center mb-6 border-2 border-dashed border-[var(--moon-glow-violet)]">
               <svg className="w-10 h-10 text-[var(--moon-glow-violet)]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
             </div>
             <h3 className="text-xl font-semibold text-[var(--moon-text)] mb-2">No characters found</h3>
-            <p className="text-[var(--moon-muted)] max-w-md mx-auto">
+            <p className="text-[var(--moon-muted)] max-w-md mb-6">
               No characters match "{searchQuery}". Try a different search term.
             </p>
-            {searchQuery && (
-              <button
-                onClick={() => setSearchQuery('')}
-                className="mt-6 px-4 py-2 text-sm font-medium text-[var(--moon-accent)] hover:text-[var(--moon-glow-violet)] transition-colors"
-              >
-                Clear search
-              </button>
-            )}
+            <button
+              onClick={() => {
+                setSearchQuery('');
+                setSortBy('name-asc');
+              }}
+              className="px-4 py-2 text-sm font-medium text-[var(--moon-accent)] hover:text-[var(--moon-glow-violet)] transition-colors"
+            >
+              Clear search
+            </button>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {filteredAndSortedCharacters.map((character) => (
+              <CharacterCard
+                key={character.id}
+                character={character}
+                onClick={() => handleCharacterClickInternal(character.id)}
+              />
+            ))}
           </div>
         )}
       </div>
-    </div>
+    </PageContainer>
   );
 };
 

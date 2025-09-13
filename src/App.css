@@ -12,6 +12,9 @@
   --moon-text: #e4e9f5;
   --moon-muted: #8a92b2;
   --moon-border: #1e2233;
+  /* Gradients */
+  --moon-gradient: linear-gradient(135deg, #7a5af8 0%, #1e3a8a 100%);
+  --moon-gradient-hover: linear-gradient(135deg, #9c6eff 0%, #1e40af 100%);
 }
 
 /* Global defaults */
@@ -50,7 +53,7 @@ body {
 }
 
 .btn-primary {
-  background-color: var(--moon-accent);
+  background: linear-gradient(135deg, #7a5af8 0%, #1e3a8a 100%);
   color: var(--moon-text);
   border-radius: 8px;
   padding: 0.5rem 1rem;
@@ -58,5 +61,22 @@ body {
 }
 
 .btn-primary:hover {
-  background-color: var(--moon-glow-violet);
+  background: linear-gradient(135deg, #9c6eff 0%, #1e40af 100%);
+}
+
+.btn-secondary {
+  background: var(--moon-gradient);
+  color: var(--moon-text);
+  border-radius: 8px;
+  padding: 0.5rem 1rem;
+  font-weight: 500;
+}
+
+.btn-secondary:hover {
+  background: var(--moon-gradient-hover);
+}
+
+.btn-danger {
+  background: linear-gradient(135deg, #7a5af8 0%, #1e3a8a 60%, #dc2626 100%);
+  color: var(--moon-text);
 }
