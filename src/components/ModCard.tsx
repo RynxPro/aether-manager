@@ -124,8 +124,7 @@ const DeleteButton: React.FC<{ onClick: (e: React.MouseEvent) => void }> = ({
     className={cnButton({
       variant: "ghost",
       size: "sm",
-      className:
-        "opacity-0 group-hover:opacity-100 transition-all hover:bg-red-500/10 hover:text-red-400",
+      className: "hover:bg-red-500/10 hover:text-red-400",
     })}
     aria-label="Delete mod"
     title="Delete mod"
@@ -194,19 +193,18 @@ const ModCard: React.FC<ModCardProps> = ({ mod, onToggleActive, onDelete }) => {
     >
       <div className="relative h-40 bg-gray-900/20 overflow-hidden">
         <ModThumbnail thumbnail={mod.thumbnail} alt={mod.title} />
-
-        <div className="absolute top-3 right-3 flex items-center gap-2">
-          <DeleteButton onClick={handleDelete} />
-        </div>
       </div>
 
       <div className="p-4 flex-1 flex flex-col">
-        <h3
-          className="text-[var(--moon-text)] font-medium text-sm mb-1.5 line-clamp-2 group-hover:text-[var(--moon-glow-violet)] transition-colors duration-200"
-          title={mod.title}
-        >
-          {mod.title}
-        </h3>
+        <div className="flex items-center justify-between gap-2">
+          <h3
+            className="text-[var(--moon-text)] font-medium text-sm mb-1.5 line-clamp-2 group-hover:text-[var(--moon-glow-violet)] transition-colors duration-200"
+            title={mod.title}
+          >
+            {mod.title}
+          </h3>
+          <DeleteButton onClick={handleDelete} />
+        </div>
 
         {mod.character && (
           <div className="flex items-center text-xs text-[var(--moon-muted)] mb-3">
