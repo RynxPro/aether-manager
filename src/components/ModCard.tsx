@@ -116,24 +116,6 @@ const ModThumbnail: React.FC<{ thumbnail?: string; alt: string }> = ({
   );
 };
 
-const StatusIndicator: React.FC<{ isActive: boolean }> = ({ isActive }) => (
-  <div
-    className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-      isActive
-        ? "bg-green-500/10 text-green-400"
-        : "bg-[var(--moon-muted)]/10 text-[var(--moon-muted)]"
-    }`}
-    title={isActive ? "Active" : "Inactive"}
-  >
-    <span
-      className={`w-1.5 h-1.5 rounded-full mr-1.5 ${
-        isActive ? "bg-green-400" : "bg-[var(--moon-muted)]"
-      }`}
-    ></span>
-    {isActive ? "Active" : "Inactive"}
-  </div>
-);
-
 const DeleteButton: React.FC<{ onClick: (e: React.MouseEvent) => void }> = ({
   onClick,
 }) => (
@@ -215,7 +197,6 @@ const ModCard: React.FC<ModCardProps> = ({ mod, onToggleActive, onDelete }) => {
 
         <div className="absolute top-3 right-3 flex items-center gap-2">
           <DeleteButton onClick={handleDelete} />
-          <StatusIndicator isActive={mod.isActive} />
         </div>
       </div>
 
