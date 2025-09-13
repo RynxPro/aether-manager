@@ -119,14 +119,18 @@ const ModThumbnail: React.FC<{ thumbnail?: string; alt: string }> = ({
 const StatusIndicator: React.FC<{ isActive: boolean }> = ({ isActive }) => (
   <div
     className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-      isActive 
-        ? "bg-green-500/10 text-green-400" 
-        : "bg-[var(--moon-surface)] text-[var(--moon-muted)]"
+      isActive
+        ? "bg-green-500/10 text-green-400"
+        : "bg-[var(--moon-muted)]/10 text-[var(--moon-muted)]"
     }`}
     title={isActive ? "Active" : "Inactive"}
   >
-    <span className={`w-1.5 h-1.5 rounded-full mr-1.5 ${isActive ? 'bg-green-400' : 'bg-[var(--moon-muted)]'}`}></span>
-    {isActive ? 'Active' : 'Inactive'}
+    <span
+      className={`w-1.5 h-1.5 rounded-full mr-1.5 ${
+        isActive ? "bg-green-400" : "bg-[var(--moon-muted)]"
+      }`}
+    ></span>
+    {isActive ? "Active" : "Inactive"}
   </div>
 );
 
@@ -136,9 +140,10 @@ const DeleteButton: React.FC<{ onClick: (e: React.MouseEvent) => void }> = ({
   <button
     onClick={onClick}
     className={cnButton({
-      variant: 'ghost',
-      size: 'sm',
-      className: 'opacity-0 group-hover:opacity-100 transition-all hover:bg-red-500/10 hover:text-red-400',
+      variant: "ghost",
+      size: "sm",
+      className:
+        "opacity-0 group-hover:opacity-100 transition-all hover:bg-red-500/10 hover:text-red-400",
     })}
     aria-label="Delete mod"
     title="Delete mod"
@@ -150,21 +155,28 @@ const DeleteButton: React.FC<{ onClick: (e: React.MouseEvent) => void }> = ({
 const ToggleButton: React.FC<{
   isActive: boolean;
   onClick: (e: React.MouseEvent) => void;
-}> = ({ isActive, onClick }) => (
-  <button
-    onClick={onClick}
-    className={cnButton({
-      variant: isActive ? 'primary' : 'secondary',
-      size: 'sm',
-      className: 'flex items-center gap-1.5',
-    })}
-    aria-label={isActive ? "Deactivate mod" : "Activate mod"}
-    title={isActive ? "Deactivate mod" : "Activate mod"}
-  >
-    <EyeIcon open={isActive} />
-    <span>{isActive ? 'Active' : 'Inactive'}</span>
-  </button>
-);
+}> = ({ isActive, onClick }) => {
+  return (
+    <button
+      onClick={onClick}
+      className={`relative inline-flex items-center w-16 h-8 rounded-full transition-all duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-[var(--moon-glow-violet)] focus:ring-offset-2 focus:ring-offset-[var(--moon-bg)] ${
+        isActive
+          ? "bg-[var(--moon-accent)] shadow-[0_0_12px_-2px_var(--moon-accent)]"
+          : "bg-[var(--moon-surface)] border border-[var(--moon-border)] hover:border-[var(--moon-glow-violet)]/50"
+      }`}
+      aria-label={isActive ? "Deactivate mod" : "Activate mod"}
+      title={isActive ? "Deactivate mod" : "Activate mod"}
+    >
+      <div
+        className={`absolute left-1 top-1 h-6 w-6 rounded-full bg-white shadow-md flex items-center justify-center transition-transform duration-300 ease-in-out ${
+          isActive ? "translate-x-8" : "translate-x-0"
+        }`}
+      >
+        <EyeIcon open={isActive} />
+      </div>
+    </button>
+  );
+};
 
 const ModCard: React.FC<ModCardProps> = ({ mod, onToggleActive, onDelete }) => {
   const handleToggleActive = useCallback(
