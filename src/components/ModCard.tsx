@@ -1,6 +1,7 @@
 import React, { useCallback, useMemo } from "react";
 import { Mod } from "@/types/mod";
 import { cnButton } from "@/styles/buttons";
+import ConfirmDialog from "./ConfirmDialog";
 
 // SVG Icons
 const DeleteIcon = () => (
@@ -160,6 +161,21 @@ const ToggleButton: React.FC<{
 };
 
 const ModCard: React.FC<ModCardProps> = ({ mod, onToggleActive, onDelete }) => {
+  const [showDeleteConfirm, setShowDeleteConfirm] = React.useState(false);
+
+  const handleDeleteClick = useCallback((e: React.MouseEvent) => {
+    e.stopPropagation();
+    setShowDeleteConfirm(true);
+  }, []);
+
+  const handleConfirmDelete = useCallback(() => {
+    onDelete(mod.id);
+    setShowDeleteConfirm(false);
+  }, [mod.id, onDelete]);
+
+  const handleCancelDelete = useCallback(() => {
+    setShowDeleteConfirm(false);
+  }, []);
   const handleToggleActive = useCallback(
     (e: React.MouseEvent) => {
       e.stopPropagation();
@@ -168,15 +184,6 @@ const ModCard: React.FC<ModCardProps> = ({ mod, onToggleActive, onDelete }) => {
     [mod.id, onToggleActive]
   );
 
-  const handleDelete = useCallback(
-    (e: React.MouseEvent) => {
-      e.stopPropagation();
-      if (window.confirm(`Are you sure you want to delete "${mod.title}"?`)) {
-        onDelete(mod.id);
-      }
-    },
-    [mod.id, mod.title, onDelete]
-  );
 
   const formattedDate = useMemo(() => {
     return new Date(mod.dateAdded).toLocaleDateString("en-US", {
@@ -187,39 +194,51 @@ const ModCard: React.FC<ModCardProps> = ({ mod, onToggleActive, onDelete }) => {
   }, [mod.dateAdded]);
 
   return (
-    <div
-      className="bg-[var(--moon-surface)] backdrop-blur-sm rounded-xl border border-[var(--moon-border)] overflow-hidden group flex flex-col h-full w-full min-w-[280px] max-w-[320px] flex-shrink-0 hover:border-[var(--moon-glow-violet)] hover:shadow-[0_0_15px_rgba(122,90,248,0.2)] transition-all duration-300"
-      style={{ flex: "0 0 auto" }}
-    >
-      <div className="relative h-40 bg-gray-900/20 overflow-hidden">
-        <ModThumbnail thumbnail={mod.thumbnail} alt={mod.title} />
-      </div>
-
-      <div className="p-4 flex-1 flex flex-col">
-        <div className="flex items-center justify-between gap-2">
-          <h3
-            className="text-[var(--moon-text)] font-medium text-sm mb-1.5 line-clamp-2 group-hover:text-[var(--moon-glow-violet)] transition-colors duration-200"
-            title={mod.title}
-          >
-            {mod.title}
-          </h3>
-          <DeleteButton onClick={handleDelete} />
+    <>
+      <div
+        className="bg-[var(--moon-surface)] backdrop-blur-sm rounded-xl border border-[var(--moon-border)] overflow-hidden group flex flex-col h-full w-full min-w-[280px] max-w-[320px] flex-shrink-0 hover:border-[var(--moon-glow-violet)] hover:shadow-[0_0_15px_rgba(122,90,248,0.2)] transition-all duration-300"
+        style={{ flex: "0 0 auto" }}
+      >
+        <div className="relative h-40 bg-gray-900/20 overflow-hidden">
+          <ModThumbnail thumbnail={mod.thumbnail} alt={mod.title} />
         </div>
 
-        {mod.character && (
-          <div className="flex items-center text-xs text-[var(--moon-muted)] mb-3">
-            <span className="truncate">{mod.character}</span>
+        <div className="p-4 flex-1 flex flex-col">
+          <div className="flex items-center justify-between gap-2">
+            <h3
+              className="text-[var(--moon-text)] font-medium text-sm mb-1.5 line-clamp-2 group-hover:text-[var(--moon-glow-violet)] transition-colors duration-200"
+              title={mod.title}
+            >
+              {mod.title}
+            </h3>
+            <DeleteButton onClick={handleDeleteClick} />
           </div>
-        )}
 
-        <div className="mt-auto pt-3 flex items-center justify-between border-t border-[var(--moon-border)]">
-          <span className="text-xs text-[var(--moon-muted)]">
-            {formattedDate}
-          </span>
-          <ToggleButton isActive={mod.isActive} onClick={handleToggleActive} />
+          {mod.character && (
+            <div className="flex items-center text-xs text-[var(--moon-muted)] mb-3">
+              <span className="truncate">{mod.character}</span>
+            </div>
+          )}
+
+          <div className="mt-auto pt-3 flex items-center justify-between border-t border-[var(--moon-border)]">
+            <span className="text-xs text-[var(--moon-muted)]">
+              {formattedDate}
+            </span>
+            <ToggleButton isActive={mod.isActive} onClick={handleToggleActive} />
+          </div>
         </div>
       </div>
-    </div>
+
+      <ConfirmDialog
+        isOpen={showDeleteConfirm}
+        title="Delete Mod"
+        message={`Are you sure you want to delete "${mod.title}"? This action cannot be undone.`}
+        confirmText="Delete"
+        cancelText="Cancel"
+        onConfirm={handleConfirmDelete}
+        onCancel={handleCancelDelete}
+      />
+    </>
   );
 };
 
