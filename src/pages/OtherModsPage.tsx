@@ -9,7 +9,9 @@ import ErrorState from "../components/characters/ErrorState";
 import EmptyState from "../components/characters/EmptyState";
 import SearchBar from "../components/characters/SearchBar";
 import SortDropdown from "../components/characters/SortDropdown";
-import PageContainer, { PageHeader } from "../components/characters/PageContainer";
+import PageContainer, {
+  PageHeader,
+} from "../components/characters/PageContainer";
 
 type SortOption = {
   value: string;
@@ -26,17 +28,21 @@ const SORT_OPTIONS: SortOption[] = [
 
 type SortOptionType = (typeof SORT_OPTIONS)[number]["value"];
 
-const OtherModsPage: React.FC = () => {
-  const { mods, loading, error, toggleModActive, fetchMods, deleteMod } = useMods();
-  
+interface OtherModsPageProps {
+  onModClick?: (modId: string) => void;
+}
+
+const OtherModsPage: React.FC<OtherModsPageProps> = ({ onModClick }) => {
+  const { mods, loading, error, toggleModActive, fetchMods, deleteMod } =
+    useMods();
+
   // Filter mods that don't have a character assigned
   const otherMods = useMemo(() => {
-    return mods.filter(mod => !mod.character);
+    return mods.filter((mod) => !mod.character);
   }, [mods]);
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState<SortOptionType>("name-asc");
   const [showInstallDialog, setShowInstallDialog] = useState(false);
-
 
   const filteredAndSortedMods = useMemo(() => {
     if (!otherMods) return [];
@@ -62,37 +68,42 @@ const OtherModsPage: React.FC = () => {
         case "name-desc":
           return b.title.localeCompare(a.title);
         case "active":
-          return (a.isActive === b.isActive) ? 0 : a.isActive ? -1 : 1;
+          return a.isActive === b.isActive ? 0 : a.isActive ? -1 : 1;
         case "inactive":
-          return (a.isActive === b.isActive) ? 0 : a.isActive ? 1 : -1;
+          return a.isActive === b.isActive ? 0 : a.isActive ? 1 : -1;
         default:
           return 0;
       }
     });
   }, [otherMods, searchQuery, sortBy]);
 
-  const handleToggleActive = useCallback(async (id: string) => {
-    try {
-      await toggleModActive(id);
-    } catch (err) {
-      console.error("Failed to toggle mod active state:", err);
-    }
-  }, [toggleModActive]);
-
-  const handleDeleteMod = useCallback(async (id: string) => {
-    try {
-      const success = await deleteMod(id);
-      if (success) {
-        // Refresh the mods list after successful deletion
-        await fetchMods();
-      } else {
-        console.error("Failed to delete mod");
+  const handleToggleActive = useCallback(
+    async (id: string) => {
+      try {
+        await toggleModActive(id);
+      } catch (err) {
+        console.error("Failed to toggle mod active state:", err);
       }
-    } catch (err) {
-      console.error("Failed to delete mod:", err);
-    }
-  }, [deleteMod, fetchMods]);
+    },
+    [toggleModActive]
+  );
 
+  const handleDeleteMod = useCallback(
+    async (id: string) => {
+      try {
+        const success = await deleteMod(id);
+        if (success) {
+          // Refresh the mods list after successful deletion
+          await fetchMods();
+        } else {
+          console.error("Failed to delete mod");
+        }
+      } catch (err) {
+        console.error("Failed to delete mod:", err);
+      }
+    },
+    [deleteMod, fetchMods]
+  );
 
   const handleSearchChange = useCallback((value: string) => {
     setSearchQuery(value);
@@ -125,10 +136,7 @@ const OtherModsPage: React.FC = () => {
           title="Other Mods"
           description="Manage mods not assigned to specific characters"
         />
-        <ErrorState 
-          error={error} 
-          onRetry={fetchMods} 
-        />
+        <ErrorState error={error} onRetry={fetchMods} />
       </PageContainer>
     );
   }
@@ -162,7 +170,10 @@ const OtherModsPage: React.FC = () => {
           </div>
           <button
             onClick={() => setShowInstallDialog(true)}
-            className={cnButton({ variant: 'primary', className: 'flex items-center space-x-2' })}
+            className={cnButton({
+              variant: "primary",
+              className: "flex items-center space-x-2",
+            })}
           >
             <svg
               className="w-5 h-5"
@@ -191,6 +202,7 @@ const OtherModsPage: React.FC = () => {
               mod={mod}
               onToggleActive={handleToggleActive}
               onDelete={handleDeleteMod}
+              onClick={onModClick}
             />
           ))}
         </div>

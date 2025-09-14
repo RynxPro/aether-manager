@@ -10,17 +10,20 @@ import SearchBar from "../components/characters/SearchBar";
 interface CharacterModPageProps {
   characterId: string;
   onBack: () => void;
+  onModClick?: (modId: string) => void;
 }
 
 const CharacterModPage: React.FC<CharacterModPageProps> = ({
   characterId,
   onBack,
+  onModClick,
 }) => {
-  const { mods, loading, error, toggleModActive, deleteMod, fetchMods } = useMods();
+  const { mods, loading, error, toggleModActive, deleteMod, fetchMods } =
+    useMods();
   const { characters } = useCharacters();
   const [showInstallDialog, setShowInstallDialog] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [sortBy, setSortBy] = useState<string>('name-asc');
+  const [searchQuery, setSearchQuery] = useState("");
+  const [sortBy, setSortBy] = useState<string>("name-asc");
 
   // Define sort options
   const SORT_OPTIONS = [
@@ -46,14 +49,20 @@ const CharacterModPage: React.FC<CharacterModPageProps> = ({
     // Apply sorting
     return [...filtered].sort((a, b) => {
       switch (sortBy) {
-        case 'name-asc':
+        case "name-asc":
           return a.title.localeCompare(b.title);
-        case 'name-desc':
+        case "name-desc":
           return b.title.localeCompare(a.title);
-        case 'active':
-          return (b.isActive ? 1 : 0) - (a.isActive ? 1 : 0) || a.title.localeCompare(b.title);
-        case 'inactive':
-          return (a.isActive ? 1 : 0) - (b.isActive ? 1 : 0) || a.title.localeCompare(b.title);
+        case "active":
+          return (
+            (b.isActive ? 1 : 0) - (a.isActive ? 1 : 0) ||
+            a.title.localeCompare(b.title)
+          );
+        case "inactive":
+          return (
+            (a.isActive ? 1 : 0) - (b.isActive ? 1 : 0) ||
+            a.title.localeCompare(b.title)
+          );
         default:
           return 0;
       }
@@ -108,12 +117,12 @@ const CharacterModPage: React.FC<CharacterModPageProps> = ({
   const handleBackClick = (e: React.MouseEvent) => {
     e.preventDefault();
     if (isNavigating) return;
-    
+
     setIsNavigating(true);
     try {
       onBack();
     } catch (error) {
-      console.error('Error during navigation:', error);
+      console.error("Error during navigation:", error);
     } finally {
       // Reset after a short delay to ensure navigation completes
       setTimeout(() => setIsNavigating(false), 1000);
@@ -208,7 +217,10 @@ const CharacterModPage: React.FC<CharacterModPageProps> = ({
           </div>
           <button
             onClick={handleUploadMod}
-            className={cnButton({ variant: 'primary', className: 'flex items-center space-x-2' })}
+            className={cnButton({
+              variant: "primary",
+              className: "flex items-center space-x-2",
+            })}
           >
             <svg
               className="w-5 h-5"
@@ -252,22 +264,36 @@ const CharacterModPage: React.FC<CharacterModPageProps> = ({
               mod={mod}
               onToggleActive={handleToggleActive}
               onDelete={handleDelete}
+              onClick={onModClick}
             />
           ))}
         </div>
       ) : searchQuery ? (
         <div className="flex flex-col items-center justify-center py-16 px-4 text-center">
           <div className="w-20 h-20 rounded-full bg-[var(--moon-surface)] flex items-center justify-center mb-6 border-2 border-dashed border-[var(--moon-glow-violet)]">
-            <svg className="w-10 h-10 text-[var(--moon-glow-violet)]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            <svg
+              className="w-10 h-10 text-[var(--moon-glow-violet)]"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={1.5}
+                d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
             </svg>
           </div>
-          <h3 className="text-xl font-semibold text-[var(--moon-text)] mb-2">No mods found</h3>
+          <h3 className="text-xl font-semibold text-[var(--moon-text)] mb-2">
+            No mods found
+          </h3>
           <p className="text-[var(--moon-muted)] max-w-md">
-            No mods match "{searchQuery}". Try a different search term or upload a new mod.
+            No mods match "{searchQuery}". Try a different search term or upload
+            a new mod.
           </p>
           <button
-            onClick={() => setSearchQuery('')}
+            onClick={() => setSearchQuery("")}
             className="mt-6 px-4 py-2 text-sm font-medium text-[var(--moon-accent)] hover:text-[var(--moon-glow-violet)] transition-colors"
           >
             Clear search
@@ -299,7 +325,11 @@ const CharacterModPage: React.FC<CharacterModPageProps> = ({
           </p>
           <button
             onClick={handleUploadMod}
-            className={cnButton({ variant: 'primary', size: 'xl', className: 'flex items-center space-x-2' })}
+            className={cnButton({
+              variant: "primary",
+              size: "xl",
+              className: "flex items-center space-x-2",
+            })}
           >
             <svg
               className="w-5 h-5"

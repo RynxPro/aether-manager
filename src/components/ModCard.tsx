@@ -75,6 +75,7 @@ interface ModCardProps {
   onToggleActive: (modId: string) => void;
   onDelete: (modId: string) => void;
   onViewDetails?: (modId: string) => void;
+  onClick?: (modId: string) => void;
 }
 
 const ModThumbnail: React.FC<{ thumbnail?: string; alt: string }> = ({
@@ -160,7 +161,12 @@ const ToggleButton: React.FC<{
   );
 };
 
-const ModCard: React.FC<ModCardProps> = ({ mod, onToggleActive, onDelete }) => {
+const ModCard: React.FC<ModCardProps> = ({
+  mod,
+  onToggleActive,
+  onDelete,
+  onClick,
+}) => {
   const [showDeleteConfirm, setShowDeleteConfirm] = React.useState(false);
 
   const handleDeleteClick = useCallback((e: React.MouseEvent) => {
@@ -184,6 +190,11 @@ const ModCard: React.FC<ModCardProps> = ({ mod, onToggleActive, onDelete }) => {
     [mod.id, onToggleActive]
   );
 
+  const handleCardClick = useCallback(() => {
+    if (onClick) {
+      onClick(mod.id);
+    }
+  }, [mod.id, onClick]);
 
   const formattedDate = useMemo(() => {
     return new Date(mod.dateAdded).toLocaleDateString("en-US", {
@@ -196,8 +207,9 @@ const ModCard: React.FC<ModCardProps> = ({ mod, onToggleActive, onDelete }) => {
   return (
     <>
       <div
-        className="bg-[var(--moon-surface)] backdrop-blur-sm rounded-xl border border-[var(--moon-border)] overflow-hidden group flex flex-col h-full w-full min-w-[280px] max-w-[320px] flex-shrink-0 hover:border-[var(--moon-glow-violet)] hover:shadow-[0_0_15px_rgba(122,90,248,0.2)] transition-all duration-300"
+        className="bg-[var(--moon-surface)] backdrop-blur-sm rounded-xl border border-[var(--moon-border)] overflow-hidden group flex flex-col h-full w-full min-w-[280px] max-w-[320px] flex-shrink-0 hover:border-[var(--moon-glow-violet)] hover:shadow-[0_0_15px_rgba(122,90,248,0.2)] transition-all duration-300 cursor-pointer"
         style={{ flex: "0 0 auto" }}
+        onClick={handleCardClick}
       >
         <div className="relative h-40 bg-gray-900/20 overflow-hidden">
           <ModThumbnail thumbnail={mod.thumbnail} alt={mod.title} />
@@ -224,7 +236,10 @@ const ModCard: React.FC<ModCardProps> = ({ mod, onToggleActive, onDelete }) => {
             <span className="text-xs text-[var(--moon-muted)]">
               {formattedDate}
             </span>
-            <ToggleButton isActive={mod.isActive} onClick={handleToggleActive} />
+            <ToggleButton
+              isActive={mod.isActive}
+              onClick={handleToggleActive}
+            />
           </div>
         </div>
       </div>

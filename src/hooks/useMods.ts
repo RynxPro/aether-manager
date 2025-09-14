@@ -151,6 +151,42 @@ export const useMods = () => {
     }
   };
 
+  const updateMod = async (
+    modId: string,
+    updates: {
+      title?: string;
+      thumbnail?: string;
+      description?: string;
+    }
+  ): Promise<boolean> => {
+    setLoading(true);
+    setError(null);
+    try {
+      await invoke("update_mod", { modId, ...updates });
+
+      // Update local state
+      setMods((prev) =>
+        prev.map((mod) =>
+          mod.id === modId
+            ? {
+                ...mod,
+                title: updates.title ?? mod.title,
+                thumbnail: updates.thumbnail ?? mod.thumbnail,
+                description: updates.description ?? mod.description,
+              }
+            : mod
+        )
+      );
+
+      return true;
+    } catch (err) {
+      setError(err as string);
+      return false;
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
     fetchMods();
   }, []);
@@ -163,5 +199,6 @@ export const useMods = () => {
     installMod,
     toggleModActive,
     deleteMod,
+    updateMod,
   };
 };

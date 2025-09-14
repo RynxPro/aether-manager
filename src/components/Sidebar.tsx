@@ -8,7 +8,13 @@ import {
 } from "@heroicons/react/24/outline";
 
 // Import the PageType from App.tsx to ensure consistency
-type PageType = 'dashboard' | 'mods' | 'characters' | 'character-mod' | 'settings';
+type PageType =
+  | "dashboard"
+  | "mods"
+  | "characters"
+  | "character-mod"
+  | "mod-details"
+  | "settings";
 
 interface SidebarProps {
   currentPage: PageType;
@@ -63,7 +69,7 @@ const Sidebar: React.FC<SidebarProps> = ({ currentPage, onPageChange }) => {
         onPageChange(item.id);
       }
     } catch (error) {
-      console.error('Navigation error:', error);
+      console.error("Navigation error:", error);
     }
   };
 

@@ -4,6 +4,7 @@ import DashboardPage from "./pages/DashboardPage";
 import OtherModsPage from "./pages/OtherModsPage";
 import CharactersPage from "./pages/CharactersPage";
 import CharacterModPage from "./pages/CharacterModPage";
+import ModDetailsPage from "./pages/ModDetailsPage";
 import SettingsPage from "./pages/SettingsPage";
 import "./App.css";
 
@@ -13,11 +14,13 @@ type PageType =
   | "mods"
   | "characters"
   | "character-mod"
+  | "mod-details"
   | "settings";
 
 type NavigationState = {
   currentPage: PageType;
   selectedCharacter: string | null;
+  selectedMod: string | null;
 };
 
 function App() {
@@ -25,6 +28,7 @@ function App() {
   const [navigation, setNavigation] = useState<NavigationState>({
     currentPage: "dashboard",
     selectedCharacter: null,
+    selectedMod: null,
   });
 
   // Handle page changes with validation
@@ -41,11 +45,18 @@ function App() {
         return { ...prev, currentPage: "characters" };
       }
 
-      // Otherwise, update the page and clear selected character if needed
+      // If navigating to mod-details without a mod, redirect to mods
+      if (page === "mod-details" && !prev.selectedMod) {
+        console.warn("Cannot navigate to mod-details without a selected mod");
+        return { ...prev, currentPage: "mods" };
+      }
+
+      // Otherwise, update the page and clear selections if needed
       return {
         currentPage: page,
         selectedCharacter:
           page === "character-mod" ? prev.selectedCharacter : null,
+        selectedMod: page === "mod-details" ? prev.selectedMod : null,
       };
     });
   }, []);
@@ -55,6 +66,16 @@ function App() {
     setNavigation({
       currentPage: "character-mod",
       selectedCharacter: characterId,
+      selectedMod: null,
+    });
+  }, []);
+
+  // Handle mod selection
+  const handleModClick = useCallback((modId: string) => {
+    setNavigation({
+      currentPage: "mod-details",
+      selectedCharacter: null,
+      selectedMod: modId,
     });
   }, []);
 
@@ -65,9 +86,24 @@ function App() {
       setNavigation({
         currentPage: "characters",
         selectedCharacter: null,
+        selectedMod: null,
       });
     } catch (error) {
       console.error("Error in handleBackToCharacters:", error);
+    }
+  }, []);
+
+  // Navigate back to mods list
+  const handleBackToMods = useCallback(() => {
+    console.log("Navigating back to mods list");
+    try {
+      setNavigation({
+        currentPage: "mods",
+        selectedCharacter: null,
+        selectedMod: null,
+      });
+    } catch (error) {
+      console.error("Error in handleBackToMods:", error);
     }
   }, []);
 
@@ -83,7 +119,7 @@ function App() {
         case "dashboard":
           return <DashboardPage />;
         case "mods":
-          return <OtherModsPage />;
+          return <OtherModsPage onModClick={handleModClick} />;
         case "characters":
           return <CharactersPage onCharacterClick={handleCharacterClick} />;
         case "character-mod":
@@ -92,11 +128,23 @@ function App() {
               <CharacterModPage
                 characterId={navigation.selectedCharacter}
                 onBack={handleBackToCharacters}
+                onModClick={handleModClick}
               />
             );
           }
           // Fallback to characters page if no character is selected
           return <CharactersPage onCharacterClick={handleCharacterClick} />;
+        case "mod-details":
+          if (navigation.selectedMod) {
+            return (
+              <ModDetailsPage
+                modId={navigation.selectedMod}
+                onBack={handleBackToMods}
+              />
+            );
+          }
+          // Fallback to mods page if no mod is selected
+          return <OtherModsPage onModClick={handleModClick} />;
         case "settings":
           return <SettingsPage />;
         default:
