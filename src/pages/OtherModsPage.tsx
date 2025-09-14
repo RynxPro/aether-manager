@@ -1,7 +1,6 @@
 import React, { useState, useMemo, useCallback } from "react";
 import ModCard from "../components/ModCard";
 import ModInstallDialog from "../components/ModInstallDialog";
-import { useCharacters } from "../hooks/useCharacters";
 import { useMods } from "../hooks/useMods";
 // Import UI components from their respective files
 import LoadingSpinner from "../components/characters/LoadingSpinner";
@@ -27,13 +26,16 @@ const SORT_OPTIONS: SortOption[] = [
 type SortOptionType = (typeof SORT_OPTIONS)[number]["value"];
 
 const OtherModsPage: React.FC = () => {
-  const { getOtherMods, loading, error } = useCharacters();
-  const { toggleModActive, fetchMods } = useMods();
+  const { mods, loading, error, toggleModActive, fetchMods, deleteMod } = useMods();
+  
+  // Filter mods that don't have a character assigned
+  const otherMods = useMemo(() => {
+    return mods.filter(mod => !mod.character);
+  }, [mods]);
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState<SortOptionType>("name-asc");
   const [showInstallDialog, setShowInstallDialog] = useState(false);
 
-  const otherMods = getOtherMods();
 
   const filteredAndSortedMods = useMemo(() => {
     if (!otherMods) return [];
@@ -78,12 +80,17 @@ const OtherModsPage: React.FC = () => {
 
   const handleDeleteMod = useCallback(async (id: string) => {
     try {
-      // TODO: Implement actual delete functionality
-      console.log("Delete mod:", id);
+      const success = await deleteMod(id);
+      if (success) {
+        // Refresh the mods list after successful deletion
+        await fetchMods();
+      } else {
+        console.error("Failed to delete mod");
+      }
     } catch (err) {
       console.error("Failed to delete mod:", err);
     }
-  }, []);
+  }, [deleteMod, fetchMods]);
 
 
   const handleSearchChange = useCallback((value: string) => {
