@@ -2,6 +2,7 @@ import React, { useState, useMemo, useCallback } from "react";
 import ModCard from "../components/ModCard";
 import ModInstallDialog from "../components/ModInstallDialog";
 import { useMods } from "../hooks/useMods";
+import { cnButton } from "../styles/buttons";
 // Import UI components from their respective files
 import LoadingSpinner from "../components/characters/LoadingSpinner";
 import ErrorState from "../components/characters/ErrorState";
@@ -137,14 +138,7 @@ const OtherModsPage: React.FC = () => {
       <PageHeader
         title="Other Mods"
         description="Manage mods not assigned to specific characters"
-      >
-        <button
-          onClick={() => setShowInstallDialog(true)}
-          className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
-        >
-          Install Mod
-        </button>
-      </PageHeader>
+      />
 
       {/* Search and Sort Bar */}
       <div className="mb-6 flex flex-col sm:flex-row gap-4">
@@ -155,12 +149,33 @@ const OtherModsPage: React.FC = () => {
             onChange={handleSearchChange}
           />
         </div>
-        <div className="w-full sm:w-64">
-          <SortDropdown
-            options={SORT_OPTIONS}
-            value={sortBy}
-            onChange={handleSortChange}
-          />
+        <div className="flex gap-4">
+          <div className="w-full sm:w-64">
+            <SortDropdown
+              options={SORT_OPTIONS}
+              value={sortBy}
+              onChange={handleSortChange}
+            />
+          </div>
+          <button
+            onClick={() => setShowInstallDialog(true)}
+            className={cnButton({ variant: 'primary', className: 'flex items-center space-x-2' })}
+          >
+            <svg
+              className="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M12 4v16m8-8H4"
+              />
+            </svg>
+            <span>Upload Mod</span>
+          </button>
         </div>
       </div>
 
