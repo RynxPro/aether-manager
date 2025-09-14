@@ -260,22 +260,33 @@ const ModDetailsPage: React.FC<ModDetailsPageProps> = ({ modId, onBack }) => {
             </div>
           )}
 
-          {/* Description */}
+          {/* Mod URL */}
           <div>
             <label className="block text-sm font-medium text-[var(--moon-text)] mb-2">
-              Description
+              Mod URL
             </label>
             {isEditing ? (
-              <textarea
+              <input
+                type="url"
                 value={formData.description}
                 onChange={handleInputChange("description")}
-                rows={4}
-                placeholder="Enter mod description..."
-                className="w-full px-3 py-2 bg-[var(--moon-surface)] border border-[var(--moon-border)] rounded-lg text-[var(--moon-text)] placeholder-[var(--moon-muted)] focus:outline-none focus:ring-2 focus:ring-[var(--moon-glow-violet)] focus:border-transparent resize-none"
+                placeholder="https://example.com/mod-page"
+                className="w-full px-3 py-2 bg-[var(--moon-surface)] border border-[var(--moon-border)] rounded-lg text-[var(--moon-text)] placeholder-[var(--moon-muted)] focus:outline-none focus:ring-2 focus:ring-[var(--moon-glow-violet)] focus:border-transparent"
               />
             ) : (
-              <div className="px-3 py-2 bg-[var(--moon-surface)] border border-[var(--moon-border)] rounded-lg text-[var(--moon-text)] min-h-[100px]">
-                {mod.description || "No description provided"}
+              <div className="px-3 py-2 bg-[var(--moon-surface)] border border-[var(--moon-border)] rounded-lg text-[var(--moon-text)]">
+                {mod.description ? (
+                  <a 
+                    href={mod.description} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="text-[var(--moon-accent)] hover:underline break-all"
+                  >
+                    {mod.description}
+                  </a>
+                ) : (
+                  <span className="text-[var(--moon-muted)]">No URL provided</span>
+                )}
               </div>
             )}
           </div>

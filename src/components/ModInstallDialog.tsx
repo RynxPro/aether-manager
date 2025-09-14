@@ -330,11 +330,12 @@ const ModInstallDialog: React.FC<ModInstallDialogProps> = ({
           {/* Description */}
           <div>
             <label className="block text-sm font-medium text-[var(--moon-text)] mb-2">
-              Description
+              Mod URL
               <span className="text-[var(--moon-muted)] text-xs font-normal ml-1">(optional)</span>
             </label>
             <div className="relative">
-              <textarea
+              <input
+                type="url"
                 value={formData.description}
                 onChange={(e) =>
                   setFormData((prev) => ({
@@ -342,14 +343,10 @@ const ModInstallDialog: React.FC<ModInstallDialogProps> = ({
                     description: e.target.value,
                   }))
                 }
-                placeholder="Add a brief description of this mod..."
+                placeholder="https://example.com/mod-page"
                 disabled={loading}
-                rows={3}
-                className="w-full px-4 py-2.5 bg-[var(--moon-surface-elevated)] border border-[var(--moon-border)] rounded-lg text-[var(--moon-text)] placeholder-[var(--moon-muted)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--moon-accent)] focus:border-transparent transition-all disabled:opacity-60 disabled:cursor-not-allowed resize-none"
+                className="w-full px-4 py-2.5 bg-[var(--moon-surface-elevated)] border border-[var(--moon-border)] rounded-lg text-[var(--moon-text)] placeholder-[var(--moon-muted)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--moon-accent)] focus:border-transparent transition-all disabled:opacity-60 disabled:cursor-not-allowed"
               />
-              <div className="absolute bottom-2 right-2 text-xs text-[var(--moon-muted)]">
-                {formData.description.length}/500
-              </div>
             </div>
           </div>
 
