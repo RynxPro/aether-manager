@@ -21,6 +21,7 @@ type NavigationState = {
   currentPage: PageType;
   selectedCharacter: string | null;
   selectedMod: string | null;
+  modCharacterContext: string | null; // Track which character's mod we're viewing (or null for other mods)
 };
 
 function App() {
@@ -29,6 +30,7 @@ function App() {
     currentPage: "dashboard",
     selectedCharacter: null,
     selectedMod: null,
+    modCharacterContext: null, // Track which character's mod we're viewing (or null for other mods)
   });
 
   // Handle page changes with validation
@@ -42,21 +44,29 @@ function App() {
         console.warn(
           "Cannot navigate to character-mod without a selected character"
         );
-        return { ...prev, currentPage: "characters" };
+        return { 
+          ...prev, 
+          currentPage: "characters",
+          modCharacterContext: null 
+        };
       }
 
       // If navigating to mod-details without a mod, redirect to mods
       if (page === "mod-details" && !prev.selectedMod) {
         console.warn("Cannot navigate to mod-details without a selected mod");
-        return { ...prev, currentPage: "mods" };
+        return { 
+          ...prev, 
+          currentPage: "mods",
+          modCharacterContext: null 
+        };
       }
 
       // Otherwise, update the page and clear selections if needed
       return {
         currentPage: page,
-        selectedCharacter:
-          page === "character-mod" ? prev.selectedCharacter : null,
+        selectedCharacter: page === "character-mod" ? prev.selectedCharacter : null,
         selectedMod: page === "mod-details" ? prev.selectedMod : null,
+        modCharacterContext: prev.modCharacterContext // Preserve the context
       };
     });
   }, []);
@@ -67,15 +77,17 @@ function App() {
       currentPage: "character-mod",
       selectedCharacter: characterId,
       selectedMod: null,
+      modCharacterContext: null // Clear context when navigating to character mods
     });
   }, []);
 
   // Handle mod selection
-  const handleModClick = useCallback((modId: string) => {
+  const handleModClick = useCallback((modId: string, characterId?: string) => {
     setNavigation({
       currentPage: "mod-details",
-      selectedCharacter: null,
+      selectedCharacter: characterId || null,
       selectedMod: modId,
+      modCharacterContext: characterId || null,
     });
   }, []);
 
@@ -87,24 +99,33 @@ function App() {
         currentPage: "characters",
         selectedCharacter: null,
         selectedMod: null,
+        modCharacterContext: null // Clear context when going back to characters list
       });
     } catch (error) {
-      console.error("Error in handleBackToCharacters:", error);
+      console.error("Error navigating to characters list:", error);
     }
   }, []);
 
-  // Navigate back to mods list
-  const handleBackToMods = useCallback(() => {
-    console.log("Navigating back to mods list");
-    try {
-      setNavigation({
+  // Navigate back to the appropriate page based on mod context
+  const handleBackFromModDetails = useCallback(() => {
+    setNavigation((prev) => {
+      // If the mod was viewed from a character's page, go back to that character
+      if (prev.modCharacterContext) {
+        return {
+          currentPage: "character-mod",
+          selectedCharacter: prev.modCharacterContext,
+          selectedMod: null,
+          modCharacterContext: null,
+        };
+      }
+      // Otherwise go back to the mods list
+      return {
         currentPage: "mods",
         selectedCharacter: null,
         selectedMod: null,
-      });
-    } catch (error) {
-      console.error("Error in handleBackToMods:", error);
-    }
+        modCharacterContext: null,
+      };
+    });
   }, []);
 
   // Debug effect to log navigation changes
@@ -112,10 +133,13 @@ function App() {
     console.log("Navigation state changed:", navigation);
   }, [navigation]);
 
+  // Destructure navigation state for easier access
+  const { currentPage, selectedCharacter } = navigation;
+
   // Render the current page with proper error boundaries
   const renderPage = () => {
     try {
-      switch (navigation.currentPage) {
+      switch (currentPage) {
         case "dashboard":
           return <DashboardPage />;
         case "mods":
@@ -123,23 +147,21 @@ function App() {
         case "characters":
           return <CharactersPage onCharacterClick={handleCharacterClick} />;
         case "character-mod":
-          if (navigation.selectedCharacter) {
-            return (
-              <CharacterModPage
-                characterId={navigation.selectedCharacter}
-                onBack={handleBackToCharacters}
-                onModClick={handleModClick}
-              />
-            );
-          }
-          // Fallback to characters page if no character is selected
-          return <CharactersPage onCharacterClick={handleCharacterClick} />;
+          return selectedCharacter ? (
+            <CharacterModPage
+              characterId={selectedCharacter}
+              onBack={handleBackToCharacters}
+              onModClick={handleModClick}
+            />
+          ) : (
+            <div>Error: No character selected</div>
+          );
         case "mod-details":
           if (navigation.selectedMod) {
             return (
               <ModDetailsPage
                 modId={navigation.selectedMod}
-                onBack={handleBackToMods}
+                onBack={handleBackFromModDetails}
               />
             );
           }
@@ -148,8 +170,7 @@ function App() {
         case "settings":
           return <SettingsPage />;
         default:
-          console.warn("Unknown page, redirecting to dashboard");
-          return <DashboardPage />;
+          return <div>Page not found</div>;
       }
     } catch (error) {
       console.error("Error rendering page:", error);

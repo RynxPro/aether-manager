@@ -10,7 +10,7 @@ import SearchBar from "../components/characters/SearchBar";
 interface CharacterModPageProps {
   characterId: string;
   onBack: () => void;
-  onModClick?: (modId: string) => void;
+  onModClick?: (modId: string, characterId?: string) => void;
 }
 
 const CharacterModPage: React.FC<CharacterModPageProps> = ({
@@ -18,8 +18,7 @@ const CharacterModPage: React.FC<CharacterModPageProps> = ({
   onBack,
   onModClick,
 }) => {
-  const { mods, loading, error, toggleModActive, deleteMod, fetchMods } =
-    useMods();
+  const { mods, loading, error, deleteMod, fetchMods } = useMods();
   const { characters } = useCharacters();
   const [showInstallDialog, setShowInstallDialog] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -80,14 +79,6 @@ const CharacterModPage: React.FC<CharacterModPageProps> = ({
     icon: "❓",
     installedMods: 0,
     activeMods: 0,
-  };
-
-  const handleToggleActive = async (modId: string) => {
-    try {
-      await toggleModActive(modId);
-    } catch (err) {
-      console.error("Failed to toggle mod active state:", err);
-    }
   };
 
   const handleDelete = async (modId: string) => {
@@ -262,9 +253,8 @@ const CharacterModPage: React.FC<CharacterModPageProps> = ({
             <ModCard
               key={mod.id}
               mod={mod}
-              onToggleActive={handleToggleActive}
               onDelete={handleDelete}
-              onClick={onModClick}
+              onViewDetails={onModClick ? (id) => onModClick(id, characterId) : undefined}
             />
           ))}
         </div>
