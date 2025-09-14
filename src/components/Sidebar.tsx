@@ -36,16 +36,16 @@ const Sidebar: React.FC<SidebarProps> = ({ currentPage, onPageChange }) => {
       path: "/",
     },
     {
-      id: "mods" as const,
-      label: "Other Mods",
-      icon: <Square3Stack3DIcon className="w-5 h-5" />,
-      path: "/mods",
-    },
-    {
       id: "characters" as const,
       label: "Characters",
       icon: <UsersIcon className="w-5 h-5" />,
       path: "/characters",
+    },
+    {
+      id: "mods" as const,
+      label: "Other Mods",
+      icon: <Square3Stack3DIcon className="w-5 h-5" />,
+      path: "/mods",
     },
     {
       id: "settings" as const,
