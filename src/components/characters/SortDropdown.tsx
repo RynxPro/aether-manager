@@ -26,7 +26,7 @@ export const SortDropdown: React.FC<SortDropdownProps> = ({
       <select
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="appearance-none w-full pl-3 pr-10 py-2 border border-[var(--moon-border)] bg-[var(--moon-surface)] rounded-xl text-[var(--moon-text)] focus:outline-none focus:ring-2 focus:ring-[var(--moon-glow-violet)] focus:border-transparent transition-all duration-200 cursor-pointer hover:border-[var(--moon-glow-violet)] hover:shadow-[0_0_8px_var(--moon-glow-violet)]"
+        className="appearance-none w-full h-10 pl-3 pr-10 py-2 border border-[var(--moon-border)] bg-[var(--moon-surface)] rounded-xl text-[var(--moon-text)] focus:outline-none focus:ring-2 focus:ring-[var(--moon-glow-violet)] focus:border-transparent transition-all duration-200 cursor-pointer hover:border-[var(--moon-glow-violet)] hover:shadow-[0_0_8px_var(--moon-glow-violet)] text-sm"
       >
         {options.map((option) => (
           <option 

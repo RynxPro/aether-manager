@@ -141,21 +141,24 @@ const OtherModsPage: React.FC = () => {
       />
 
       {/* Search and Sort Bar */}
-      <div className="mb-6 flex flex-col sm:flex-row gap-4">
-        <div className="flex-1">
-          <SearchBar
-            placeholder="Search mods..."
-            value={searchQuery}
-            onChange={handleSearchChange}
-          />
-        </div>
-        <div className="flex gap-4">
-          <div className="w-full sm:w-64">
-            <SortDropdown
-              options={SORT_OPTIONS}
-              value={sortBy}
-              onChange={handleSortChange}
+      <div className="sticky top-0 z-10 bg-[var(--moon-bg)]/90 backdrop-blur-sm border-b border-[var(--moon-border)] -mx-6 px-6 pt-2 pb-4 mb-6">
+        <div className="max-w-5xl mx-auto flex flex-col sm:flex-row gap-4">
+          <div className="flex-1">
+            <SearchBar
+              placeholder="Search mods..."
+              value={searchQuery}
+              onChange={handleSearchChange}
+              className="w-full"
             />
+          </div>
+          <div className="flex gap-4">
+            <div className="w-full sm:w-48">
+              <SortDropdown
+                options={SORT_OPTIONS}
+                value={sortBy}
+                onChange={handleSortChange}
+              />
+            </div>
           </div>
           <button
             onClick={() => setShowInstallDialog(true)}

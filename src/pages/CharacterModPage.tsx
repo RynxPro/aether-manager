@@ -4,6 +4,8 @@ import { useCharacters } from "../hooks/useCharacters";
 import ModCard from "../components/ModCard";
 import ModInstallDialog from "../components/ModInstallDialog";
 import { cnButton } from "../styles/buttons";
+import SortDropdown from "../components/characters/SortDropdown";
+import SearchBar from "../components/characters/SearchBar";
 
 interface CharacterModPageProps {
   characterId: string;
@@ -18,10 +20,19 @@ const CharacterModPage: React.FC<CharacterModPageProps> = ({
   const { characters } = useCharacters();
   const [showInstallDialog, setShowInstallDialog] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [sortBy, setSortBy] = useState<string>('name-asc');
 
-  // Filter mods for this specific character and search query
+  // Define sort options
+  const SORT_OPTIONS = [
+    { value: "name-asc", label: "Name (A-Z)" },
+    { value: "name-desc", label: "Name (Z-A)" },
+    { value: "active", label: "Active First" },
+    { value: "inactive", label: "Inactive First" },
+  ];
+
+  // Filter and sort mods for this specific character
   const characterMods = React.useMemo(() => {
-    return (mods || [])
+    let filtered = (mods || [])
       .filter((mod) => mod.character === characterId)
       .filter((mod) => {
         if (!searchQuery.trim()) return true;
@@ -31,7 +42,27 @@ const CharacterModPage: React.FC<CharacterModPageProps> = ({
           (mod.description && mod.description.toLowerCase().includes(query))
         );
       });
-  }, [mods, characterId, searchQuery]);
+
+    // Apply sorting
+    return [...filtered].sort((a, b) => {
+      switch (sortBy) {
+        case 'name-asc':
+          return a.title.localeCompare(b.title);
+        case 'name-desc':
+          return b.title.localeCompare(a.title);
+        case 'active':
+          return (b.isActive ? 1 : 0) - (a.isActive ? 1 : 0) || a.title.localeCompare(b.title);
+        case 'inactive':
+          return (a.isActive ? 1 : 0) - (b.isActive ? 1 : 0) || a.title.localeCompare(b.title);
+        default:
+          return 0;
+      }
+    });
+  }, [mods, characterId, searchQuery, sortBy]);
+
+  const handleSortChange = (value: string) => {
+    setSortBy(value);
+  };
 
   // Find character data
   const character = characters.find((c) => c.id === characterId) || {
@@ -156,30 +187,23 @@ const CharacterModPage: React.FC<CharacterModPageProps> = ({
       </div>
 
       {/* Action Bar */}
-      <div className="sticky top-0 z-10 bg-[var(--moon-bg)]/90 backdrop-blur-md border-b border-[var(--moon-border)] mb-8 px-4 py-8">
-        <div className="max-w-5xl mx-auto flex flex-col sm:flex-row gap-4 sm:items-center">
+      <div className="sticky top-0 z-10 bg-[var(--moon-bg)]/90 backdrop-blur-sm border-b border-[var(--moon-border)] -mx-6 px-6 pt-2 pb-4 mb-6">
+        <div className="max-w-5xl mx-auto flex flex-col sm:flex-row gap-4">
           <div className="flex-1">
-            <div className="relative">
-              <input
-                type="text"
-                placeholder="Search mods..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full px-3 py-1.5 pl-10 bg-[var(--moon-surface)] border border-[var(--moon-border)] rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-[var(--moon-glow-violet)] focus:ring-2 focus:ring-[var(--moon-glow-violet)]"
+            <SearchBar
+              placeholder="Search mods..."
+              value={searchQuery}
+              onChange={setSearchQuery}
+              className="w-full"
+            />
+          </div>
+          <div className="flex gap-4">
+            <div className="w-full sm:w-48">
+              <SortDropdown
+                options={SORT_OPTIONS}
+                value={sortBy}
+                onChange={handleSortChange}
               />
-              <svg
-                className="absolute left-3 top-2.5 w-4 h-4 text-[var(--moon-muted)]"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M21 21l-4.35-4.35M17 10a7 7 0 11-14 0 7 7 0 0114 0z"
-                />
-              </svg>
             </div>
           </div>
           <button

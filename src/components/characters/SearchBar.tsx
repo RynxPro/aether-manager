@@ -35,7 +35,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
-        className="block w-full pl-10 pr-3 py-2 border border-[var(--moon-border)] bg-[var(--moon-surface)] rounded-xl text-[var(--moon-text)] placeholder-[var(--moon-text-secondary)] focus:outline-none focus:ring-2 focus:ring-[var(--moon-glow-violet)] focus:border-transparent transition-all duration-200 hover:border-[var(--moon-glow-violet)] hover:shadow-[0_0_8px_var(--moon-glow-violet)]"
+        className="block w-full h-10 pl-10 pr-3 py-2 border border-[var(--moon-border)] bg-[var(--moon-surface)] rounded-xl text-[var(--moon-text)] placeholder-[var(--moon-text-secondary)] focus:outline-none focus:ring-2 focus:ring-[var(--moon-glow-violet)] focus:border-transparent transition-all duration-200 hover:border-[var(--moon-glow-violet)] hover:shadow-[0_0_8px_var(--moon-glow-violet)] text-sm"
       />
       {value && (
         <button
