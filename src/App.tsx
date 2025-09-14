@@ -8,7 +8,12 @@ import SettingsPage from "./pages/SettingsPage";
 import "./App.css";
 
 // Define valid page types for type safety
-type PageType = 'dashboard' | 'mods' | 'characters' | 'character-mod' | 'settings';
+type PageType =
+  | "dashboard"
+  | "mods"
+  | "characters"
+  | "character-mod"
+  | "settings";
 
 type NavigationState = {
   currentPage: PageType;
@@ -18,26 +23,29 @@ type NavigationState = {
 function App() {
   // Use a single state object to prevent race conditions
   const [navigation, setNavigation] = useState<NavigationState>({
-    currentPage: 'dashboard',
+    currentPage: "dashboard",
     selectedCharacter: null,
   });
 
   // Handle page changes with validation
   const handlePageChange = useCallback((page: PageType) => {
-    setNavigation(prev => {
+    setNavigation((prev) => {
       // If we're already on this page, do nothing
       if (page === prev.currentPage) return prev;
-      
+
       // If navigating to character-mod without a character, redirect to characters
-      if (page === 'character-mod' && !prev.selectedCharacter) {
-        console.warn('Cannot navigate to character-mod without a selected character');
-        return { ...prev, currentPage: 'characters' };
+      if (page === "character-mod" && !prev.selectedCharacter) {
+        console.warn(
+          "Cannot navigate to character-mod without a selected character"
+        );
+        return { ...prev, currentPage: "characters" };
       }
-      
+
       // Otherwise, update the page and clear selected character if needed
       return {
         currentPage: page,
-        selectedCharacter: page === 'character-mod' ? prev.selectedCharacter : null,
+        selectedCharacter:
+          page === "character-mod" ? prev.selectedCharacter : null,
       };
     });
   }, []);
@@ -45,40 +53,40 @@ function App() {
   // Handle character selection
   const handleCharacterClick = useCallback((characterId: string) => {
     setNavigation({
-      currentPage: 'character-mod',
+      currentPage: "character-mod",
       selectedCharacter: characterId,
     });
   }, []);
 
   // Navigate back to characters list
   const handleBackToCharacters = useCallback(() => {
-    console.log('Navigating back to characters list');
+    console.log("Navigating back to characters list");
     try {
       setNavigation({
-        currentPage: 'characters',
+        currentPage: "characters",
         selectedCharacter: null,
       });
     } catch (error) {
-      console.error('Error in handleBackToCharacters:', error);
+      console.error("Error in handleBackToCharacters:", error);
     }
   }, []);
 
   // Debug effect to log navigation changes
   useEffect(() => {
-    console.log('Navigation state changed:', navigation);
+    console.log("Navigation state changed:", navigation);
   }, [navigation]);
 
   // Render the current page with proper error boundaries
   const renderPage = () => {
     try {
       switch (navigation.currentPage) {
-        case 'dashboard':
+        case "dashboard":
           return <DashboardPage />;
-        case 'mods':
+        case "mods":
           return <OtherModsPage />;
-        case 'characters':
+        case "characters":
           return <CharactersPage onCharacterClick={handleCharacterClick} />;
-        case 'character-mod':
+        case "character-mod":
           if (navigation.selectedCharacter) {
             return (
               <CharacterModPage
@@ -89,14 +97,14 @@ function App() {
           }
           // Fallback to characters page if no character is selected
           return <CharactersPage onCharacterClick={handleCharacterClick} />;
-        case 'settings':
+        case "settings":
           return <SettingsPage />;
         default:
-          console.warn('Unknown page, redirecting to dashboard');
+          console.warn("Unknown page, redirecting to dashboard");
           return <DashboardPage />;
       }
     } catch (error) {
-      console.error('Error rendering page:', error);
+      console.error("Error rendering page:", error);
       return (
         <div className="p-4 text-red-500">
           An error occurred while loading the page. Please try again.
@@ -107,7 +115,10 @@ function App() {
 
   return (
     <div className="flex h-screen bg-[var(--moon-bg)]">
-      <Sidebar currentPage={navigation.currentPage} onPageChange={handlePageChange} />
+      <Sidebar
+        currentPage={navigation.currentPage}
+        onPageChange={handlePageChange}
+      />
       <main className="flex-1 overflow-y-auto backdrop-blur-sm px-6">
         {renderPage()}
       </main>

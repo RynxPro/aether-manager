@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 
 interface SearchBarProps {
   value: string;
@@ -10,14 +10,14 @@ interface SearchBarProps {
 export const SearchBar: React.FC<SearchBarProps> = ({
   value,
   onChange,
-  placeholder = 'Search characters...',
-  className = '',
+  placeholder = "Search characters...",
+  className = "",
 }) => {
   return (
     <div className={`relative ${className}`}>
       <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
         <svg
-          className="h-5 w-5 text-gray-400"
+          className="h-5 w-5 text-[var(--moon-text-secondary)]"
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"
@@ -35,15 +35,15 @@ export const SearchBar: React.FC<SearchBarProps> = ({
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
-        className="block w-full pl-10 pr-3 py-2 border border-gray-600 bg-gray-800/50 rounded-xl text-gray-200 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200"
+        className="block w-full pl-10 pr-3 py-2 border border-[var(--moon-border)] bg-[var(--moon-surface)] rounded-xl text-[var(--moon-text)] placeholder-[var(--moon-text-secondary)] focus:outline-none focus:ring-2 focus:ring-[var(--moon-glow-violet)] focus:border-transparent transition-all duration-200 hover:border-[var(--moon-glow-violet)] hover:shadow-[0_0_8px_var(--moon-glow-violet)]"
       />
       {value && (
         <button
-          onClick={() => onChange('')}
+          onClick={() => onChange("")}
           className="absolute inset-y-0 right-0 pr-3 flex items-center"
         >
           <svg
-            className="h-5 w-5 text-gray-400 hover:text-gray-300"
+            className="h-5 w-5 text-[var(--moon-text-secondary)] hover:text-[var(--moon-text)]"
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"

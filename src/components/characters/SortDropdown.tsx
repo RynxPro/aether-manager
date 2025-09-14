@@ -26,17 +26,21 @@ export const SortDropdown: React.FC<SortDropdownProps> = ({
       <select
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="appearance-none bg-gray-800/50 border border-gray-600 rounded-xl pl-3 pr-10 py-2 text-gray-200 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 cursor-pointer"
+        className="appearance-none w-full pl-3 pr-10 py-2 border border-[var(--moon-border)] bg-[var(--moon-surface)] rounded-xl text-[var(--moon-text)] focus:outline-none focus:ring-2 focus:ring-[var(--moon-glow-violet)] focus:border-transparent transition-all duration-200 cursor-pointer hover:border-[var(--moon-glow-violet)] hover:shadow-[0_0_8px_var(--moon-glow-violet)]"
       >
         {options.map((option) => (
-          <option key={option.value} value={option.value}>
+          <option 
+            key={option.value} 
+            value={option.value}
+            className="bg-[var(--moon-surface)] text-[var(--moon-text)]"
+          >
             {option.label}
           </option>
         ))}
       </select>
       <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
         <svg
-          className="h-5 w-5 text-gray-400"
+          className="h-5 w-5 text-[var(--moon-text-secondary)]"
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"
