@@ -170,6 +170,31 @@ async fn toggle_mod_active(modId: String) -> Result<bool, String> {
 }
 
 #[tauri::command]
+async fn update_mod(modId: String, title: Option<String>, thumbnail: Option<String>, description: Option<String>) -> Result<(), String> {
+    let mut mods = load_all_mods().await?;
+    let mod_index = mods.iter().position(|m| m.id == modId)
+        .ok_or("Mod not found")?;
+    
+    let mod_ref = &mut mods[mod_index];
+    
+    // Update fields if provided
+    if let Some(new_title) = title {
+        mod_ref.title = new_title;
+    }
+    if let Some(new_thumbnail) = thumbnail {
+        mod_ref.thumbnail = Some(new_thumbnail);
+    }
+    if let Some(new_description) = description {
+        mod_ref.description = Some(new_description);
+    }
+    
+    // Save updated mod metadata
+    save_mod_metadata(mod_ref).await?;
+    
+    Ok(())
+}
+
+#[tauri::command]
 async fn delete_mod(modId: String) -> Result<(), String> {
     let mods = load_all_mods().await?;
     let mod_index = mods.iter().position(|m| m.id == modId)
@@ -373,6 +398,7 @@ pub fn run() {
             get_mods,
             install_mod,
             toggle_mod_active,
+            update_mod,
             delete_mod,
             get_mod_stats,
             get_settings,
