@@ -159,10 +159,20 @@ const ToggleButton: React.FC<{
   );
 };
 
+interface ModCardProps {
+  mod: Mod;
+  onToggleActive: (modId: string) => void;
+  onDelete: (modId: string) => void;
+  onViewDetails?: (modId: string) => void;
+  onClick?: (modId: string) => void;
+}
+
 const ModCard: React.FC<ModCardProps> = ({
   mod,
+  onToggleActive,
   onDelete,
   onViewDetails,
+  onClick,
 }) => {
   const [showDeleteConfirm, setShowDeleteConfirm] = React.useState(false);
 
@@ -181,8 +191,12 @@ const ModCard: React.FC<ModCardProps> = ({
   }, []);
 
   const handleCardClick = useCallback(() => {
-    onViewDetails?.(mod.id);
-  }, [mod.id, onViewDetails]);
+    if (onClick) {
+      onClick(mod.id);
+    } else if (onViewDetails) {
+      onViewDetails(mod.id);
+    }
+  }, [mod.id, onClick, onViewDetails]);
 
   const formattedDate = useMemo(() => {
     return new Date(mod.dateAdded).toLocaleDateString("en-US", {
@@ -226,7 +240,10 @@ const ModCard: React.FC<ModCardProps> = ({
             </span>
             <ToggleButton
               isActive={mod.isActive}
-              onClick={(e) => e.stopPropagation()}
+              onClick={(e) => {
+                e.stopPropagation();
+                onToggleActive?.(mod.id);
+              }}
             />
           </div>
         </div>

@@ -113,20 +113,42 @@ export const useMods = () => {
     setError(null);
     try {
       console.log("Toggling mod active:", modId);
-      const result = await invoke<boolean>("toggle_mod_active", { modId });
-      console.log("Toggle result:", result);
-
-      // Update local state
-      setMods((prev) =>
-        prev.map((mod) =>
+      
+      // Get current state before toggling
+      const currentMod = mods.find(mod => mod.id === modId);
+      if (!currentMod) {
+        throw new Error("Mod not found");
+      }
+      
+      // Optimistically update UI
+      setMods(prev =>
+        prev.map(mod =>
           mod.id === modId ? { ...mod, isActive: !mod.isActive } : mod
         )
       );
-
-      return result;
+      
+      // Call backend
+      const result = await invoke<boolean>("toggle_mod_active", { modId });
+      console.log("Toggle result:", result);
+      
+      if (!result) {
+        // If backend failed, revert the UI
+        setMods(prev =>
+          prev.map(mod =>
+            mod.id === modId ? { ...mod, isActive: currentMod.isActive } : mod
+          )
+        );
+        throw new Error("Failed to toggle mod active state");
+      }
+      
+      // Refresh mods list to ensure consistency with backend
+      await fetchMods();
+      
+      return true;
     } catch (err) {
       console.error("toggleModActive error:", err);
-      setError(err as string);
+      const errorMsg = err instanceof Error ? err.message : String(err);
+      setError(`Failed to toggle mod: ${errorMsg}`);
       return false;
     } finally {
       setLoading(false);

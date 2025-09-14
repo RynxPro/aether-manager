@@ -18,7 +18,8 @@ const CharacterModPage: React.FC<CharacterModPageProps> = ({
   onBack,
   onModClick,
 }) => {
-  const { mods, loading, error, deleteMod, fetchMods } = useMods();
+  const { mods, loading, error, toggleModActive, deleteMod, fetchMods } =
+    useMods();
   const { characters } = useCharacters();
   const [showInstallDialog, setShowInstallDialog] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -79,6 +80,15 @@ const CharacterModPage: React.FC<CharacterModPageProps> = ({
     icon: "❓",
     installedMods: 0,
     activeMods: 0,
+  };
+
+  const handleToggleActive = async (modId: string) => {
+    try {
+      await toggleModActive(modId);
+      await fetchMods(); // Refresh the mods list after toggle
+    } catch (error) {
+      console.error("Failed to toggle mod active state:", error);
+    }
   };
 
   const handleDelete = async (modId: string) => {
@@ -253,8 +263,11 @@ const CharacterModPage: React.FC<CharacterModPageProps> = ({
             <ModCard
               key={mod.id}
               mod={mod}
+              onToggleActive={handleToggleActive}
               onDelete={handleDelete}
-              onViewDetails={onModClick ? (id) => onModClick(id, characterId) : undefined}
+              onClick={
+                onModClick ? (id) => onModClick(id, characterId) : undefined
+              }
             />
           ))}
         </div>

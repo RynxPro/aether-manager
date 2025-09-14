@@ -33,7 +33,8 @@ interface OtherModsPageProps {
 }
 
 const OtherModsPage: React.FC<OtherModsPageProps> = ({ onModClick }) => {
-  const { mods, loading, error, fetchMods, deleteMod } = useMods();
+  const { mods, loading, error, toggleModActive, fetchMods, deleteMod } =
+    useMods();
 
   // Filter mods that don't have a character assigned
   const otherMods = useMemo(() => {
@@ -75,6 +76,18 @@ const OtherModsPage: React.FC<OtherModsPageProps> = ({ onModClick }) => {
       }
     });
   }, [otherMods, searchQuery, sortBy]);
+
+  const handleToggleActive = useCallback(
+    async (id: string) => {
+      try {
+        await toggleModActive(id);
+        await fetchMods(); // Refresh the mods list after toggle
+      } catch (err) {
+        console.error("Failed to toggle mod active state:", err);
+      }
+    },
+    [toggleModActive, fetchMods]
+  );
 
   const handleDeleteMod = useCallback(
     async (id: string) => {
@@ -188,8 +201,9 @@ const OtherModsPage: React.FC<OtherModsPageProps> = ({ onModClick }) => {
             <ModCard
               key={mod.id}
               mod={mod}
+              onToggleActive={handleToggleActive}
               onDelete={handleDeleteMod}
-              onViewDetails={onModClick}
+              onClick={onModClick}
             />
           ))}
         </div>
