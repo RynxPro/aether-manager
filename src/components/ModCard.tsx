@@ -91,7 +91,7 @@ const ModThumbnail: React.FC<{ thumbnail?: string; alt: string }> = ({
 
   if (thumbnail) {
     return (
-      <div className="w-full h-40 overflow-hidden">
+      <div className="w-full h-full">
         <img
           src={thumbnail}
           alt={alt}
@@ -103,7 +103,7 @@ const ModThumbnail: React.FC<{ thumbnail?: string; alt: string }> = ({
   }
 
   return (
-    <div className="w-full h-40 flex items-center justify-center bg-gradient-to-br from-[var(--moon-bg)] to-[#0f1320]">
+    <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-[var(--moon-bg)] to-[#0f1320]">
       <div className="text-center p-4">
         <div className="w-16 h-16 mx-auto mb-3 rounded-xl bg-[var(--moon-surface)] flex items-center justify-center">
           <ImagePlaceholderIcon />
@@ -209,15 +209,14 @@ const ModCard: React.FC<ModCardProps> = ({
   return (
     <>
       <div
-        className="bg-[var(--moon-surface)] backdrop-blur-sm rounded-xl border border-[var(--moon-border)] overflow-hidden group flex flex-col h-full w-full min-w-[280px] max-w-[320px] flex-shrink-0 hover:border-[var(--moon-glow-violet)] hover:shadow-[0_0_15px_rgba(122,90,248,0.2)] transition-all duration-300 cursor-pointer"
-        style={{ flex: "0 0 auto" }}
+        className="bg-[var(--moon-surface)] backdrop-blur-sm rounded-xl border border-[var(--moon-border)] overflow-hidden group flex flex-col h-full w-full hover:border-[var(--moon-glow-violet)] hover:shadow-[0_0_15px_rgba(122,90,248,0.2)] transition-all duration-300 cursor-pointer"
         onClick={handleCardClick}
       >
-        <div className="relative h-40 bg-gray-900/20 overflow-hidden">
+        <div className="relative aspect-video bg-gray-900/20 overflow-hidden">
           <ModThumbnail thumbnail={mod.thumbnail} alt={mod.title} />
         </div>
 
-        <div className="p-4 flex-1 flex flex-col">
+        <div className="p-4 flex-1 flex flex-col min-h-[120px]">
           <div className="flex items-center justify-between gap-2">
             <h3
               className="text-[var(--moon-text)] font-medium text-sm mb-1.5 line-clamp-2 group-hover:text-[var(--moon-glow-violet)] transition-colors duration-200"
@@ -234,7 +233,7 @@ const ModCard: React.FC<ModCardProps> = ({
             </div>
           )}
 
-          <div className="mt-auto pt-3 flex items-center justify-between border-t border-[var(--moon-border)]">
+          <div className="mt-2 pt-3 flex items-center justify-between border-t border-[var(--moon-border)]">
             <span className="text-xs text-[var(--moon-muted)]">
               {formattedDate}
             </span>
