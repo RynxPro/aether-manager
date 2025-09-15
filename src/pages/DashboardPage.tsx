@@ -322,15 +322,13 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ onModClick }) => {
         ) : filteredAndSortedMods.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 px-2">
             {filteredAndSortedMods.map((mod) => (
-              <div key={mod.id} className="group relative">
-                <div className="absolute -inset-0.5 bg-gradient-to-r from-[var(--moon-accent)] to-[var(--moon-glow-violet)] rounded-xl opacity-0 group-hover:opacity-100 blur transition duration-300"></div>
-                <ModCard
-                  mod={mod}
-                  onToggleActive={handleToggleActive}
-                  onDelete={handleDeleteMod}
-                  onViewDetails={(id) => onModClick(id, mod.character || undefined)}
-                />
-              </div>
+              <ModCard
+                key={mod.id}
+                mod={mod}
+                onToggleActive={handleToggleActive}
+                onDelete={handleDeleteMod}
+                onViewDetails={(id) => onModClick(id, mod.character || undefined)}
+              />
             ))}
           </div>
         ) : (

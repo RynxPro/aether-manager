@@ -206,7 +206,7 @@ const ModCard: React.FC<ModCardProps> = ({
   return (
     <>
       <div
-        className="bg-[var(--moon-surface)] rounded-xl border border-[var(--moon-border)] overflow-hidden group flex flex-col h-full hover:border-[var(--moon-glow-violet)] hover:shadow-[0_0_15px_rgba(122,90,248,0.2)] transition-all duration-300 cursor-pointer hover:scale-[1.02] transform-gpu"
+        className="bg-[var(--moon-surface)] rounded-xl border border-[var(--moon-border)] overflow-hidden group flex flex-col h-full hover:border-[var(--moon-glow-violet)] hover:shadow-[0_0_15px_rgba(122,90,248,0.2)] transition-all duration-300 cursor-pointer"
         onClick={handleCardClick}
         onKeyDown={(e) => {
           if (e.key === 'Enter' || e.key === ' ') {
