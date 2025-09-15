@@ -15,7 +15,10 @@ type PageType =
   | "characters"
   | "character-mod"
   | "mod-details"
-  | "settings";
+  | "settings"
+  | "about";
+
+import AboutPage from "./pages/AboutPage";
 
 type NavigationState = {
   currentPage: PageType;
@@ -44,29 +47,30 @@ function App() {
         console.warn(
           "Cannot navigate to character-mod without a selected character"
         );
-        return { 
-          ...prev, 
+        return {
+          ...prev,
           currentPage: "characters",
-          modCharacterContext: null 
+          modCharacterContext: null,
         };
       }
 
       // If navigating to mod-details without a mod, redirect to mods
       if (page === "mod-details" && !prev.selectedMod) {
         console.warn("Cannot navigate to mod-details without a selected mod");
-        return { 
-          ...prev, 
+        return {
+          ...prev,
           currentPage: "mods",
-          modCharacterContext: null 
+          modCharacterContext: null,
         };
       }
 
       // Otherwise, update the page and clear selections if needed
       return {
         currentPage: page,
-        selectedCharacter: page === "character-mod" ? prev.selectedCharacter : null,
+        selectedCharacter:
+          page === "character-mod" ? prev.selectedCharacter : null,
         selectedMod: page === "mod-details" ? prev.selectedMod : null,
-        modCharacterContext: prev.modCharacterContext // Preserve the context
+        modCharacterContext: prev.modCharacterContext, // Preserve the context
       };
     });
   }, []);
@@ -77,7 +81,7 @@ function App() {
       currentPage: "character-mod",
       selectedCharacter: characterId,
       selectedMod: null,
-      modCharacterContext: null // Clear context when navigating to character mods
+      modCharacterContext: null, // Clear context when navigating to character mods
     });
   }, []);
 
@@ -99,7 +103,7 @@ function App() {
         currentPage: "characters",
         selectedCharacter: null,
         selectedMod: null,
-        modCharacterContext: null // Clear context when going back to characters list
+        modCharacterContext: null, // Clear context when going back to characters list
       });
     } catch (error) {
       console.error("Error navigating to characters list:", error);
@@ -169,6 +173,8 @@ function App() {
           return <OtherModsPage onModClick={handleModClick} />;
         case "settings":
           return <SettingsPage />;
+        case "about":
+          return <AboutPage />;
         default:
           return <div>Page not found</div>;
       }

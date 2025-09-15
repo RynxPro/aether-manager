@@ -14,7 +14,8 @@ type PageType =
   | "characters"
   | "character-mod"
   | "mod-details"
-  | "settings";
+  | "settings"
+  | "about";
 
 interface SidebarProps {
   currentPage: PageType;
@@ -58,6 +59,12 @@ const Sidebar: React.FC<SidebarProps> = ({ currentPage, onPageChange }) => {
       label: "Settings",
       icon: <Cog6ToothIcon className="w-5 h-5" />,
       path: "/settings",
+    },
+    {
+      id: "about" as const,
+      label: "About",
+      icon: <Square3Stack3DIcon className="w-5 h-5" />,
+      path: "/about",
     },
   ];
 
