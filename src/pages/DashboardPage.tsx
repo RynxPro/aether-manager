@@ -173,7 +173,8 @@ const DashboardPage: React.FC = () => {
   const handleToggleActive = useCallback(
     async (modId: string) => {
       await toggleModActive(modId);
-      fetchStats();
+      // Optionally refresh stats; comment out to avoid any visual updates
+      // await fetchStats();
     },
     [toggleModActive, fetchStats]
   );

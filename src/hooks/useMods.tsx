@@ -58,12 +58,13 @@ const useModsInternal = (): UseModsReturn => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchMods = async () => {
-    setLoading(true);
-    setError(null);
+  const fetchMods = async (silent: boolean = false) => {
+    if (!silent) {
+      setLoading(true);
+      setError(null);
+    }
     try {
       const result = await invoke<RustMod[]>("get_mods");
-      // Convert snake_case from Rust to camelCase for React
       const convertedMods: Mod[] = result.map((mod) => ({
         id: mod.id,
         title: mod.title,
@@ -77,9 +78,15 @@ const useModsInternal = (): UseModsReturn => {
       }));
       setMods(convertedMods);
     } catch (err) {
-      setError(err as string);
+      if (!silent) {
+        setError(err as string);
+      } else {
+        console.warn("Silent fetchMods failed:", err);
+      }
     } finally {
-      setLoading(false);
+      if (!silent) {
+        setLoading(false);
+      }
     }
   };
 
@@ -128,7 +135,7 @@ const useModsInternal = (): UseModsReturn => {
   };
 
   const toggleModActive = async (modId: string): Promise<boolean> => {
-    setLoading(true);
+    // Do not flip global loading for a small toggle to avoid page refresh spinners
     setError(null);
     try {
       console.log("Toggling mod active:", modId);
@@ -149,14 +156,14 @@ const useModsInternal = (): UseModsReturn => {
       // Call backend (returns new is_active state, but false can be valid when deactivating)
       const result = await invoke<boolean>("toggle_mod_active", { modId });
       console.log("Toggle result (new is_active):", result);
+      // Reconcile with backend in background to keep all pages in sync
+      fetchMods(true);
       return true;
     } catch (err) {
       console.error("toggleModActive error:", err);
       const errorMsg = err instanceof Error ? err.message : String(err);
       setError(`Failed to toggle mod: ${errorMsg}`);
       return false;
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -248,11 +255,7 @@ export const ModsProvider: React.FC<{ children: React.ReactNode }> = ({
 export const useMods = (): UseModsReturn => {
   const ctx = useContext(ModsContext);
   if (!ctx) {
-    // Fallback to an isolated instance to avoid crashes, but advise wrapping with provider
-    console.warn(
-      "useMods called outside of ModsProvider. State will not persist across pages."
-    );
-    return useModsInternal();
+    throw new Error("useMods must be used within a ModsProvider");
   }
   return ctx;
 };
