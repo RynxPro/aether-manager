@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { invoke } from "@tauri-apps/api/core";
 
 export interface AppSettings {
@@ -15,9 +15,10 @@ export const useSettings = () => {
     setError(null);
     try {
       const result = await invoke<any>("get_settings");
-      // Convert snake_case from Rust to camelCase for React
+      const zzmi = result?.zzmi_mods_path;
       setSettings({
-        zzmiModsPath: result.zzmi_mods_path,
+        zzmiModsPath:
+          typeof zzmi === "string" && zzmi.trim() !== "" ? zzmi : undefined,
       });
     } catch (err) {
       setError(err as string);
@@ -60,6 +61,12 @@ export const useSettings = () => {
     }
   };
 
+  const isValid = useMemo(() => {
+    return Boolean(
+      settings.zzmiModsPath && settings.zzmiModsPath.trim() !== ""
+    );
+  }, [settings.zzmiModsPath]);
+
   useEffect(() => {
     fetchSettings();
   }, []);
@@ -68,6 +75,7 @@ export const useSettings = () => {
     settings,
     loading,
     error,
+    isValid,
     fetchSettings,
     updateSettings,
     selectFolder,

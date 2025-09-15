@@ -12,6 +12,7 @@ import PageContainer, {
 import LoadingSpinner from "../components/characters/LoadingSpinner";
 import ErrorState from "../components/characters/ErrorState";
 import EmptyState from "../components/characters/EmptyState";
+import { useSettings } from "../hooks/useSettings";
 
 const StatsCard: React.FC<{
   title: string;
@@ -142,6 +143,7 @@ const DashboardPage: React.FC = () => {
   const [showInstallDialog, setShowInstallDialog] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState<SortOptionType>("name-asc");
+  const { isValid } = useSettings();
 
   const statsData = [
     {
@@ -300,6 +302,13 @@ const DashboardPage: React.FC = () => {
           </div>
         </div>
 
+        {!isValid && (
+          <div className="mb-4 p-3 rounded-lg border border-amber-500/30 bg-amber-500/10 text-amber-300 text-sm">
+            ZZMI mods path is not configured. Go to Settings to set it before
+            activating mods.
+          </div>
+        )}
+
         {modsError ? (
           <ErrorState error={modsError} onRetry={fetchMods} />
         ) : modsLoading ? (
@@ -310,12 +319,16 @@ const DashboardPage: React.FC = () => {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 px-2">
             {filteredAndSortedMods.map((mod) => (
               <div key={mod.id} className="group relative">
-                <div className="absolute -inset-0.5 bg-gradient-to-r from-[var(--moon-accent)] to-[var(--moon-glow-violet)] rounded-xl opacity-0 group-hover:opacity-100 blur transition duration-300"></div>
+                <div className="pointer-events-none absolute -inset-0.5 bg-gradient-to-r from-[var(--moon-accent)] to-[var(--moon-glow-violet)] rounded-xl opacity-0 group-hover:opacity-100 blur transition duration-300"></div>
                 <div className="relative bg-[var(--moon-surface)] rounded-lg border border-[var(--moon-border)] overflow-hidden h-full group-hover:border-[var(--moon-accent)]/30 transition-colors duration-300">
                   <ModCard
                     mod={mod}
                     onToggleActive={handleToggleActive}
                     onDelete={handleDeleteMod}
+                    onViewDetails={(id) => {
+                      // Lightweight fallback: navigate via hash to signal selection
+                      window.location.hash = `#mod/${id}`;
+                    }}
                   />
                 </div>
               </div>

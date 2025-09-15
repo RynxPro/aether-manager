@@ -6,6 +6,8 @@ import React, {
   useEffect,
 } from "react";
 import { invoke } from "@tauri-apps/api/core";
+import { useSettings } from "./useSettings";
+import { useStats } from "./useStats";
 import { Mod as UnifiedMod } from "../types/mod";
 
 // Rust backend response type (snake_case)
@@ -57,6 +59,8 @@ const useModsInternal = (): UseModsReturn => {
   const [mods, setMods] = useState<Mod[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const { isValid } = useSettings();
+  const { fetchStats } = useStats();
 
   const fetchMods = async (silent: boolean = false) => {
     if (!silent) {
@@ -138,6 +142,11 @@ const useModsInternal = (): UseModsReturn => {
     // Do not flip global loading for a small toggle to avoid page refresh spinners
     setError(null);
     try {
+      if (!isValid) {
+        throw new Error(
+          "ZZMI mods path not configured. Please set it in Settings."
+        );
+      }
       console.log("Toggling mod active:", modId);
 
       // Get current state before toggling
@@ -158,6 +167,8 @@ const useModsInternal = (): UseModsReturn => {
       console.log("Toggle result (new is_active):", result);
       // Reconcile with backend in background to keep all pages in sync
       fetchMods(true);
+      // Refresh stats silently so dashboard cards reflect accurate active/inactive counts
+      fetchStats(true);
       return true;
     } catch (err) {
       console.error("toggleModActive error:", err);
