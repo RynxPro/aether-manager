@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useMods } from "../hooks/useMods";
+import { useModsContext } from "../context/ModsContext";
 import { useCharacters } from "../hooks/useCharacters";
 import { Listbox } from "@headlessui/react";
 import { CheckIcon, ChevronUpDownIcon } from "@heroicons/react/20/solid";
@@ -17,7 +17,7 @@ const ModInstallDialog: React.FC<ModInstallDialogProps> = ({
   onSuccess,
   initialCharacterId = ""
 }) => {
-  const { installMod, loading } = useMods();
+  const { installMod, loading } = useModsContext();
   const { characters, loading: loadingCharacters } = useCharacters();
 
   const [formData, setFormData] = useState({

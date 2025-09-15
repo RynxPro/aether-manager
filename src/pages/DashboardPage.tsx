@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import ModCard from "../components/ModCard";
 import ModInstallDialog from "../components/ModInstallDialog";
-import { useMods } from "../hooks/useMods";
+import { useModsContext } from "../context/ModsContext";
 import { useStats } from "../hooks/useStats";
 import { cnButton } from "../styles/buttons";
 import SearchBar from "../components/characters/SearchBar";
@@ -69,7 +69,7 @@ const DashboardPage: React.FC = () => {
     toggleModActive,
     deleteMod,
     fetchMods,
-  } = useMods();
+  } = useModsContext();
   const { stats, loading: statsLoading, fetchStats } = useStats();
   const [showInstallDialog, setShowInstallDialog] = useState(false);
 

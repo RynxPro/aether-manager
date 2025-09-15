@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useMods } from "../hooks/useMods";
+import { useModsContext } from "../context/ModsContext";
 import { useCharacters } from "../hooks/useCharacters";
 import ModCard from "../components/ModCard";
 import ModInstallDialog from "../components/ModInstallDialog";
@@ -18,8 +18,7 @@ const CharacterModPage: React.FC<CharacterModPageProps> = ({
   onBack,
   onModClick,
 }) => {
-  const { mods, loading, error, toggleModActive, deleteMod, fetchMods } =
-    useMods();
+  const { mods, loading, error, toggleModActive, deleteMod, fetchMods } = useModsContext();
   const { characters } = useCharacters();
   const [showInstallDialog, setShowInstallDialog] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");

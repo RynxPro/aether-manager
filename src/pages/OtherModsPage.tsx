@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useCallback } from "react";
 import ModCard from "../components/ModCard";
 import ModInstallDialog from "../components/ModInstallDialog";
-import { useMods } from "../hooks/useMods";
+import { useModsContext } from "../context/ModsContext";
 import { cnButton } from "../styles/buttons";
 // Import UI components from their respective files
 import LoadingSpinner from "../components/characters/LoadingSpinner";
@@ -33,8 +33,7 @@ interface OtherModsPageProps {
 }
 
 const OtherModsPage: React.FC<OtherModsPageProps> = ({ onModClick }) => {
-  const { mods, loading, error, toggleModActive, fetchMods, deleteMod } =
-    useMods();
+  const { mods, loading, error, toggleModActive, fetchMods, deleteMod } = useModsContext();
 
   // Filter mods that don't have a character assigned
   const otherMods = useMemo(() => {
