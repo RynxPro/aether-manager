@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useCallback } from "react";
 import ModCard from "../components/ModCard";
 import ModInstallDialog from "../components/ModInstallDialog";
-import { useModsContext } from "../context/ModsContext";
+import { useMods } from "../hooks/useMods";
 import { cnButton } from "../styles/buttons";
 // Import UI components from their respective files
 import LoadingSpinner from "../components/characters/LoadingSpinner";
@@ -33,7 +33,8 @@ interface OtherModsPageProps {
 }
 
 const OtherModsPage: React.FC<OtherModsPageProps> = ({ onModClick }) => {
-  const { mods, loading, error, toggleModActive, fetchMods, deleteMod } = useModsContext();
+  const { mods, loading, error, toggleModActive, fetchMods, deleteMod } =
+    useMods();
 
   // Filter mods that don't have a character assigned
   const otherMods = useMemo(() => {
@@ -80,12 +81,11 @@ const OtherModsPage: React.FC<OtherModsPageProps> = ({ onModClick }) => {
     async (id: string) => {
       try {
         await toggleModActive(id);
-        await fetchMods(); // Refresh the mods list after toggle
       } catch (err) {
         console.error("Failed to toggle mod active state:", err);
       }
     },
-    [toggleModActive, fetchMods]
+    [toggleModActive]
   );
 
   const handleDeleteMod = useCallback(

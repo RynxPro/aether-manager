@@ -1,5 +1,12 @@
-import { useState, useEffect } from "react";
+import React, {
+  createContext,
+  useContext,
+  useMemo,
+  useState,
+  useEffect,
+} from "react";
 import { invoke } from "@tauri-apps/api/core";
+import { Mod as UnifiedMod } from "../types/mod";
 
 // Rust backend response type (snake_case)
 interface RustMod {
@@ -15,17 +22,7 @@ interface RustMod {
 }
 
 // Frontend type (camelCase)
-export interface Mod {
-  id: string;
-  title: string;
-  description?: string;
-  thumbnail?: string;
-  isActive: boolean;
-  dateAdded: string;
-  character?: string;
-  filePath: string;
-  originalName: string;
-}
+export type Mod = UnifiedMod;
 
 export interface ModStats {
   installedMods: number;
@@ -34,7 +31,29 @@ export interface ModStats {
   presets: number;
 }
 
-export const useMods = () => {
+type UseModsReturn = {
+  mods: Mod[];
+  loading: boolean;
+  error: string | null;
+  fetchMods: () => Promise<void>;
+  installMod: (
+    filePath: string,
+    title: string,
+    character?: string,
+    description?: string,
+    thumbnail?: string
+  ) => Promise<Mod | null>;
+  toggleModActive: (modId: string) => Promise<boolean>;
+  deleteMod: (modId: string) => Promise<boolean>;
+  updateMod: (
+    modId: string,
+    updates: { title?: string; thumbnail?: string; description?: string }
+  ) => Promise<boolean>;
+};
+
+const ModsContext = createContext<UseModsReturn | null>(null);
+
+const useModsInternal = (): UseModsReturn => {
   const [mods, setMods] = useState<Mod[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -113,37 +132,23 @@ export const useMods = () => {
     setError(null);
     try {
       console.log("Toggling mod active:", modId);
-      
+
       // Get current state before toggling
-      const currentMod = mods.find(mod => mod.id === modId);
+      const currentMod = mods.find((mod) => mod.id === modId);
       if (!currentMod) {
         throw new Error("Mod not found");
       }
-      
+
       // Optimistically update UI
-      setMods(prev =>
-        prev.map(mod =>
+      setMods((prev) =>
+        prev.map((mod) =>
           mod.id === modId ? { ...mod, isActive: !mod.isActive } : mod
         )
       );
-      
-      // Call backend
+
+      // Call backend (returns new is_active state, but false can be valid when deactivating)
       const result = await invoke<boolean>("toggle_mod_active", { modId });
-      console.log("Toggle result:", result);
-      
-      if (!result) {
-        // If backend failed, revert the UI
-        setMods(prev =>
-          prev.map(mod =>
-            mod.id === modId ? { ...mod, isActive: currentMod.isActive } : mod
-          )
-        );
-        throw new Error("Failed to toggle mod active state");
-      }
-      
-      // Refresh mods list to ensure consistency with backend
-      await fetchMods();
-      
+      console.log("Toggle result (new is_active):", result);
       return true;
     } catch (err) {
       console.error("toggleModActive error:", err);
@@ -223,4 +228,31 @@ export const useMods = () => {
     deleteMod,
     updateMod,
   };
+};
+
+export const ModsProvider: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
+  const value = useModsInternal();
+  const memoizedValue = useMemo(
+    () => value,
+    [value.mods, value.loading, value.error]
+  );
+  return (
+    <ModsContext.Provider value={memoizedValue}>
+      {children}
+    </ModsContext.Provider>
+  );
+};
+
+export const useMods = (): UseModsReturn => {
+  const ctx = useContext(ModsContext);
+  if (!ctx) {
+    // Fallback to an isolated instance to avoid crashes, but advise wrapping with provider
+    console.warn(
+      "useMods called outside of ModsProvider. State will not persist across pages."
+    );
+    return useModsInternal();
+  }
+  return ctx;
 };

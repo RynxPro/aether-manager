@@ -70,10 +70,13 @@ const EyeIcon = ({ open = true }) => (
   </svg>
 );
 
+// Props for ModCard
 interface ModCardProps {
   mod: Mod;
+  onToggleActive: (modId: string) => void;
   onDelete: (modId: string) => void;
   onViewDetails?: (modId: string) => void;
+  onClick?: (modId: string) => void;
 }
 
 const ModThumbnail: React.FC<{ thumbnail?: string; alt: string }> = ({
@@ -159,13 +162,7 @@ const ToggleButton: React.FC<{
   );
 };
 
-interface ModCardProps {
-  mod: Mod;
-  onToggleActive: (modId: string) => void;
-  onDelete: (modId: string) => void;
-  onViewDetails?: (modId: string) => void;
-  onClick?: (modId: string) => void;
-}
+// (Note: consolidated duplicate interface definition)
 
 const ModCard: React.FC<ModCardProps> = ({
   mod,
@@ -233,7 +230,9 @@ const ModCard: React.FC<ModCardProps> = ({
             <div className="mt-1 mb-2 flex items-center text-xs text-[var(--moon-muted)] min-h-[1.25rem]">
               <span className="truncate">{mod.character}</span>
             </div>
-          ) : <div className="mt-1 mb-2 min-h-[1.25rem]"></div>}
+          ) : (
+            <div className="mt-1 mb-2 min-h-[1.25rem]"></div>
+          )}
 
           <div className="mt-auto pt-3 flex items-center justify-between border-t border-[var(--moon-border)]">
             <span className="text-xs text-[var(--moon-muted)]">

@@ -1,12 +1,17 @@
-import React, { useState } from "react";
+import React, { useMemo, useState, useCallback } from "react";
 import ModCard from "../components/ModCard";
 import ModInstallDialog from "../components/ModInstallDialog";
-import { useModsContext } from "../context/ModsContext";
+import { useMods } from "../hooks/useMods";
 import { useStats } from "../hooks/useStats";
 import { cnButton } from "../styles/buttons";
 import SearchBar from "../components/characters/SearchBar";
 import SortDropdown from "../components/characters/SortDropdown";
-import PageContainer, { PageHeader } from "../components/characters/PageContainer";
+import PageContainer, {
+  PageHeader,
+} from "../components/characters/PageContainer";
+import LoadingSpinner from "../components/characters/LoadingSpinner";
+import ErrorState from "../components/characters/ErrorState";
+import EmptyState from "../components/characters/EmptyState";
 
 const StatsCard: React.FC<{
   title: string;
@@ -29,96 +34,239 @@ const StatsCard: React.FC<{
             </p>
           )}
         </div>
-        <div className="p-2 rounded-lg bg-[var(--moon-bg)]">
-          {icon}
-        </div>
+        <div className="p-2 rounded-lg bg-[var(--moon-bg)]">{icon}</div>
       </div>
     </div>
   );
 };
 
 const BoxIcon = () => (
-  <svg className="w-5 h-5 text-[var(--moon-glow-violet)]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+  <svg
+    className="w-5 h-5 text-[var(--moon-glow-violet)]"
+    fill="none"
+    viewBox="0 0 24 24"
+    stroke="currentColor"
+  >
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth={1.5}
+      d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
+    />
   </svg>
 );
 
 const CheckIcon = () => (
-  <svg className="w-5 h-5 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M5 13l4 4L19 7" />
+  <svg
+    className="w-5 h-5 text-green-500"
+    fill="none"
+    viewBox="0 0 24 24"
+    stroke="currentColor"
+  >
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth={1.5}
+      d="M5 13l4 4L19 7"
+    />
   </svg>
 );
 
 const PauseIcon = () => (
-  <svg className="w-5 h-5 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+  <svg
+    className="w-5 h-5 text-amber-500"
+    fill="none"
+    viewBox="0 0 24 24"
+    stroke="currentColor"
+  >
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth={1.5}
+      d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z"
+    />
   </svg>
 );
 
 const PresetIcon = () => (
-  <svg className="w-5 h-5 text-purple-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+  <svg
+    className="w-5 h-5 text-purple-500"
+    fill="none"
+    viewBox="0 0 24 24"
+    stroke="currentColor"
+  >
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth={1.5}
+      d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
+    />
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth={1.5}
+      d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+    />
   </svg>
 );
+
+type SortOption = {
+  value: string;
+  label: string;
+};
+
+const SORT_OPTIONS: SortOption[] = [
+  { value: "name-asc", label: "Name (A-Z)" },
+  { value: "name-desc", label: "Name (Z-A)" },
+  { value: "active", label: "Active First" },
+  { value: "inactive", label: "Inactive First" },
+];
+
+type SortOptionType = (typeof SORT_OPTIONS)[number]["value"];
 
 const DashboardPage: React.FC = () => {
   const {
     mods,
     loading: modsLoading,
+    error: modsError,
     toggleModActive,
     deleteMod,
     fetchMods,
-  } = useModsContext();
-  const { stats, loading: statsLoading, fetchStats } = useStats();
+  } = useMods();
+  const {
+    stats,
+    loading: statsLoading,
+    error: statsError,
+    fetchStats,
+  } = useStats();
   const [showInstallDialog, setShowInstallDialog] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [sortBy, setSortBy] = useState<SortOptionType>("name-asc");
 
   const statsData = [
     {
-      title: 'Total Mods',
+      title: "Total Mods",
       value: stats?.installedMods || 0,
       icon: <BoxIcon />,
-      loading: statsLoading
+      loading: statsLoading,
     },
     {
-      title: 'Active Mods',
+      title: "Active Mods",
       value: stats?.activeMods || 0,
       icon: <CheckIcon />,
-      loading: statsLoading
+      loading: statsLoading,
     },
     {
-      title: 'Inactive Mods',
+      title: "Inactive Mods",
       value: stats?.inactiveMods || 0,
       icon: <PauseIcon />,
-      loading: statsLoading
+      loading: statsLoading,
     },
     {
-      title: 'Presets',
+      title: "Presets",
       value: stats?.presets || 0,
       icon: <PresetIcon />,
-      loading: statsLoading
-    }
+      loading: statsLoading,
+    },
   ];
 
-  const handleToggleActive = async (modId: string) => {
-    await toggleModActive(modId);
-    fetchStats(); // Refresh stats after toggling mod active state
-  };
+  const handleToggleActive = useCallback(
+    async (modId: string) => {
+      await toggleModActive(modId);
+      fetchStats();
+    },
+    [toggleModActive, fetchStats]
+  );
 
-  const handleDeleteMod = async (modId: string) => {
-    try {
-      await deleteMod(modId);
-      await fetchMods(); // Refresh the mods list
-      await fetchStats(); // Refresh stats after deleting mod
-    } catch (error) {
-      console.error("Failed to delete mod:", error);
-    }
-  };
+  const handleDeleteMod = useCallback(
+    async (modId: string) => {
+      try {
+        await deleteMod(modId);
+        await fetchMods();
+        await fetchStats();
+      } catch (error) {
+        console.error("Failed to delete mod:", error);
+      }
+    },
+    [deleteMod, fetchMods, fetchStats]
+  );
 
-  const handleInstallSuccess = () => {
+  const handleInstallSuccess = useCallback(() => {
     fetchMods();
     fetchStats();
-  };
+  }, [fetchMods, fetchStats]);
+
+  const filteredAndSortedMods = useMemo(() => {
+    let result = [...mods];
+    if (searchQuery.trim()) {
+      const q = searchQuery.toLowerCase().trim();
+      result = result.filter(
+        (m) =>
+          m.title.toLowerCase().includes(q) ||
+          (m.description && m.description.toLowerCase().includes(q))
+      );
+    }
+    return result.sort((a, b) => {
+      switch (sortBy) {
+        case "name-asc":
+          return a.title.localeCompare(b.title);
+        case "name-desc":
+          return b.title.localeCompare(a.title);
+        case "active":
+          return a.isActive === b.isActive ? 0 : a.isActive ? -1 : 1;
+        case "inactive":
+          return a.isActive === b.isActive ? 0 : a.isActive ? 1 : -1;
+        default:
+          return 0;
+      }
+    });
+  }, [mods, searchQuery, sortBy]);
+
+  const renderHeaderControls = () => (
+    <div className="sticky top-0 z-10 bg-[var(--moon-bg)]/90 backdrop-blur-sm border-b border-[var(--moon-border)] -mx-6 px-6 pt-2 pb-4 mb-6">
+      <div className="max-w-5xl mx-auto flex flex-col sm:flex-row gap-4">
+        <div className="flex-1">
+          <SearchBar
+            placeholder="Search mods..."
+            value={searchQuery}
+            onChange={setSearchQuery}
+            className="w-full"
+          />
+        </div>
+        <div className="flex gap-4">
+          <div className="w-full sm:w-48">
+            <SortDropdown
+              options={SORT_OPTIONS}
+              value={sortBy}
+              onChange={(v) => setSortBy(v as SortOptionType)}
+            />
+          </div>
+        </div>
+        <button
+          onClick={() => setShowInstallDialog(true)}
+          className={cnButton({
+            variant: "primary",
+            className: "flex items-center space-x-2",
+          })}
+        >
+          <svg
+            className="w-5 h-5"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M12 4v16m8-8H4"
+            />
+          </svg>
+          <span>Upload Mod</span>
+        </button>
+      </div>
+    </div>
+  );
 
   return (
     <PageContainer>
@@ -129,73 +277,37 @@ const DashboardPage: React.FC = () => {
 
       {/* Stats Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        {statsData.map((stat, index) => (
-          <StatsCard key={index} {...stat} />
-        ))}
+        {statsError ? (
+          <div className="sm:col-span-2 lg:col-span-4">
+            <ErrorState error={statsError} onRetry={fetchStats} />
+          </div>
+        ) : (
+          statsData.map((stat, index) => <StatsCard key={index} {...stat} />)
+        )}
       </div>
 
-      {/* Search and Actions */}
-      <div className="sticky top-0 z-10 bg-[var(--moon-bg)]/90 backdrop-blur-sm border-b border-[var(--moon-border)] -mx-6 px-6 pt-2 pb-4 mb-6">
-        <div className="max-w-5xl mx-auto flex flex-col sm:flex-row gap-4">
-          <div className="flex-1">
-            <SearchBar
-              placeholder="Search mods..."
-              value=""
-              onChange={() => {}}
-              className="w-full"
-            />
-          </div>
-          <div className="flex gap-4">
-            <div className="w-full sm:w-48">
-              <SortDropdown
-                options={[]}
-                value=""
-                onChange={() => {}}
-              />
-            </div>
-          </div>
-          <button
-            onClick={() => setShowInstallDialog(true)}
-            className={cnButton({
-              variant: "primary",
-              className: "flex items-center space-x-2",
-            })}
-          >
-            <svg
-              className="w-5 h-5"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M12 4v16m8-8H4"
-              />
-            </svg>
-            <span>Upload Mod</span>
-          </button>
-        </div>
-      </div>
+      {renderHeaderControls()}
 
       {/* Mods Section */}
       <div className="mb-8">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-semibold text-[var(--moon-text)]">Your Mods</h2>
+          <h2 className="text-lg font-semibold text-[var(--moon-text)]">
+            Your Mods
+          </h2>
           <div className="text-sm text-[var(--moon-muted)]">
-            {mods.length} {mods.length === 1 ? 'mod' : 'mods'} total
+            {mods.length} {mods.length === 1 ? "mod" : "mods"} total
           </div>
         </div>
 
-        {modsLoading ? (
-          <div className="text-center py-16 bg-[var(--moon-surface)] rounded-xl border border-[var(--moon-border)]">
-            <div className="w-12 h-12 border-4 border-[var(--moon-accent)] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-            <p className="text-[var(--moon-muted)]">Loading your mods...</p>
+        {modsError ? (
+          <ErrorState error={modsError} onRetry={fetchMods} />
+        ) : modsLoading ? (
+          <div className="py-16">
+            <LoadingSpinner message="Loading your mods..." />
           </div>
-        ) : mods.length > 0 ? (
+        ) : filteredAndSortedMods.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 px-2">
-            {mods.map((mod) => (
+            {filteredAndSortedMods.map((mod) => (
               <div key={mod.id} className="group relative">
                 <div className="absolute -inset-0.5 bg-gradient-to-r from-[var(--moon-accent)] to-[var(--moon-glow-violet)] rounded-xl opacity-0 group-hover:opacity-100 blur transition duration-300"></div>
                 <div className="relative bg-[var(--moon-surface)] rounded-lg border border-[var(--moon-border)] overflow-hidden h-full group-hover:border-[var(--moon-accent)]/30 transition-colors duration-300">
@@ -209,26 +321,40 @@ const DashboardPage: React.FC = () => {
             ))}
           </div>
         ) : (
-          <div className="text-center py-16 bg-[var(--moon-surface)] rounded-xl border-2 border-dashed border-[var(--moon-border)]">
-            <div className="w-20 h-20 bg-[var(--moon-accent)]/10 rounded-full flex items-center justify-center mx-auto mb-6">
-              <span className="text-4xl">📦</span>
-            </div>
-            <h3 className="text-xl font-semibold text-[var(--moon-text)] mb-2">
-              No mods found
-            </h3>
-            <p className="text-[var(--moon-muted)] max-w-md mx-auto mb-6">
-              You haven't added any mods yet. Upload your first mod to get started.
-            </p>
-            <button
-              onClick={() => setShowInstallDialog(true)}
-              className={cnButton({ variant: 'primary', size: 'md' })}
-            >
-              <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-              </svg>
-              Upload Your First Mod
-            </button>
-          </div>
+          <EmptyState
+            icon="📦"
+            title={
+              searchQuery || sortBy !== "name-asc"
+                ? "No matching mods found"
+                : "No mods found"
+            }
+            description={
+              searchQuery || sortBy !== "name-asc"
+                ? "Try adjusting your search or filter criteria"
+                : "Upload your first mod to get started."
+            }
+            action={
+              <button
+                onClick={() => setShowInstallDialog(true)}
+                className={cnButton({ variant: "primary", size: "md" })}
+              >
+                <svg
+                  className="w-4 h-4 mr-2"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 4v16m8-8H4"
+                  />
+                </svg>
+                Upload Mod
+              </button>
+            }
+          />
         )}
       </div>
 

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { useModsContext, useMod } from "@/context/ModsContext";
+import { useMods, Mod } from "@/hooks/useMods";
 import { cnButton } from "@/styles/buttons";
 
 interface ModDetailsPageProps {
@@ -8,8 +8,8 @@ interface ModDetailsPageProps {
 }
 
 const ModDetailsPage: React.FC<ModDetailsPageProps> = ({ modId, onBack }) => {
-  const { updateMod, toggleModActive } = useModsContext();
-  const mod = useMod(modId);
+  const { mods, updateMod, toggleModActive, loading, error } = useMods();
+  const [mod, setMod] = useState<Mod | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({
     title: "",
@@ -17,16 +17,18 @@ const ModDetailsPage: React.FC<ModDetailsPageProps> = ({ modId, onBack }) => {
     description: "",
   });
 
-  // Update form data when mod changes
+  // Find the mod by ID
   useEffect(() => {
-    if (mod) {
+    const foundMod = mods.find((m) => m.id === modId);
+    if (foundMod) {
+      setMod(foundMod);
       setFormData({
-        title: mod.title,
-        thumbnail: mod.thumbnail || "",
-        description: mod.description || "",
+        title: foundMod.title,
+        thumbnail: foundMod.thumbnail || "",
+        description: foundMod.description || "",
       });
     }
-  }, [mod]);
+  }, [modId, mods]);
 
   const handleInputChange = useCallback(
     (field: keyof typeof formData) =>
@@ -74,9 +76,25 @@ const ModDetailsPage: React.FC<ModDetailsPageProps> = ({ modId, onBack }) => {
     }
   }, [mod, toggleModActive]);
 
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="text-[var(--moon-text)]">Loading mod details...</div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="text-red-400">Error loading mod: {error}</div>
+      </div>
+    );
+  }
+
   if (!mod) {
     return (
-      <div className="p-4">
+      <div className="flex items-center justify-center h-64">
         <div className="text-[var(--moon-text)]">Mod not found</div>
       </div>
     );

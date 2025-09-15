@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useModsContext } from "../context/ModsContext";
+import { useMods } from "../hooks/useMods";
 import { useCharacters } from "../hooks/useCharacters";
 import ModCard from "../components/ModCard";
 import ModInstallDialog from "../components/ModInstallDialog";
@@ -18,7 +18,8 @@ const CharacterModPage: React.FC<CharacterModPageProps> = ({
   onBack,
   onModClick,
 }) => {
-  const { mods, loading, error, toggleModActive, deleteMod, fetchMods } = useModsContext();
+  const { mods, loading, error, toggleModActive, deleteMod, fetchMods } =
+    useMods();
   const { characters } = useCharacters();
   const [showInstallDialog, setShowInstallDialog] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -84,7 +85,6 @@ const CharacterModPage: React.FC<CharacterModPageProps> = ({
   const handleToggleActive = async (modId: string) => {
     try {
       await toggleModActive(modId);
-      await fetchMods(); // Refresh the mods list after toggle
     } catch (error) {
       console.error("Failed to toggle mod active state:", error);
     }

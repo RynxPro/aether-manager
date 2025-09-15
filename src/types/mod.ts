@@ -6,4 +6,6 @@ export interface Mod {
   dateAdded: string;
   character?: string;
   description?: string;
+  filePath: string;
+  originalName: string;
 }

@@ -6,7 +6,6 @@ import CharactersPage from "./pages/CharactersPage";
 import CharacterModPage from "./pages/CharacterModPage";
 import ModDetailsPage from "./pages/ModDetailsPage";
 import SettingsPage from "./pages/SettingsPage";
-import { ModsProvider } from "./context/ModsContext";
 import "./App.css";
 
 // Define valid page types for type safety
@@ -184,17 +183,15 @@ function App() {
   };
 
   return (
-    <ModsProvider>
-      <div className="flex h-screen bg-[var(--moon-bg)] text-[var(--moon-text)] overflow-hidden">
-        <Sidebar
-          currentPage={navigation.currentPage}
-          onPageChange={handlePageChange}
-        />
-        <main className="flex-1 overflow-y-auto backdrop-blur-sm px-6">
-          {renderPage()}
-        </main>
-      </div>
-    </ModsProvider>
+    <div className="flex h-screen bg-[var(--moon-bg)]">
+      <Sidebar
+        currentPage={navigation.currentPage}
+        onPageChange={handlePageChange}
+      />
+      <main className="flex-1 overflow-y-auto backdrop-blur-sm px-6">
+        {renderPage()}
+      </main>
+    </div>
   );
 }
 
