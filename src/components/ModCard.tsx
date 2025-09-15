@@ -209,31 +209,33 @@ const ModCard: React.FC<ModCardProps> = ({
   return (
     <>
       <div
-        className="bg-[var(--moon-surface)] backdrop-blur-sm rounded-xl border border-[var(--moon-border)] overflow-hidden group flex flex-col h-full w-full hover:border-[var(--moon-glow-violet)] hover:shadow-[0_0_15px_rgba(122,90,248,0.2)] transition-all duration-300 cursor-pointer"
+        className="bg-[var(--moon-surface)] rounded-xl border border-[var(--moon-border)] overflow-hidden group flex flex-col h-full w-full hover:border-[var(--moon-glow-violet)] hover:shadow-[0_0_15px_rgba(122,90,248,0.2)] transition-all duration-300 cursor-pointer"
         onClick={handleCardClick}
       >
-        <div className="relative aspect-video bg-gray-900/20 overflow-hidden">
+        <div className="relative aspect-video bg-gray-900/20 overflow-hidden flex-shrink-0">
           <ModThumbnail thumbnail={mod.thumbnail} alt={mod.title} />
         </div>
 
-        <div className="p-4 flex-1 flex flex-col min-h-[120px]">
-          <div className="flex items-center justify-between gap-2">
+        <div className="p-4 flex flex-col flex-grow h-full">
+          <div className="flex items-start justify-between gap-2 min-h-[3.5rem]">
             <h3
-              className="text-[var(--moon-text)] font-medium text-sm mb-1.5 line-clamp-2 group-hover:text-[var(--moon-glow-violet)] transition-colors duration-200"
+              className="text-[var(--moon-text)] font-medium text-sm line-clamp-2 group-hover:text-[var(--moon-glow-violet)] transition-colors duration-200 flex-grow"
               title={mod.title}
             >
               {mod.title}
             </h3>
-            <DeleteButton onClick={handleDeleteClick} />
+            <div className="flex-shrink-0 ml-2">
+              <DeleteButton onClick={handleDeleteClick} />
+            </div>
           </div>
 
-          {mod.character && (
-            <div className="flex items-center text-xs text-[var(--moon-muted)] mb-3">
+          {mod.character ? (
+            <div className="mt-1 mb-2 flex items-center text-xs text-[var(--moon-muted)] min-h-[1.25rem]">
               <span className="truncate">{mod.character}</span>
             </div>
-          )}
+          ) : <div className="mt-1 mb-2 min-h-[1.25rem]"></div>}
 
-          <div className="mt-2 pt-3 flex items-center justify-between border-t border-[var(--moon-border)]">
+          <div className="mt-auto pt-3 flex items-center justify-between border-t border-[var(--moon-border)]">
             <span className="text-xs text-[var(--moon-muted)]">
               {formattedDate}
             </span>
