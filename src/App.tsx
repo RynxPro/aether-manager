@@ -145,7 +145,7 @@ function App() {
     try {
       switch (currentPage) {
         case "dashboard":
-          return <DashboardPage />;
+          return <DashboardPage onModClick={handleModClick} />;
         case "mods":
           return <OtherModsPage onModClick={handleModClick} />;
         case "characters":

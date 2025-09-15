@@ -206,8 +206,16 @@ const ModCard: React.FC<ModCardProps> = ({
   return (
     <>
       <div
-        className="bg-[var(--moon-surface)] rounded-xl border border-[var(--moon-border)] overflow-hidden group flex flex-col h-full w-full hover:border-[var(--moon-glow-violet)] hover:shadow-[0_0_15px_rgba(122,90,248,0.2)] transition-all duration-300 cursor-pointer"
+        className="bg-[var(--moon-surface)] rounded-xl border border-[var(--moon-border)] overflow-hidden group flex flex-col h-full hover:border-[var(--moon-glow-violet)] hover:shadow-[0_0_15px_rgba(122,90,248,0.2)] transition-all duration-300 cursor-pointer hover:scale-[1.02] transform-gpu"
         onClick={handleCardClick}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            handleCardClick();
+          }
+        }}
+        role="button"
+        tabIndex={0}
       >
         <div className="relative aspect-video bg-gray-900/20 overflow-hidden flex-shrink-0">
           <ModThumbnail thumbnail={mod.thumbnail} alt={mod.title} />
@@ -221,7 +229,13 @@ const ModCard: React.FC<ModCardProps> = ({
             >
               {mod.title}
             </h3>
-            <div className="flex-shrink-0 ml-2">
+            <div 
+              className="flex-shrink-0 ml-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+              onClick={(e) => {
+                e.stopPropagation();
+                handleDeleteClick(e);
+              }}
+            >
               <DeleteButton onClick={handleDeleteClick} />
             </div>
           </div>

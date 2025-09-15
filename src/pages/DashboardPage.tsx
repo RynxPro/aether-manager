@@ -125,7 +125,11 @@ const SORT_OPTIONS: SortOption[] = [
 
 type SortOptionType = (typeof SORT_OPTIONS)[number]["value"];
 
-const DashboardPage: React.FC = () => {
+interface DashboardPageProps {
+  onModClick: (modId: string, characterId?: string) => void;
+}
+
+const DashboardPage: React.FC<DashboardPageProps> = ({ onModClick }) => {
   const {
     mods,
     loading: modsLoading,
@@ -319,18 +323,13 @@ const DashboardPage: React.FC = () => {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 px-2">
             {filteredAndSortedMods.map((mod) => (
               <div key={mod.id} className="group relative">
-                <div className="pointer-events-none absolute -inset-0.5 bg-gradient-to-r from-[var(--moon-accent)] to-[var(--moon-glow-violet)] rounded-xl opacity-0 group-hover:opacity-100 blur transition duration-300"></div>
-                <div className="relative bg-[var(--moon-surface)] rounded-lg border border-[var(--moon-border)] overflow-hidden h-full group-hover:border-[var(--moon-accent)]/30 transition-colors duration-300">
-                  <ModCard
-                    mod={mod}
-                    onToggleActive={handleToggleActive}
-                    onDelete={handleDeleteMod}
-                    onViewDetails={(id) => {
-                      // Lightweight fallback: navigate via hash to signal selection
-                      window.location.hash = `#mod/${id}`;
-                    }}
-                  />
-                </div>
+                <div className="absolute -inset-0.5 bg-gradient-to-r from-[var(--moon-accent)] to-[var(--moon-glow-violet)] rounded-xl opacity-0 group-hover:opacity-100 blur transition duration-300"></div>
+                <ModCard
+                  mod={mod}
+                  onToggleActive={handleToggleActive}
+                  onDelete={handleDeleteMod}
+                  onViewDetails={(id) => onModClick(id, mod.character || undefined)}
+                />
               </div>
             ))}
           </div>
