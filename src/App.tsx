@@ -17,6 +17,7 @@ type NavigationState = {
   selectedCharacter: string | null;
   selectedMod: string | null;
   modCharacterContext: string | null; // Track which character's mod we're viewing (or null for other mods)
+  lastPage: PageType | null; // Track where we came from when opening mod details
 };
 
 function App() {
@@ -26,6 +27,7 @@ function App() {
     selectedCharacter: null,
     selectedMod: null,
     modCharacterContext: null, // Track which character's mod we're viewing (or null for other mods)
+    lastPage: null,
   });
 
   // Handle page changes with validation
@@ -43,6 +45,7 @@ function App() {
           ...prev,
           currentPage: "characters",
           modCharacterContext: null,
+          lastPage: null,
         };
       }
 
@@ -63,6 +66,7 @@ function App() {
           page === "character-mod" ? prev.selectedCharacter : null,
         selectedMod: page === "mod-details" ? prev.selectedMod : null,
         modCharacterContext: prev.modCharacterContext, // Preserve the context
+        lastPage: null,
       };
     });
   }, []);
@@ -74,17 +78,21 @@ function App() {
       selectedCharacter: characterId,
       selectedMod: null,
       modCharacterContext: null, // Clear context when navigating to character mods
+      lastPage: null,
     });
   }, []);
 
   // Handle mod selection
   const handleModClick = useCallback((modId: string, characterId?: string) => {
-    setNavigation({
+    setNavigation((prev) => ({
       currentPage: "mod-details",
       selectedCharacter: characterId || null,
       selectedMod: modId,
-      modCharacterContext: characterId || null,
-    });
+      // Only keep character context if we navigated from the character-mod page
+      modCharacterContext: prev.currentPage === "character-mod" && characterId ? characterId : null,
+      // Remember where we came from so Back returns there (e.g., dashboard or mods)
+      lastPage: prev.currentPage,
+    }));
   }, []);
 
   // Navigate back to characters list
@@ -96,6 +104,7 @@ function App() {
         selectedCharacter: null,
         selectedMod: null,
         modCharacterContext: null, // Clear context when going back to characters list
+        lastPage: null,
       });
     } catch (error) {
       console.error("Error navigating to characters list:", error);
@@ -112,15 +121,27 @@ function App() {
           selectedCharacter: prev.modCharacterContext,
           selectedMod: null,
           modCharacterContext: null,
-        };
+          lastPage: null,
+        } as NavigationState;
       }
-      // Otherwise go back to the mods list
+      // Otherwise go back to where we came from (dashboard/mods/characters/settings...)
+      if (prev.lastPage) {
+        return {
+          currentPage: prev.lastPage,
+          selectedCharacter: null,
+          selectedMod: null,
+          modCharacterContext: null,
+          lastPage: null,
+        } as NavigationState;
+      }
+      // Fallback to mods page if no history
       return {
         currentPage: "mods",
         selectedCharacter: null,
         selectedMod: null,
         modCharacterContext: null,
-      };
+        lastPage: null,
+      } as NavigationState;
     });
   }, []);
 
