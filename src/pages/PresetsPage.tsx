@@ -1,14 +1,23 @@
-import React from "react";
-import { usePresets } from "../hooks/usePresets";
+import React, { useState } from 'react';
+import { usePresets } from '../hooks/usePresets';
+import PresetCreateDialog from '../components/PresetCreateDialog';
+import { Preset } from '../types/preset';
 
 interface PresetsPageProps {}
 
 const PresetsPage: React.FC<PresetsPageProps> = () => {
-  const { presets, loading, error, addPreset, applyPreset, deletePreset } = usePresets();
+  const { presets, loading, error, applyPreset, deletePreset } = usePresets();
+  const [isDialogOpen, setDialogOpen] = useState(false);
+  const [editingPreset, setEditingPreset] = useState<Preset | undefined>(undefined);
 
-  const handleAdd = async () => {
-    const name = window.prompt("Preset name (optional):", "");
-    await addPreset(name ?? undefined);
+  const handleEdit = (preset: Preset) => {
+    setEditingPreset(preset);
+    setDialogOpen(true);
+  };
+
+  const handleCloseDialog = () => {
+    setEditingPreset(undefined);
+    setDialogOpen(false);
   };
 
   return (
@@ -32,12 +41,14 @@ const PresetsPage: React.FC<PresetsPageProps> = () => {
           )}
         </div>
         <button
-          onClick={handleAdd}
+          onClick={() => setDialogOpen(true)}
           className="px-4 py-2 rounded-lg bg-[var(--moon-accent)]/20 text-[var(--moon-accent)] border border-[var(--moon-glow-violet)]/30 hover:bg-[var(--moon-accent)]/25 transition"
         >
-          + New Preset (save current active)
+          + New Preset
         </button>
       </div>
+
+      <PresetCreateDialog isOpen={isDialogOpen} onClose={handleCloseDialog} presetToEdit={editingPreset} />
 
       {presets.length === 0 ? (
         <div className="rounded-xl border border-[var(--moon-border)] bg-[var(--moon-surface)] p-6 text-[var(--moon-muted)]">
@@ -66,6 +77,12 @@ const PresetsPage: React.FC<PresetsPageProps> = () => {
                   className="px-3 py-2 rounded-lg bg-[var(--moon-accent)]/20 text-[var(--moon-accent)] border border-[var(--moon-glow-violet)]/30 hover:bg-[var(--moon-accent)]/25 transition"
                 >
                   Apply
+                </button>
+                <button
+                  onClick={() => handleEdit(p)}
+                  className="px-3 py-2 rounded-lg bg-gray-500/10 text-gray-400 border border-gray-500/30 hover:bg-gray-500/15 transition"
+                >
+                  Edit
                 </button>
                 <button
                   onClick={() => deletePreset(p.id)}

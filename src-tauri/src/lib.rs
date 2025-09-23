@@ -430,21 +430,27 @@ async fn list_presets() -> Result<Vec<Preset>, String> {
 }
 
 #[tauri::command]
-async fn create_preset(name: String) -> Result<Preset, String> {
-    let mods = load_all_mods().await?;
-    let active_ids: Vec<String> = mods
-        .into_iter()
-        .filter(|m| m.is_active)
-        .map(|m| m.id)
-        .collect();
+async fn create_preset(name: String, mod_ids: Option<Vec<String>>) -> Result<Preset, String> {
+    let final_mod_ids = if let Some(ids) = mod_ids {
+        ids
+    } else {
+        // Fallback to active mods if no ids are provided
+        let mods = load_all_mods().await?;
+        mods.into_iter()
+            .filter(|m| m.is_active)
+            .map(|m| m.id)
+            .collect()
+    };
+
     let now = Utc::now().to_rfc3339();
     let preset = Preset {
         id: Uuid::new_v4().to_string(),
         name,
         created_at: now.clone(),
         updated_at: now,
-        mod_ids: active_ids,
+        mod_ids: final_mod_ids,
     };
+
     let mut all = load_all_presets().await.unwrap_or_default();
     all.push(preset.clone());
     save_all_presets(&all).await?;
@@ -460,6 +466,19 @@ async fn delete_preset(preset_id: String) -> Result<(), String> {
         return Err("Preset not found".into());
     }
     save_all_presets(&all).await
+}
+
+#[tauri::command]
+async fn update_preset(preset_id: String, name: String, mod_ids: Vec<String>) -> Result<(), String> {
+    let mut all = load_all_presets().await?;
+    if let Some(preset) = all.iter_mut().find(|p| p.id == preset_id) {
+        preset.name = name;
+        preset.mod_ids = mod_ids;
+        preset.updated_at = Utc::now().to_rfc3339();
+        save_all_presets(&all).await
+    } else {
+        Err("Preset not found".to_string())
+    }
 }
 
 #[tauri::command]
@@ -531,6 +550,7 @@ pub fn run() {
             list_presets,
             create_preset,
             delete_preset,
+            update_preset,
             apply_preset
         ])
         .run(tauri::generate_context!())
