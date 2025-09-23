@@ -1,11 +1,12 @@
 import React, { useMemo, useState } from 'react';
-import PageContainer, { PageHeader } from '../components/characters/PageContainer';
+import PageContainer from '../components/characters/PageContainer';
 import { usePresets } from '../hooks/usePresets';
 import { useMods } from '../hooks/useMods';
 import ModCard from '../components/ModCard';
 import PresetEditDialog from '../components/PresetEditDialog';
 import LoadingSpinner from '../components/characters/LoadingSpinner';
 import ErrorState from '../components/characters/ErrorState';
+import { cnButton } from "../styles/buttons";
 
 interface PresetDetailsPageProps {
   presetId: string;
@@ -32,27 +33,40 @@ const PresetDetailsPage: React.FC<PresetDetailsPageProps> = ({ presetId, onBack,
 
   return (
     <PageContainer>
-      <PageHeader
-        title={preset ? preset.name : 'Preset'}
-        description={preset ? `${preset.mod_ids.length} ${preset.mod_ids.length === 1 ? 'mod' : 'mods'}` : ''}
-      >
-        <div className="flex items-center gap-2">
-          <button
-            onClick={onBack}
-            className="px-3 py-2 rounded-lg border border-[var(--moon-border)] text-[var(--moon-text)] hover:border-[var(--moon-glow-violet)]/50"
-          >
-            ← Back
-          </button>
+      {/* Back Row (match CharacterModPage) */}
+      <div className="mb-4">
+        <button
+          onClick={onBack}
+          className="flex items-center space-x-2 text-[var(--moon-muted)] hover:text-[var(--moon-glow-violet)] hover:drop-shadow-[0_0_6px_var(--moon-glow-violet)] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+          </svg>
+          <span>Back to Presets</span>
+        </button>
+      </div>
+
+      {/* Header */}
+      <div className="flex items-center justify-between mb-8">
+        <div className="flex items-center space-x-4">
+          <div>
+            <h1 className="text-2xl font-bold text-[var(--moon-text)]">{preset ? preset.name : 'Preset'}</h1>
+            {preset && (
+              <p className="text-sm text-[var(--moon-muted)]">{preset.mod_ids.length} {preset.mod_ids.length === 1 ? 'mod' : 'mods'}</p>
+            )}
+          </div>
+        </div>
+        <div className="flex items-center space-x-3">
           {preset && (
             <button
               onClick={() => setEditOpen(true)}
-              className="px-4 py-2 rounded-lg bg-[var(--moon-accent)] hover:bg-[var(--moon-glow-violet)] text-white text-sm font-medium transition-all shadow border border-[var(--moon-glow-violet)]/40"
+              className={cnButton({ variant: 'primary', size: 'sm' })}
             >
               Edit Preset
             </button>
           )}
         </div>
-      </PageHeader>
+      </div>
 
       {error && (
         <div className="mb-4 p-3 rounded-lg border border-red-500/30 bg-red-500/10 text-red-300 text-sm">{error}</div>

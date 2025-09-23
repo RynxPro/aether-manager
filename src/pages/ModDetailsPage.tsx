@@ -102,35 +102,32 @@ const ModDetailsPage: React.FC<ModDetailsPageProps> = ({ modId, onBack }) => {
 
   return (
     <div className="max-w-4xl mx-auto p-6">
+      {/* Back Row (match CharacterModPage) */}
+      <div className="mb-4">
+        <button
+          onClick={onBack}
+          className="flex items-center space-x-2 text-[var(--moon-muted)] hover:text-[var(--moon-glow-violet)] hover:drop-shadow-[0_0_6px_var(--moon-glow-violet)] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          <svg
+            className="w-5 h-5"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M15 19l-7-7 7-7"
+            />
+          </svg>
+          <span>Back</span>
+        </button>
+      </div>
       {/* Header */}
       <div className="flex items-center justify-between mb-8">
         <div className="flex items-center space-x-4">
-          <button
-            onClick={onBack}
-            className={cnButton({
-              variant: "ghost",
-              size: "sm",
-              className: "hover:bg-[var(--moon-surface)]",
-            })}
-          >
-            <svg
-              className="w-5 h-5"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M15 19l-7-7 7-7"
-              />
-            </svg>
-            Back
-          </button>
-          <h1 className="text-2xl font-bold text-[var(--moon-text)]">
-            Mod Details
-          </h1>
+          <h1 className="text-2xl font-bold text-[var(--moon-text)]">Mod Details</h1>
         </div>
         <div className="flex items-center space-x-3">
           {!isEditing ? (
