@@ -7,6 +7,7 @@ import CharacterModPage from "./pages/CharacterModPage";
 import ModDetailsPage from "./pages/ModDetailsPage";
 import SettingsPage from "./pages/SettingsPage";
 import PresetsPage from "./pages/PresetsPage";
+import PresetDetailsPage from "./pages/PresetDetailsPage";
 import "./App.css";
 import { PageType } from "./types/navigation";
 
@@ -18,6 +19,7 @@ type NavigationState = {
   selectedMod: string | null;
   modCharacterContext: string | null; // Track which character's mod we're viewing (or null for other mods)
   lastPage: PageType | null; // Track where we came from when opening mod details
+  selectedPreset: string | null;
 };
 
 function App() {
@@ -28,6 +30,7 @@ function App() {
     selectedMod: null,
     modCharacterContext: null, // Track which character's mod we're viewing (or null for other mods)
     lastPage: null,
+    selectedPreset: null,
   });
 
   // Handle page changes with validation
@@ -67,6 +70,7 @@ function App() {
         selectedMod: page === "mod-details" ? prev.selectedMod : null,
         modCharacterContext: prev.modCharacterContext, // Preserve the context
         lastPage: null,
+        selectedPreset: page === "preset-details" ? prev.selectedPreset : null,
       };
     });
   }, []);
@@ -79,6 +83,7 @@ function App() {
       selectedMod: null,
       modCharacterContext: null, // Clear context when navigating to character mods
       lastPage: null,
+      selectedPreset: null,
     });
   }, []);
 
@@ -89,9 +94,36 @@ function App() {
       selectedCharacter: characterId || null,
       selectedMod: modId,
       // Only keep character context if we navigated from the character-mod page
-      modCharacterContext: prev.currentPage === "character-mod" && characterId ? characterId : null,
+      modCharacterContext:
+        prev.currentPage === "character-mod" && characterId
+          ? characterId
+          : null,
       // Remember where we came from so Back returns there (e.g., dashboard or mods)
       lastPage: prev.currentPage,
+      selectedPreset: prev.selectedPreset,
+    }));
+  }, []);
+
+  // Handle preset selection
+  const handlePresetClick = useCallback((presetId: string) => {
+    setNavigation((prev) => ({
+      currentPage: "preset-details",
+      selectedCharacter: null,
+      selectedMod: null,
+      modCharacterContext: null,
+      lastPage: prev.currentPage,
+      selectedPreset: presetId,
+    }));
+  }, []);
+
+  const handleBackFromPresetDetails = useCallback(() => {
+    setNavigation((prev) => ({
+      currentPage: prev.lastPage ?? "presets",
+      selectedCharacter: null,
+      selectedMod: null,
+      modCharacterContext: null,
+      lastPage: null,
+      selectedPreset: null,
     }));
   }, []);
 
@@ -105,6 +137,7 @@ function App() {
         selectedMod: null,
         modCharacterContext: null, // Clear context when going back to characters list
         lastPage: null,
+        selectedPreset: null,
       });
     } catch (error) {
       console.error("Error navigating to characters list:", error);
@@ -122,6 +155,7 @@ function App() {
           selectedMod: null,
           modCharacterContext: null,
           lastPage: null,
+          selectedPreset: null,
         } as NavigationState;
       }
       // Otherwise go back to where we came from (dashboard/mods/characters/settings...)
@@ -132,6 +166,7 @@ function App() {
           selectedMod: null,
           modCharacterContext: null,
           lastPage: null,
+          selectedPreset: null,
         } as NavigationState;
       }
       // Fallback to mods page if no history
@@ -141,6 +176,7 @@ function App() {
         selectedMod: null,
         modCharacterContext: null,
         lastPage: null,
+        selectedPreset: null,
       } as NavigationState;
     });
   }, []);
@@ -162,7 +198,17 @@ function App() {
         case "mods":
           return <OtherModsPage onModClick={handleModClick} />;
         case "presets":
-          return <PresetsPage />;
+          return <PresetsPage onPresetClick={handlePresetClick} />;
+        case "preset-details":
+          return navigation.selectedPreset ? (
+            <PresetDetailsPage
+              presetId={navigation.selectedPreset}
+              onBack={handleBackFromPresetDetails}
+              onModClick={handleModClick}
+            />
+          ) : (
+            <PresetsPage onPresetClick={handlePresetClick} />
+          );
         case "characters":
           return <CharactersPage onCharacterClick={handleCharacterClick} />;
         case "character-mod":

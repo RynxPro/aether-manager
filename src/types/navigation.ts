@@ -6,4 +6,5 @@ export type PageType =
   | "mod-details"
   | "settings"
   | "presets"
+  | "preset-details"
   | "about";
