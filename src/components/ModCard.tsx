@@ -2,6 +2,7 @@ import React, { useCallback, useMemo } from "react";
 import { Mod } from "@/types/mod";
 import { cnButton } from "@/styles/buttons";
 import ConfirmDialog from "./ConfirmDialog";
+import { useMods } from "@/hooks/useMods";
 
 // SVG Icons
 const DeleteIcon = () => (
@@ -138,26 +139,40 @@ const DeleteButton: React.FC<{ onClick: (e: React.MouseEvent) => void }> = ({
 
 const ToggleButton: React.FC<{
   isActive: boolean;
+  busy?: boolean;
   onClick: (e: React.MouseEvent) => void;
-}> = ({ isActive, onClick }) => {
+}> = ({ isActive, busy = false, onClick }) => {
   return (
     <button
-      onClick={onClick}
+      onClick={(e) => {
+        if (busy) return; // guard while busy
+        onClick(e);
+      }}
       className={`relative inline-flex items-center w-16 h-8 rounded-full transition-all duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-[var(--moon-glow-violet)] focus:ring-offset-2 focus:ring-offset-[var(--moon-bg)] ${
         isActive
           ? "bg-[var(--moon-accent)] shadow-[0_0_12px_-2px_var(--moon-accent)]"
           : "bg-[var(--moon-surface)] border border-[var(--moon-border)] hover:border-[var(--moon-glow-violet)]/50"
-      }`}
+      } ${busy ? "opacity-60 cursor-not-allowed" : ""}`}
       aria-label={isActive ? "Deactivate mod" : "Activate mod"}
       title={isActive ? "Deactivate mod" : "Activate mod"}
+      disabled={busy}
     >
-      <div
-        className={`absolute left-1 top-1 h-6 w-6 rounded-full bg-white shadow-md flex items-center justify-center transition-transform duration-300 ease-in-out ${
-          isActive ? "translate-x-8" : "translate-x-0"
-        }`}
-      >
-        <EyeIcon open={isActive} />
-      </div>
+      {busy ? (
+        <div className="absolute inset-0 flex items-center justify-center">
+          <svg className="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+          </svg>
+        </div>
+      ) : (
+        <div
+          className={`absolute left-1 top-1 h-6 w-6 rounded-full bg-white shadow-md flex items-center justify-center transition-transform duration-300 ease-in-out ${
+            isActive ? "translate-x-8" : "translate-x-0"
+          }`}
+        >
+          <EyeIcon open={isActive} />
+        </div>
+      )}
     </button>
   );
 };
@@ -172,6 +187,8 @@ const ModCard: React.FC<ModCardProps> = ({
   onClick,
 }) => {
   const [showDeleteConfirm, setShowDeleteConfirm] = React.useState(false);
+  const { isToggling } = useMods();
+  const busy = isToggling(mod.id);
 
   const handleDeleteClick = useCallback((e: React.MouseEvent) => {
     e.stopPropagation();
@@ -254,6 +271,7 @@ const ModCard: React.FC<ModCardProps> = ({
             </span>
             <ToggleButton
               isActive={mod.isActive}
+              busy={busy}
               onClick={(e) => {
                 e.stopPropagation();
                 onToggleActive?.(mod.id);

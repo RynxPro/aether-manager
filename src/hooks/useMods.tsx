@@ -9,6 +9,7 @@ import { invoke } from "@tauri-apps/api/core";
 import { useSettings } from "./useSettings";
 import { useStats } from "./useStats";
 import { Mod as UnifiedMod } from "../types/mod";
+import { toast } from "react-hot-toast";
 
 // Rust backend response type (snake_case)
 interface RustMod {
@@ -46,6 +47,7 @@ type UseModsReturn = {
     thumbnail?: string
   ) => Promise<Mod | null>;
   toggleModActive: (modId: string) => Promise<boolean>;
+  isToggling: (modId: string) => boolean;
   deleteMod: (modId: string) => Promise<boolean>;
   updateMod: (
     modId: string,
@@ -59,6 +61,7 @@ const useModsInternal = (): UseModsReturn => {
   const [mods, setMods] = useState<Mod[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [togglingSet, setTogglingSet] = useState<Set<string>>(new Set());
   const { isValid } = useSettings();
   const { fetchStats } = useStats();
 
@@ -141,6 +144,7 @@ const useModsInternal = (): UseModsReturn => {
   const toggleModActive = async (modId: string): Promise<boolean> => {
     // Do not flip global loading for a small toggle to avoid page refresh spinners
     setError(null);
+    let previousIsActive: boolean | undefined = undefined;
     try {
       if (!isValid) {
         throw new Error(
@@ -154,6 +158,13 @@ const useModsInternal = (): UseModsReturn => {
       if (!currentMod) {
         throw new Error("Mod not found");
       }
+      previousIsActive = currentMod.isActive;
+
+      // Prevent double toggles on the same mod
+      if (togglingSet.has(modId)) {
+        return false;
+      }
+      setTogglingSet((prev) => new Set(prev).add(modId));
 
       // Optimistically update UI
       setMods((prev) =>
@@ -165,6 +176,12 @@ const useModsInternal = (): UseModsReturn => {
       // Call backend (returns new is_active state, but false can be valid when deactivating)
       const result = await invoke<boolean>("toggle_mod_active", { modId });
       console.log("Toggle result (new is_active):", result);
+      // Reconcile local state with backend result immediately
+      setMods((prev) =>
+        prev.map((mod) => (mod.id === modId ? { ...mod, isActive: result } : mod))
+      );
+      // Toast feedback
+      toast.success(result ? "Mod activated" : "Mod deactivated");
       // Reconcile with backend in background to keep all pages in sync
       fetchMods(true);
       // Refresh stats silently so dashboard cards reflect accurate active/inactive counts
@@ -174,7 +191,20 @@ const useModsInternal = (): UseModsReturn => {
       console.error("toggleModActive error:", err);
       const errorMsg = err instanceof Error ? err.message : String(err);
       setError(`Failed to toggle mod: ${errorMsg}`);
+      toast.error(`Failed to toggle mod: ${errorMsg}`);
+      // Rollback optimistic change to previous state
+      setMods((prev) =>
+        prev.map((mod) =>
+          mod.id === modId ? { ...mod, isActive: previousIsActive ?? mod.isActive } : mod
+        )
+      );
       return false;
+    } finally {
+      setTogglingSet((prev) => {
+        const next = new Set(prev);
+        next.delete(modId);
+        return next;
+      });
     }
   };
 
@@ -243,6 +273,7 @@ const useModsInternal = (): UseModsReturn => {
     fetchMods,
     installMod,
     toggleModActive,
+    isToggling: (id: string) => togglingSet.has(id),
     deleteMod,
     updateMod,
   };
