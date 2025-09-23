@@ -6,17 +6,9 @@ import CharactersPage from "./pages/CharactersPage";
 import CharacterModPage from "./pages/CharacterModPage";
 import ModDetailsPage from "./pages/ModDetailsPage";
 import SettingsPage from "./pages/SettingsPage";
+import PresetsPage from "./pages/PresetsPage";
 import "./App.css";
-
-// Define valid page types for type safety
-type PageType =
-  | "dashboard"
-  | "mods"
-  | "characters"
-  | "character-mod"
-  | "mod-details"
-  | "settings"
-  | "about";
+import { PageType } from "./types/navigation";
 
 import AboutPage from "./pages/AboutPage";
 
@@ -148,6 +140,8 @@ function App() {
           return <DashboardPage onModClick={handleModClick} />;
         case "mods":
           return <OtherModsPage onModClick={handleModClick} />;
+        case "presets":
+          return <PresetsPage />;
         case "characters":
           return <CharactersPage onCharacterClick={handleCharacterClick} />;
         case "character-mod":

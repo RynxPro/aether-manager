@@ -5,17 +5,11 @@ import {
   Cog6ToothIcon,
   XMarkIcon,
   Square3Stack3DIcon,
+  BookmarkIcon,
 } from "@heroicons/react/24/outline";
+import { PageType } from "../types/navigation";
 
-// Import the PageType from App.tsx to ensure consistency
-type PageType =
-  | "dashboard"
-  | "mods"
-  | "characters"
-  | "character-mod"
-  | "mod-details"
-  | "settings"
-  | "about";
+// Using shared PageType to ensure consistency across the app
 
 interface SidebarProps {
   currentPage: PageType;
@@ -53,6 +47,12 @@ const Sidebar: React.FC<SidebarProps> = ({ currentPage, onPageChange }) => {
       label: "Other Mods",
       icon: <Square3Stack3DIcon className="w-5 h-5" />,
       path: "/mods",
+    },
+    {
+      id: "presets" as const,
+      label: "Presets",
+      icon: <BookmarkIcon className="w-5 h-5" />,
+      path: "/presets",
     },
     {
       id: "settings" as const,

@@ -37,7 +37,7 @@ type UseModsReturn = {
   mods: Mod[];
   loading: boolean;
   error: string | null;
-  fetchMods: () => Promise<void>;
+  fetchMods: (silent?: boolean) => Promise<void>;
   installMod: (
     filePath: string,
     title: string,

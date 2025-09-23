@@ -3,6 +3,7 @@ use std::fs;
 use std::path::{Path, PathBuf};
 use uuid::Uuid;
 use chrono::Utc;
+use std::collections::HashSet;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Mod {
@@ -15,6 +16,15 @@ pub struct Mod {
     pub character: Option<String>,
     pub file_path: String,
     pub original_name: String,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct Preset {
+    pub id: String,
+    pub name: String,
+    pub created_at: String,
+    pub updated_at: String,
+    pub mod_ids: Vec<String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -244,11 +254,13 @@ async fn get_mod_stats() -> Result<ModStats, String> {
     let active_mods = mods.iter().filter(|m| m.is_active).count();
     let inactive_mods = installed_mods - active_mods;
     
+    let presets_count = load_all_presets().await.map(|v| v.len()).unwrap_or(0);
+
     Ok(ModStats {
         installedMods: installed_mods,
         activeMods: active_mods,
         inactiveMods: inactive_mods,
-        presets: 0, // TODO: Implement presets functionality
+        presets: presets_count,
     })
 }
 
@@ -387,6 +399,117 @@ fn copy_dir_all(src: impl AsRef<Path>, dst: impl AsRef<Path>) -> std::io::Result
     Ok(())
 }
 
+// ===== Presets persistence =====
+async fn presets_db_path() -> Result<PathBuf, String> {
+    let base = get_app_config_dir()?;
+    let dir = base.join("mods");
+    fs::create_dir_all(&dir).map_err(|e| format!("Failed to create presets directory: {}", e))?;
+    Ok(dir.join("presets.json"))
+}
+
+async fn load_all_presets() -> Result<Vec<Preset>, String> {
+    let path = presets_db_path().await?;
+    if !path.exists() {
+        return Ok(vec![]);
+    }
+    let content = fs::read_to_string(&path).map_err(|e| format!("Failed to read presets DB: {}", e))?;
+    serde_json::from_str(&content).map_err(|e| format!("Failed to parse presets DB: {}", e))
+}
+
+async fn save_all_presets(presets: &[Preset]) -> Result<(), String> {
+    let path = presets_db_path().await?;
+    let content = serde_json::to_string_pretty(presets)
+        .map_err(|e| format!("Failed to serialize presets: {}", e))?;
+    fs::write(&path, content).map_err(|e| format!("Failed to write presets DB: {}", e))
+}
+
+// ===== Presets commands =====
+#[tauri::command]
+async fn list_presets() -> Result<Vec<Preset>, String> {
+    load_all_presets().await
+}
+
+#[tauri::command]
+async fn create_preset(name: String) -> Result<Preset, String> {
+    let mods = load_all_mods().await?;
+    let active_ids: Vec<String> = mods
+        .into_iter()
+        .filter(|m| m.is_active)
+        .map(|m| m.id)
+        .collect();
+    let now = Utc::now().to_rfc3339();
+    let preset = Preset {
+        id: Uuid::new_v4().to_string(),
+        name,
+        created_at: now.clone(),
+        updated_at: now,
+        mod_ids: active_ids,
+    };
+    let mut all = load_all_presets().await.unwrap_or_default();
+    all.push(preset.clone());
+    save_all_presets(&all).await?;
+    Ok(preset)
+}
+
+#[tauri::command]
+async fn delete_preset(preset_id: String) -> Result<(), String> {
+    let mut all = load_all_presets().await.unwrap_or_default();
+    let len_before = all.len();
+    all.retain(|p| p.id != preset_id);
+    if all.len() == len_before {
+        return Err("Preset not found".into());
+    }
+    save_all_presets(&all).await
+}
+
+#[tauri::command]
+async fn apply_preset(preset_id: String) -> Result<(), String> {
+    let presets = load_all_presets().await?;
+    let preset = presets
+        .into_iter()
+        .find(|p| p.id == preset_id)
+        .ok_or("Preset not found")?;
+
+    let mut mods = load_all_mods().await?;
+    let desired: HashSet<String> = preset.mod_ids.iter().cloned().collect();
+
+    let settings = load_settings().await?;
+    let zzmi_path = settings
+        .zzmi_mods_path
+        .ok_or("ZZMI mods path not configured. Please set it in settings.")?;
+    fs::create_dir_all(&zzmi_path)
+        .map_err(|e| format!("Failed to create ZZMI mods directory: {}", e))?;
+
+    for m in mods.iter_mut() {
+        let should_be_active = desired.contains(&m.id);
+        let zzmi_file_path = format!("{}/{}", zzmi_path, m.original_name);
+
+        if should_be_active && !m.is_active {
+            if Path::new(&m.file_path).is_dir() {
+                copy_dir_all(&m.file_path, &zzmi_file_path)
+                    .map_err(|e| format!("Failed to copy mod folder to ZZMI: {}", e))?;
+            } else {
+                fs::copy(&m.file_path, &zzmi_file_path)
+                    .map_err(|e| format!("Failed to copy mod file to ZZMI: {}", e))?;
+            }
+            m.is_active = true;
+        } else if !should_be_active && m.is_active {
+            if Path::new(&zzmi_file_path).exists() {
+                if Path::new(&zzmi_file_path).is_dir() {
+                    fs::remove_dir_all(&zzmi_file_path)
+                        .map_err(|e| format!("Failed to remove mod folder from ZZMI: {}", e))?;
+                } else {
+                    fs::remove_file(&zzmi_file_path)
+                        .map_err(|e| format!("Failed to remove mod file from ZZMI: {}", e))?;
+                }
+            }
+            m.is_active = false;
+        }
+    }
+
+    save_all_mods(&mods).await
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
@@ -404,7 +527,11 @@ pub fn run() {
             get_settings,
             update_settings,
             select_folder,
-            select_mod_folder
+            select_mod_folder,
+            list_presets,
+            create_preset,
+            delete_preset,
+            apply_preset
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
