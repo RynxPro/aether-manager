@@ -275,10 +275,17 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ onModClick }) => {
     </div>
   );
 
+  const greeting = useMemo(() => {
+    const h = new Date().getHours();
+    if (h < 12) return "Good Morning Master";
+    if (h < 18) return "Good Afternoon Master";
+    return "Good Evening Master";
+  }, []);
+
   return (
     <PageContainer>
       <PageHeader
-        title="Dashboard"
+        title={greeting}
         description="Overview of your mods and statistics"
       />
 
@@ -327,7 +334,9 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ onModClick }) => {
                 mod={mod}
                 onToggleActive={handleToggleActive}
                 onDelete={handleDeleteMod}
-                onViewDetails={(id) => onModClick(id, mod.character || undefined)}
+                onViewDetails={(id) =>
+                  onModClick(id, mod.character || undefined)
+                }
               />
             ))}
           </div>

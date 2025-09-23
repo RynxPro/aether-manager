@@ -5,6 +5,7 @@ import { Preset } from '../types/preset';
 import PageContainer, { PageHeader } from '../components/characters/PageContainer';
 import ConfirmDialog from '../components/ConfirmDialog';
 import { cnButton } from '../styles/buttons';
+import { useMods } from '../hooks/useMods';
 
 interface PresetsPageProps {
   onPresetClick?: (presetId: string) => void;
@@ -12,17 +13,11 @@ interface PresetsPageProps {
 
 const PresetsPage: React.FC<PresetsPageProps> = ({ onPresetClick }) => {
   const { presets, loading, error, applyPreset, deletePreset } = usePresets();
+  const { mods } = useMods();
   const [isDialogOpen, setDialogOpen] = useState(false);
-  const [editingPreset, setEditingPreset] = useState<Preset | undefined>(undefined);
   const [deleting, setDeleting] = useState<Preset | null>(null);
 
-  const handleEdit = (preset: Preset) => {
-    setEditingPreset(preset);
-    setDialogOpen(true);
-  };
-
   const handleCloseDialog = () => {
-    setEditingPreset(undefined);
     setDialogOpen(false);
   };
 
@@ -49,7 +44,7 @@ const PresetsPage: React.FC<PresetsPageProps> = ({ onPresetClick }) => {
         </div>
       </PageHeader>
 
-      <PresetCreateDialog isOpen={isDialogOpen} onClose={handleCloseDialog} presetToEdit={editingPreset} />
+      <PresetCreateDialog isOpen={isDialogOpen} onClose={handleCloseDialog} />
 
       {error && (
         <div className="mb-4 p-3 rounded-lg border border-red-500/30 bg-red-500/10 text-red-300 text-sm">
@@ -75,7 +70,10 @@ const PresetsPage: React.FC<PresetsPageProps> = ({ onPresetClick }) => {
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {presets.map((p) => (
+          {presets.map((p) => {
+            const activeIds = new Set(mods.filter(m => m.isActive).map(m => m.id));
+            const isApplied = p.mod_ids.length === activeIds.size && p.mod_ids.every(id => activeIds.has(id));
+            return (
             <div
               key={p.id}
               className="bg-[var(--moon-surface)] rounded-xl border border-[var(--moon-border)] overflow-hidden flex flex-col hover:border-[var(--moon-glow-violet)] hover:shadow-[0_0_15px_rgba(122,90,248,0.2)] transition-all duration-300 cursor-pointer"
@@ -84,47 +82,38 @@ const PresetsPage: React.FC<PresetsPageProps> = ({ onPresetClick }) => {
               <div className="p-5 flex flex-col gap-2 flex-1">
                 <div className="flex items-start justify-between gap-3">
                   <h3 className="text-[var(--moon-text)] font-semibold truncate" title={p.name}>{p.name}</h3>
-                  <span className="text-xs px-2 py-1 rounded-full bg-[var(--moon-bg)] border border-[var(--moon-border)] text-[var(--moon-muted)] whitespace-nowrap">
-                    {p.mod_ids.length} {p.mod_ids.length === 1 ? 'mod' : 'mods'}
-                  </span>
+                  <div className="flex items-center gap-2">
+                    {isApplied && (
+                      <span className="text-[10px] px-2 py-0.5 rounded-full bg-green-500/15 text-green-400 border border-green-500/30 whitespace-nowrap">Applied</span>
+                    )}
+                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-[var(--moon-bg)] border border-[var(--moon-border)] text-[var(--moon-muted)] whitespace-nowrap">
+                      {p.mod_ids.length} {p.mod_ids.length === 1 ? 'mod' : 'mods'}
+                    </span>
+                  </div>
                 </div>
                 <div className="text-xs text-[var(--moon-muted)]">
                   {new Date(p.created_at).toLocaleString()}
                 </div>
-                {/* Mod preview chips */}
-                {p.mod_ids.length > 0 && (
-                  <div className="mt-1 flex flex-wrap gap-2">
-                    {p.mod_ids.slice(0, 3).map((id) => (
-                      <span key={id} className="text-[10px] px-2 py-1 rounded-full bg-[var(--moon-bg)] border border-[var(--moon-border)] text-[var(--moon-muted)]">{id.slice(0, 8)}…</span>
-                    ))}
-                    {p.mod_ids.length > 3 && (
-                      <span className="text-[10px] px-2 py-1 rounded-full bg-[var(--moon-bg)] border border-[var(--moon-border)] text-[var(--moon-muted)]">+{p.mod_ids.length - 3} more</span>
-                    )}
+                <div className="mt-auto pt-3 border-t border-[var(--moon-border)]" onClick={(e) => e.stopPropagation()}>
+                  <div className="flex items-center justify-end gap-1 flex-wrap">
+                    <button
+                      onClick={() => applyPreset(p.id)}
+                      className="px-2 py-1 text-xs rounded-lg bg-[var(--moon-accent)]/20 text-[var(--moon-accent)] border border-[var(--moon-glow-violet)]/30 hover:bg-[var(--moon-accent)]/25 transition"
+                    >
+                      Apply
+                    </button>
+                    <button
+                      onClick={() => setDeleting(p)}
+                      className="px-2 py-1 text-xs rounded-lg bg-red-500/10 text-red-400 border border-red-500/30 hover:bg-red-500/15 transition"
+                    >
+                      Delete
+                    </button>
                   </div>
-                )}
-                <div className="mt-auto pt-3 flex items-center justify-end gap-2 border-t border-[var(--moon-border)]" onClick={(e) => e.stopPropagation()}>
-                  <button
-                    onClick={() => applyPreset(p.id)}
-                    className="px-3 py-2 rounded-lg bg-[var(--moon-accent)]/20 text-[var(--moon-accent)] border border-[var(--moon-glow-violet)]/30 hover:bg-[var(--moon-accent)]/25 transition"
-                  >
-                    Apply
-                  </button>
-                  <button
-                    onClick={() => handleEdit(p)}
-                    className="px-3 py-2 rounded-lg bg-gray-500/10 text-gray-300 border border-gray-500/30 hover:bg-gray-500/15 transition"
-                  >
-                    Edit
-                  </button>
-                  <button
-                    onClick={() => setDeleting(p)}
-                    className="px-3 py-2 rounded-lg bg-red-500/10 text-red-400 border border-red-500/30 hover:bg-red-500/15 transition"
-                  >
-                    Delete
-                  </button>
                 </div>
               </div>
             </div>
-          ))}
+            );
+          })}
         </div>
       )}
 

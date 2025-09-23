@@ -1,27 +1,47 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import PageContainer, {
   PageHeader,
 } from "../components/characters/PageContainer";
 import { cnButton } from "../styles/buttons";
+import { getVersion } from "@tauri-apps/api/app";
 
 const AboutPage: React.FC = () => {
+  const [version, setVersion] = useState<string>("-");
+
+  useEffect(() => {
+    // Fetch app version from Tauri metadata
+    getVersion()
+      .then(setVersion)
+      .catch(() => setVersion("1.0.0"));
+  }, []);
+
   return (
     <PageContainer>
       <PageHeader
         title="About Aether Manager"
-        description="Version 1.0.0 • Lightweight mod manager for Zenless Zone Zero"
+        description={`Version ${version} • Lightweight mod manager for Zenless Zone Zero`}
       />
 
-      <div className="max-w-4xl mx-auto space-y-8">
+      <div className="max-w-5xl mx-auto space-y-8">
         <section className="bg-[var(--moon-surface)] border border-[var(--moon-border)] rounded-xl p-6">
           <h2 className="text-lg font-semibold text-[var(--moon-text)] mb-2">
             Overview
           </h2>
           <p className="text-[var(--moon-muted)]">
-            Aether Manager helps you install, organize, and toggle mods for
-            Zenless Zone Zero. It supports character-specific mods and other
-            mods, with instant toggling and consistent state across pages.
+            Aether Manager helps you install, organize, and toggle mods for Zenless Zone Zero. It supports
+            character-specific mods and general mods, with quick activation, presets, and a modern desktop UI.
           </p>
+        </section>
+
+        <section className="bg-[var(--moon-surface)] border border-[var(--moon-border)] rounded-xl p-6">
+          <h2 className="text-lg font-semibold text-[var(--moon-text)] mb-3">Key Features</h2>
+          <ul className="list-disc list-inside text-[var(--moon-muted)] space-y-1">
+            <li>Install mods and organize by character or other mods</li>
+            <li>Activate/Deactivate with safe file copy/remove to ZZMI mods folder</li>
+            <li>Presets: save, apply, and edit curated sets of mods</li>
+            <li>Dashboard with stats and quick actions</li>
+            <li>Clean, responsive UI with keyboard-friendly navigation</li>
+          </ul>
         </section>
 
         <section className="bg-[var(--moon-surface)] border border-[var(--moon-border)] rounded-xl p-6">
@@ -48,6 +68,20 @@ const AboutPage: React.FC = () => {
               page.
             </li>
           </ol>
+        </section>
+
+        <section className="bg-[var(--moon-surface)] border border-[var(--moon-border)] rounded-xl p-6">
+          <h2 className="text-lg font-semibold text-[var(--moon-text)] mb-3">Presets</h2>
+          <p className="text-[var(--moon-muted)] mb-3">
+            Presets let you save a named set of mods and re-apply it later. Create presets from the Presets page,
+            open a preset to view its mods, and use Edit Preset to add/remove mods.
+          </p>
+          <h3 className="font-semibold text-[var(--moon-text)] mb-1">File Organization</h3>
+          <ul className="list-disc list-inside text-[var(--moon-muted)] space-y-1">
+            <li>Installed mods live in the app data under characters/{"{"}name{"}"} or othermods/</li>
+            <li>Active mods are copied to your configured zzmi/mods folder</li>
+            <li>Deactivating removes from zzmi/mods but keeps the original</li>
+          </ul>
         </section>
 
         <section className="bg-[var(--moon-surface)] border border-[var(--moon-border)] rounded-xl p-6">
@@ -136,6 +170,15 @@ const AboutPage: React.FC = () => {
               Other Mods
             </a>
           </div>
+        </section>
+
+        <section className="bg-[var(--moon-surface)] border border-[var(--moon-border)] rounded-xl p-6">
+          <h2 className="text-lg font-semibold text-[var(--moon-text)] mb-2">Tech Stack</h2>
+          <ul className="list-disc list-inside text-[var(--moon-muted)] space-y-1">
+            <li>Tauri (Rust backend) for performant, safe desktop access</li>
+            <li>React + Vite + TypeScript for a fast, modern UI</li>
+            <li>Tailwind CSS for consistent styling</li>
+          </ul>
         </section>
 
         <div className="text-[var(--moon-muted)] text-sm text-center">
