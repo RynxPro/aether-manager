@@ -93,7 +93,7 @@ const SettingsPage: React.FC = () => {
       <div className="mb-2">
         <h1 className="text-3xl md:text-4xl font-bold text-white">Settings</h1>
         <p className="text-lg text-[var(--moon-muted)]">
-          Customize your Aether Manager experience
+          Customize your Ether Manager experience
         </p>
       </div>
 

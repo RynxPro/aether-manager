@@ -18,7 +18,7 @@ const AboutPage: React.FC = () => {
   return (
     <PageContainer>
       <PageHeader
-        title="About Aether Manager"
+        title="About Ether Manager"
         description={`Version ${version} • Lightweight mod manager for Zenless Zone Zero`}
       />
 
@@ -28,7 +28,7 @@ const AboutPage: React.FC = () => {
             Overview
           </h2>
           <p className="text-[var(--moon-muted)]">
-            Aether Manager helps you install, organize, and toggle mods for Zenless Zone Zero. It supports
+            Ether Manager helps you install, organize, and toggle mods for Zenless Zone Zero. It supports
             character-specific mods and general mods, with quick activation, presets, and a modern desktop UI.
           </p>
         </section>
@@ -182,7 +182,7 @@ const AboutPage: React.FC = () => {
         </section>
 
         <div className="text-[var(--moon-muted)] text-sm text-center">
-          © {new Date().getFullYear()} Aether Manager
+          © {new Date().getFullYear()} Ether Manager
         </div>
       </div>
     </PageContainer>

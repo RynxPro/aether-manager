@@ -98,9 +98,14 @@ const PresetsPage: React.FC<PresetsPageProps> = ({ onPresetClick }) => {
                   <div className="flex items-center justify-end gap-1 flex-wrap">
                     <button
                       onClick={() => applyPreset(p.id)}
-                      className="px-2 py-1 text-xs rounded-lg bg-[var(--moon-accent)]/20 text-[var(--moon-accent)] border border-[var(--moon-glow-violet)]/30 hover:bg-[var(--moon-accent)]/25 transition"
+                      disabled={isApplied}
+                      className={`px-2 py-1 text-xs rounded-lg border transition ${
+                        isApplied
+                          ? 'bg-gray-500/10 text-gray-400 border-gray-500/30 cursor-not-allowed'
+                          : 'bg-[var(--moon-accent)]/20 text-[var(--moon-accent)] border-[var(--moon-glow-violet)]/30 hover:bg-[var(--moon-accent)]/25'
+                      }`}
                     >
-                      Apply
+                      {isApplied ? 'Applied' : 'Apply'}
                     </button>
                     <button
                       onClick={() => setDeleting(p)}

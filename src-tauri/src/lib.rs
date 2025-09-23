@@ -33,10 +33,11 @@ pub struct AppSettings {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct ModStats {
-    pub installedMods: usize,
-    pub activeMods: usize,
-    pub inactiveMods: usize,
+    pub installed_mods: usize,
+    pub active_mods: usize,
+    pub inactive_mods: usize,
     pub presets: usize,
 }
 
@@ -52,6 +53,7 @@ async fn get_mods() -> Result<Vec<Mod>, String> {
 }
 
 #[tauri::command]
+#[allow(non_snake_case)]
 async fn install_mod(filePath: String, title: String, character: Option<String>, description: Option<String>, thumbnail: Option<String>) -> Result<Mod, String> {
     println!("Installing mod: title={}, filePath={}, character={:?}", title, filePath, character);
     
@@ -127,6 +129,7 @@ async fn install_mod(filePath: String, title: String, character: Option<String>,
 }
 
 #[tauri::command]
+#[allow(non_snake_case)]
 async fn toggle_mod_active(modId: String) -> Result<bool, String> {
     println!("Toggling mod active: modId={}", modId);
     
@@ -180,6 +183,7 @@ async fn toggle_mod_active(modId: String) -> Result<bool, String> {
 }
 
 #[tauri::command]
+#[allow(non_snake_case)]
 async fn update_mod(modId: String, title: Option<String>, thumbnail: Option<String>, description: Option<String>) -> Result<(), String> {
     let mut mods = load_all_mods().await?;
     let mod_index = mods.iter().position(|m| m.id == modId)
@@ -205,6 +209,7 @@ async fn update_mod(modId: String, title: Option<String>, thumbnail: Option<Stri
 }
 
 #[tauri::command]
+#[allow(non_snake_case)]
 async fn delete_mod(modId: String) -> Result<(), String> {
     let mods = load_all_mods().await?;
     let mod_index = mods.iter().position(|m| m.id == modId)
@@ -257,9 +262,9 @@ async fn get_mod_stats() -> Result<ModStats, String> {
     let presets_count = load_all_presets().await.map(|v| v.len()).unwrap_or(0);
 
     Ok(ModStats {
-        installedMods: installed_mods,
-        activeMods: active_mods,
-        inactiveMods: inactive_mods,
+        installed_mods,
+        active_mods,
+        inactive_mods,
         presets: presets_count,
     })
 }

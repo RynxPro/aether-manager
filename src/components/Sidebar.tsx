@@ -92,11 +92,11 @@ const Sidebar: React.FC<SidebarProps> = ({ currentPage, onPageChange }) => {
           <div className={`flex items-center justify-between`}>
             <div className="flex items-center space-x-3 overflow-hidden">
               <div className="w-10 h-10 bg-gradient-to-br from-[var(--moon-accent)] to-[var(--moon-glow-violet)] rounded-full flex items-center justify-center flex-shrink-0 shadow-lg">
-                <span className="text-white font-bold text-sm">M</span>
+                <span className="text-white font-bold text-sm">E</span>
               </div>
               <div className="overflow-hidden">
                 <h1 className="text-[var(--moon-text)] font-bold text-base whitespace-nowrap">
-                  Aether Manager
+                  Ether Manager
                 </h1>
                 <p className="text-[var(--moon-muted)]/80 text-xs whitespace-nowrap">
                   v1.0.0
