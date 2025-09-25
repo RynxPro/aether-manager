@@ -30,3 +30,6 @@ chrono = { version = "0.4", features = ["serde"] }
 rfd = "0.15"
 dirs = "5.0"
 
+[target.'cfg(not(any(target_os = "android", target_os = "ios")))'.dependencies]
+tauri-plugin-updater = "2"
+
