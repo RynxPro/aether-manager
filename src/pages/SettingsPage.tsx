@@ -39,9 +39,28 @@ const SettingsPage: React.FC = () => {
   };
 
   const handleBrowseZzmiFolder = async () => {
-    const path = await selectFolder("Select ZZMI Mods Folder");
+    const path = await selectFolder(
+      "Select ZZMI Mods Folder",
+      localSettings.zzmiModsPath || undefined
+    );
     if (path) {
+      // Update local input immediately
       handleZzmiPathChange(path);
+      // Auto-save to avoid confusion on Windows where users expect the selection to persist
+      setSaving(true);
+      setMessage(null);
+      try {
+        const success = await updateSettings({ zzmiModsPath: path });
+        setMessage({
+          text: success ? "Mods folder saved." : "Failed to save selected folder",
+          type: success ? "success" : "error",
+        });
+      } catch (err) {
+        setMessage({ text: "An error occurred while saving folder", type: "error" });
+      } finally {
+        setSaving(false);
+        setTimeout(() => setMessage(null), 4000);
+      }
     }
   };
 

@@ -305,10 +305,18 @@ async fn update_settings(settings: AppSettings) -> Result<(), String> {
 }
 
 #[tauri::command]
-async fn select_folder(title: String) -> Result<Option<String>, String> {
+async fn select_folder(title: String, initial_dir: Option<String>) -> Result<Option<String>, String> {
     use rfd::FileDialog;
 
-    let folder = FileDialog::new().set_title(&title).pick_folder();
+    let mut dialog = FileDialog::new();
+    dialog = dialog.set_title(&title);
+    if let Some(dir) = initial_dir {
+        if !dir.is_empty() {
+            dialog = dialog.set_directory(dir);
+        }
+    }
+
+    let folder = dialog.pick_folder();
 
     Ok(folder.map(|p| p.to_string_lossy().to_string()))
 }

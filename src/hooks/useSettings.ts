@@ -47,11 +47,17 @@ export const useSettings = () => {
     }
   };
 
-  const selectFolder = async (title: string): Promise<string | null> => {
+  const selectFolder = async (
+    title: string,
+    initialDir?: string
+  ): Promise<string | null> => {
     setLoading(true);
     setError(null);
     try {
-      const result = await invoke<string | null>("select_folder", { title });
+      const result = await invoke<string | null>("select_folder", {
+        title,
+        initial_dir: initialDir,
+      });
       return result;
     } catch (err) {
       setError(err as string);
