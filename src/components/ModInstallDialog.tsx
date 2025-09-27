@@ -45,38 +45,6 @@ const ModInstallDialog: React.FC<ModInstallDialogProps> = ({
   const handleFolderSelect = async () => {
     try {
       const { invoke } = await import("@tauri-apps/api/core");
-      // Let user pick a file (ZIP or any file within a folder)
-      const pickedFile = await invoke<string | null>("select_mod_file");
-
-      if (pickedFile) {
-        const normalized = pickedFile.replace(/\\/g, "/");
-        const lower = normalized.toLowerCase();
-        if (lower.endsWith(".zip")) {
-          // ZIP selected: pass ZIP directly to backend (it will extract)
-          const zipName = normalized.split("/").pop() || "";
-          const baseName = zipName.replace(/\.zip$/i, "");
-          setFormData((prev) => ({ ...prev, filePath: normalized }));
-          if (!formData.title) {
-            setFormData((prev) => ({ ...prev, title: baseName }));
-          }
-        } else {
-          // Non-zip file picked: use its parent folder as the mod folder
-          const folderPath = normalized.replace(/\/[^^/]+$/g, "");
-          setFormData((prev) => ({ ...prev, filePath: folderPath }));
-          if (!formData.title) {
-            const foldername = folderPath.split("/").pop() || "";
-            setFormData((prev) => ({ ...prev, title: foldername }));
-          }
-        }
-      }
-    } catch (err) {
-      setError("Failed to open file picker");
-    }
-  };
-
-  const handleBrowseFolderOnly = async () => {
-    try {
-      const { invoke } = await import("@tauri-apps/api/core");
       const pickedFolder = await invoke<string | null>("select_mod_folder", {
         initial_dir: formData.filePath || null,
       });
@@ -224,29 +192,18 @@ const ModInstallDialog: React.FC<ModInstallDialogProps> = ({
                   </button>
                 )}
               </div>
-              <div className="flex gap-2">
-                <button
-                  type="button"
-                  onClick={handleFolderSelect}
-                  disabled={loading}
-                  className="px-4 py-2.5 bg-[var(--moon-accent)] hover:bg-[var(--moon-glow-violet)] text-white text-sm font-medium rounded-lg transition-all flex items-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed"
-                  title="Pick a ZIP or any file inside the mod folder"
-                >
-                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
-                  </svg>
-                  Browse File/ZIP
-                </button>
-                <button
-                  type="button"
-                  onClick={handleBrowseFolderOnly}
-                  disabled={loading}
-                  className="px-4 py-2.5 bg-[var(--moon-surface-elevated)] hover:bg-[var(--moon-surface-hover)] text-[var(--moon-text)] text-sm font-medium rounded-lg border border-[var(--moon-border)] transition-all disabled:opacity-60 disabled:cursor-not-allowed"
-                  title="Pick a folder directly"
-                >
-                  Browse Folder
-                </button>
-              </div>
+              <button
+                type="button"
+                onClick={handleFolderSelect}
+                disabled={loading}
+                className="px-4 py-2.5 bg-[var(--moon-accent)] hover:bg-[var(--moon-glow-violet)] text-white text-sm font-medium rounded-lg transition-all flex items-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed"
+                title="Pick a folder"
+              >
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
+                </svg>
+                Browse Folder
+              </button>
             </div>
           </div>
 
