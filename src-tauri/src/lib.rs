@@ -69,15 +69,10 @@ async fn install_mod(
     let mod_id = Uuid::new_v4().to_string();
     let now = Utc::now();
 
-    // Validate folder exists
-    if !Path::new(&filePath).exists() {
-        let error = format!("Folder does not exist: {}", filePath);
-        println!("Error: {}", error);
-        return Err(error);
-    }
-
-    if !Path::new(&filePath).is_dir() {
-        let error = format!("Path must be a folder, not a file: {}", filePath);
+    // Validate source exists
+    let src_path = Path::new(&filePath);
+    if !src_path.exists() {
+        let error = format!("Path does not exist: {}", filePath);
         println!("Error: {}", error);
         return Err(error);
     }
@@ -103,22 +98,43 @@ async fn install_mod(
         error
     })?;
 
-    // Get original filename and create destination path
-    let original_name = Path::new(&filePath)
+    // Determine destination based on input (folder or zip)
+    let original_name = src_path
         .file_name()
         .and_then(|n| n.to_str())
         .unwrap_or("unknown")
         .to_string();
 
-    let destination_path = format!("{}/{}", storage_folder, original_name);
-    println!("Copying from {} to {}", filePath, destination_path);
-
-    // Copy folder to storage location
-    copy_dir_all(&filePath, &destination_path).map_err(|e| {
-        let error = format!("Failed to copy mod folder: {}", e);
-        println!("Error: {}", error);
-        error
-    })?;
+    let (destination_path, stored_original_name) = if src_path.is_dir() {
+        // Folder input: copy as-is
+        let dest = format!("{}/{}", storage_folder, original_name);
+        println!("Copying folder from {} to {}", filePath, dest);
+        copy_dir_all(&filePath, &dest).map_err(|e| {
+            let error = format!("Failed to copy mod folder: {}", e);
+            println!("Error: {}", error);
+            error
+        })?;
+        (dest, original_name)
+    } else {
+        // File input: support .zip archives
+        let ext = src_path.extension().and_then(|e| e.to_str()).unwrap_or("").to_lowercase();
+        if ext != "zip" {
+            let error = format!("Unsupported file type: {}. Please select a folder or a .zip file.", original_name);
+            println!("Error: {}", error);
+            return Err(error);
+        }
+        let base = src_path
+            .file_stem()
+            .and_then(|s| s.to_str())
+            .unwrap_or("mod");
+        let dest_dir = format!("{}/{}", storage_folder, base);
+        println!("Extracting zip {} to {}", filePath, dest_dir);
+        fs::create_dir_all(&dest_dir).map_err(|e| format!("Failed to create destination: {}", e))?;
+        let file = fs::File::open(&filePath).map_err(|e| format!("Failed to open zip: {}", e))?;
+        zip_extract::extract(file, &Path::new(&dest_dir), true)
+            .map_err(|e| format!("Failed to extract zip: {}", e))?;
+        (dest_dir, format!("{}", base))
+    };
 
     let new_mod = Mod {
         id: mod_id,
@@ -129,7 +145,7 @@ async fn install_mod(
         date_added: now.to_rfc3339(),
         character,
         file_path: destination_path,
-        original_name: original_name.clone(),
+        original_name: stored_original_name.clone(),
     };
 
     // Save mod metadata
@@ -327,6 +343,7 @@ async fn select_mod_file() -> Result<Option<String>, String> {
 
     let file = FileDialog::new()
         .set_title("Select Mod File")
+        .add_filter("ZIP archives", &["zip"]) // show zip files prominently
         .pick_file();
 
     Ok(file.map(|p| p.to_string_lossy().to_string()))
