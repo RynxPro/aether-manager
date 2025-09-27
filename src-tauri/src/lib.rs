@@ -322,12 +322,29 @@ async fn select_folder(title: String, initial_dir: Option<String>) -> Result<Opt
 }
 
 #[tauri::command]
-async fn select_mod_folder() -> Result<Option<String>, String> {
+async fn select_mod_file() -> Result<Option<String>, String> {
     use rfd::FileDialog;
 
-    let folder = FileDialog::new()
-        .set_title("Select Mod Folder")
-        .pick_folder();
+    let file = FileDialog::new()
+        .set_title("Select Mod File")
+        .pick_file();
+
+    Ok(file.map(|p| p.to_string_lossy().to_string()))
+}
+
+#[tauri::command]
+async fn select_mod_folder(initial_dir: Option<String>) -> Result<Option<String>, String> {
+    use rfd::FileDialog;
+
+    let mut dialog = FileDialog::new();
+    dialog = dialog.set_title("Select Mod Folder");
+    if let Some(dir) = initial_dir {
+        if !dir.is_empty() {
+            dialog = dialog.set_directory(dir);
+        }
+    }
+
+    let folder = dialog.pick_folder();
 
     Ok(folder.map(|p| p.to_string_lossy().to_string()))
 }
@@ -591,6 +608,7 @@ pub fn run() {
             update_settings,
             select_folder,
             select_mod_folder,
+            select_mod_file,
             list_presets,
             create_preset,
             delete_preset,

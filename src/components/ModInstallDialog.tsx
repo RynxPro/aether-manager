@@ -45,19 +45,23 @@ const ModInstallDialog: React.FC<ModInstallDialogProps> = ({
   const handleFolderSelect = async () => {
     try {
       const { invoke } = await import("@tauri-apps/api/core");
-      const selected = await invoke<string | null>("select_mod_folder");
+      // Let user pick any file inside the mod folder (shows full explorer on Windows)
+      const pickedFile = await invoke<string | null>("select_mod_file");
 
-      if (selected) {
-        setFormData((prev) => ({ ...prev, filePath: selected }));
+      if (pickedFile) {
+        // Derive parent folder path from the selected file
+        const normalized = pickedFile.replace(/\\/g, "/");
+        const folderPath = normalized.replace(/\/[^^/]+$/g, "");
+        setFormData((prev) => ({ ...prev, filePath: folderPath }));
 
         // Auto-generate title from folder name if not set
         if (!formData.title) {
-          const foldername = selected.split("/").pop() || "";
+          const foldername = folderPath.split("/").pop() || "";
           setFormData((prev) => ({ ...prev, title: foldername }));
         }
       }
     } catch (err) {
-      setError("Failed to select folder");
+      setError("Failed to open file picker");
     }
   };
 
@@ -170,9 +174,11 @@ const ModInstallDialog: React.FC<ModInstallDialogProps> = ({
               <div className="relative flex-1">
                 <input
                   type="text"
-                  value={
-                    formData.filePath ? formData.filePath.split("/").pop() : ""
-                  }
+                  value={(() => {
+                    if (!formData.filePath) return "";
+                    const normalized = formData.filePath.replace(/\\/g, "/");
+                    return normalized.split("/").pop() || normalized;
+                  })()}
                   placeholder="No folder selected"
                   readOnly
                   className="w-full px-4 py-2.5 bg-[var(--moon-surface-elevated)] border border-[var(--moon-border)] rounded-lg text-[var(--moon-text)] placeholder-[var(--moon-muted)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--moon-accent)] focus:border-transparent transition-all disabled:opacity-60 disabled:cursor-not-allowed truncate"
