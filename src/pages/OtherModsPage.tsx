@@ -6,7 +6,6 @@ import { cnButton } from "../styles/buttons";
 // Import UI components from their respective files
 import LoadingSpinner from "../components/characters/LoadingSpinner";
 import ErrorState from "../components/characters/ErrorState";
-import EmptyState from "../components/characters/EmptyState";
 import SearchBar from "../components/characters/SearchBar";
 import SortDropdown from "../components/characters/SortDropdown";
 import PageContainer, {
@@ -207,19 +206,50 @@ const OtherModsPage: React.FC<OtherModsPageProps> = ({ onModClick }) => {
           ))}
         </div>
       ) : (
-        <EmptyState
-          icon="🎮"
-          title={
-            searchQuery || sortBy !== "name-asc"
-              ? "No matching mods found"
-              : "No mods found"
-          }
-          description={
-            searchQuery || sortBy !== "name-asc"
-              ? "Try adjusting your search or filter criteria"
-              : "Mods not assigned to characters will appear here"
-          }
-        />
+        <div className="flex flex-col items-center justify-center py-16 px-4 text-center">
+          <div className="w-20 h-20 rounded-full bg-[var(--moon-surface)] border-2 border-dashed border-[var(--moon-glow-violet)] flex items-center justify-center mb-6">
+            <svg
+              className="w-10 h-10 text-[var(--moon-glow-violet)]"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={1.5}
+                d="M12 4v16m8-8H4"
+              />
+            </svg>
+          </div>
+          <h3 className="text-2xl font-semibold text-[var(--moon-text)] mb-3">
+            {searchQuery || sortBy !== "name-asc" ? "No Matching Mods" : "No Mods Found"}
+          </h3>
+          <p className="text-[var(--moon-muted)] max-w-md mb-8">
+            {searchQuery || sortBy !== "name-asc"
+              ? "Try adjusting your search or filter criteria."
+              : "Mods not assigned to characters will appear here. Use Upload Mod to add one."}
+          </p>
+          <button
+            onClick={() => setShowInstallDialog(true)}
+            className={cnButton({ variant: "primary", size: "xl", className: "flex items-center space-x-2" })}
+          >
+            <svg
+              className="w-5 h-5"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M12 4v16m8-8H4"
+              />
+            </svg>
+            <span>Upload Mod</span>
+          </button>
+        </div>
       )}
       {/* Install Dialog */}
       <ModInstallDialog
