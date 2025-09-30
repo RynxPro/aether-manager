@@ -1,7 +1,7 @@
 {
   "name": "ether-manager",
   "private": true,
-  "version": "0.1.0",
+  "version": "1.0.5",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -16,6 +16,7 @@
     "@tauri-apps/api": "^2.8.0",
     "@tauri-apps/plugin-dialog": "^2.4.0",
     "@tauri-apps/plugin-opener": "^2",
+    "@tauri-apps/plugin-process": "^2.3.0",
     "@tauri-apps/plugin-updater": "^2.9.0",
     "framer-motion": "^12.23.12",
     "react": "^19.1.0",

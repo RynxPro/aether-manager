@@ -117,9 +117,16 @@ async fn install_mod(
         (dest, original_name)
     } else {
         // File input: support .zip archives
-        let ext = src_path.extension().and_then(|e| e.to_str()).unwrap_or("").to_lowercase();
+        let ext = src_path
+            .extension()
+            .and_then(|e| e.to_str())
+            .unwrap_or("")
+            .to_lowercase();
         if ext != "zip" {
-            let error = format!("Unsupported file type: {}. Please select a folder or a .zip file.", original_name);
+            let error = format!(
+                "Unsupported file type: {}. Please select a folder or a .zip file.",
+                original_name
+            );
             println!("Error: {}", error);
             return Err(error);
         }
@@ -129,7 +136,8 @@ async fn install_mod(
             .unwrap_or("mod");
         let dest_dir = format!("{}/{}", storage_folder, base);
         println!("Extracting zip {} to {}", filePath, dest_dir);
-        fs::create_dir_all(&dest_dir).map_err(|e| format!("Failed to create destination: {}", e))?;
+        fs::create_dir_all(&dest_dir)
+            .map_err(|e| format!("Failed to create destination: {}", e))?;
         let file = fs::File::open(&filePath).map_err(|e| format!("Failed to open zip: {}", e))?;
         zip_extract::extract(file, &Path::new(&dest_dir), true)
             .map_err(|e| format!("Failed to extract zip: {}", e))?;
@@ -321,7 +329,10 @@ async fn update_settings(settings: AppSettings) -> Result<(), String> {
 }
 
 #[tauri::command]
-async fn select_folder(title: String, initial_dir: Option<String>) -> Result<Option<String>, String> {
+async fn select_folder(
+    title: String,
+    initial_dir: Option<String>,
+) -> Result<Option<String>, String> {
     use rfd::FileDialog;
 
     let mut dialog = FileDialog::new();
@@ -609,6 +620,8 @@ async fn apply_preset(preset_id: String) -> Result<(), String> {
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
+        .plugin(tauri_plugin_updater::Builder::new().build())
+        .plugin(tauri_plugin_process::init())
         .plugin(tauri_plugin_updater::Builder::new().build())
         .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_fs::init())
