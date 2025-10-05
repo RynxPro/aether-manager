@@ -10,7 +10,6 @@ import PresetsPage from "./pages/PresetsPage";
 import PresetDetailsPage from "./pages/PresetDetailsPage";
 import "./App.css";
 import { PageType } from "./types/navigation";
-
 import AboutPage from "./pages/AboutPage";
 
 type NavigationState = {
@@ -22,6 +21,9 @@ type NavigationState = {
   selectedPreset: string | null;
 };
 
+import { check } from "@tauri-apps/plugin-updater";
+import { relaunch } from "@tauri-apps/plugin-process";
+
 function App() {
   // Use a single state object to prevent race conditions
   const [navigation, setNavigation] = useState<NavigationState>({
@@ -32,6 +34,46 @@ function App() {
     lastPage: null,
     selectedPreset: null,
   });
+
+  // Check for app updates (Tauri Updater)
+  useEffect(() => {
+    async function checkForUpdates() {
+      try {
+        const update = await check();
+        if (update) {
+          console.log(
+            `Found update ${update.version} — ${update.date}\nNotes: ${update.body}`
+          );
+
+          await update.downloadAndInstall((event) => {
+            switch (event.event) {
+              case "Started":
+                console.log(`Downloading ${event.data.contentLength} bytes...`);
+                break;
+              case "Progress":
+                console.log(
+                  `Downloaded ${event.data.chunkLength} bytes so far...`
+                );
+                break;
+              case "Finished":
+                console.log("Download finished");
+                break;
+            }
+          });
+
+          console.log("Update installed — relaunching...");
+          await relaunch();
+        } else {
+          console.log("No updates available");
+        }
+      } catch (err) {
+        console.error("Update check failed:", err);
+      }
+    }
+
+    // Run once when the app starts
+    checkForUpdates();
+  }, []);
 
   // Handle page changes with validation
   const handlePageChange = useCallback((page: PageType) => {

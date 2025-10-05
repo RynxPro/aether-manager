@@ -99,7 +99,7 @@ const Sidebar: React.FC<SidebarProps> = ({ currentPage, onPageChange }) => {
                   Ether Manager
                 </h1>
                 <p className="text-[var(--moon-muted)]/80 text-xs whitespace-nowrap">
-                  v1.0.0
+                  v1.1.0
                 </p>
               </div>
             </div>
