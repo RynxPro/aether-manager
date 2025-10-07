@@ -36,7 +36,7 @@
   },
   "plugins": {
     "updater": {
-      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IENGOURFNzE2ODEzRTc0QTYKUldTbWRENkJGdWVkenlSSExNdjQ3QWdtS1RvSW0zRHA0bmZZbUt1ZjI4bWkxWGltajljVjJ3L2sK",
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEFCMTkxMkVEMTYxOUY4RTQKUldUaytCa1c3UklacTF4bHE4aFp3ZlhxSy80RnExTUhqcTd1cVArRVpzYzQ1eFNibG80MTcwQnoK",
       "endpoints": [
         "https://github.com/RynxPro/aether-manager/releases/latest/download/latest.json"
       ]
