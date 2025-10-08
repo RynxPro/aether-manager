@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
 import { invoke } from "@tauri-apps/api/core";
+import { open } from "@tauri-apps/plugin-dialog";
 
 export interface AppSettings {
   zzmiModsPath?: string; // Path to zzmi/mods folder for active mods
@@ -51,8 +52,13 @@ export const useSettings = () => {
     setLoading(true);
     setError(null);
     try {
-      const result = await invoke<string | null>("select_folder", { title });
-      return result;
+      // Prefer Tauri dialog plugin for better cross-platform support (especially Windows)
+      const result = await open({ directory: true, multiple: false, title });
+      if (!result) return null;
+      if (Array.isArray(result)) {
+        return result[0] ?? null;
+      }
+      return result as string;
     } catch (err) {
       setError(err as string);
       return null;
