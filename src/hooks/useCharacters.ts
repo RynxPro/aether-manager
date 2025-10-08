@@ -277,6 +277,15 @@ export const useCharacters = () => {
       activeMods: 0,
     },
     {
+      id: "orphie",
+      name: "Orphie",
+      attribute: "fire",
+      rank: "S",
+      specialty: "attack",
+      installedMods: 0,
+      activeMods: 0,
+    },
+    {
       id: "pan",
       name: "Pan",
       attribute: "physical",
