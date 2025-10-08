@@ -55,16 +55,22 @@ export const useSettings = () => {
       // Prefer Tauri dialog plugin for better cross-platform support (especially Windows)
       const result = await open({ directory: true, multiple: false, title });
 
+      let selectedPath: string | null = null;
+
       if (Array.isArray(result)) {
-        // If it's an array (even with one item), return the first element.
-        return result[0] ?? null;
-      } else if (typeof result === 'string') {
-        // If it's a single string, return it directly.
-        return result;
+        // If it's an array (even with one item), get the first element
+        selectedPath = result[0] ?? null;
+      } else if (typeof result === "string") {
+        // If it's a single string, use it directly
+        selectedPath = result;
       }
 
-      // If it's null or any other type, return null.
-      return null;
+      // Normalize path for Windows by converting backslashes to forward slashes
+      if (selectedPath) {
+        selectedPath = selectedPath.replace(/\\/g, "/");
+      }
+
+      return selectedPath;
     } catch (err) {
       setError(err as string);
       return null;

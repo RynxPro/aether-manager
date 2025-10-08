@@ -1,47 +1,43 @@
 import React, { useState, useEffect } from "react";
 import { useSettings } from "../hooks/useSettings";
-import { FiFolder, FiSave, FiRefreshCw, FiCheckCircle, FiAlertCircle } from "react-icons/fi";
+import {
+  FiFolder,
+  FiSave,
+  FiRefreshCw,
+  FiCheckCircle,
+  FiAlertCircle,
+} from "react-icons/fi";
 import { cnButton } from "../styles/buttons";
-
-interface SettingsState {
-  zzmiModsPath: string;
-  autoStart: boolean;
-  notifications: boolean;
-  theme: string;
-}
 
 const SettingsPage: React.FC = () => {
   const { settings, loading, updateSettings, selectFolder } = useSettings();
-  const [localSettings, setLocalSettings] = useState<SettingsState>({
-    zzmiModsPath: "",
-    autoStart: false,
-    notifications: true,
-    theme: "dark",
-  });
+  const [zzmiModsPath, setZzmiModsPath] = useState("");
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState<{
     text: string;
     type: "success" | "error";
   } | null>(null);
 
-  // Update local settings when settings from hook change
+  // Initialize from settings
   useEffect(() => {
-    if (!loading && settings) {
-      setLocalSettings((prev) => ({
-        ...prev,
-        zzmiModsPath: settings.zzmiModsPath || "",
-      }));
+    if (!loading && settings?.zzmiModsPath) {
+      setZzmiModsPath(settings.zzmiModsPath);
     }
   }, [settings, loading]);
 
-  const handleZzmiPathChange = (path: string) => {
-    setLocalSettings((prev) => ({ ...prev, zzmiModsPath: path }));
-  };
-
   const handleBrowseZzmiFolder = async () => {
-    const path = await selectFolder("Select ZZMI Mods Folder");
-    if (path) {
-      handleZzmiPathChange(path);
+    try {
+      const path = await selectFolder("Select ZZMI Mods Folder");
+      console.log("Selected path:", path);
+      if (path) {
+        setZzmiModsPath(path);
+      }
+    } catch (error) {
+      console.error("Error selecting folder:", error);
+      setMessage({
+        text: "Failed to select folder. Please try again.",
+        type: "error",
+      });
     }
   };
 
@@ -51,7 +47,7 @@ const SettingsPage: React.FC = () => {
 
     try {
       const success = await updateSettings({
-        zzmiModsPath: localSettings.zzmiModsPath,
+        zzmiModsPath: zzmiModsPath,
       });
 
       setMessage({
@@ -61,6 +57,7 @@ const SettingsPage: React.FC = () => {
         type: success ? "success" : "error",
       });
     } catch (err) {
+      console.error("Error saving settings:", err);
       setMessage({
         text: "An error occurred while saving settings",
         type: "error",
@@ -72,12 +69,8 @@ const SettingsPage: React.FC = () => {
   };
 
   const handleResetSettings = () => {
-    setLocalSettings({
-      zzmiModsPath: "",
-      autoStart: false,
-      notifications: true,
-      theme: "dark",
-    });
+    setZzmiModsPath("");
+    // Reset other settings if needed
   };
 
   if (loading) {
@@ -145,14 +138,18 @@ const SettingsPage: React.FC = () => {
                 <input
                   type="text"
                   id="zzmiModsPath"
-                  value={localSettings.zzmiModsPath}
-                  onChange={(e) => handleZzmiPathChange(e.target.value)}
+                  value={zzmiModsPath}
+                  onChange={(e) => setZzmiModsPath(e.target.value)}
                   placeholder="Select your ZZZ mods folder..."
                   className="flex-1 px-4 py-2.5 bg-[var(--moon-bg)] border border-[var(--moon-border)] rounded-lg text-[var(--moon-text)] placeholder-[var(--moon-muted)] focus:outline-none focus:ring-2 focus:ring-[var(--moon-glow-violet)] focus:border-transparent transition-colors"
                 />
                 <button
                   onClick={handleBrowseZzmiFolder}
-                  className={cnButton({ variant: 'primary', size: 'md', className: 'whitespace-nowrap' })}
+                  className={cnButton({
+                    variant: "primary",
+                    size: "md",
+                    className: "whitespace-nowrap",
+                  })}
                 >
                   <FiFolder className="w-4 h-4" />
                   Browse
@@ -170,14 +167,23 @@ const SettingsPage: React.FC = () => {
         <div className="flex flex-col sm:flex-row justify-end gap-3 pt-2">
           <button
             onClick={handleResetSettings}
-            className={cnButton({ variant: 'secondary', size: 'lg', className: 'flex-1 sm:flex-none' })}
+            className={cnButton({
+              variant: "secondary",
+              size: "lg",
+              className: "flex-1 sm:flex-none",
+            })}
           >
             Reset to Defaults
           </button>
           <button
             onClick={handleSaveSettings}
             disabled={saving}
-            className={cnButton({ variant: 'primary', size: 'xl', className: 'flex items-center space-x-2', disabled: saving })}
+            className={cnButton({
+              variant: "primary",
+              size: "xl",
+              className: "flex items-center space-x-2",
+              disabled: saving,
+            })}
           >
             {saving ? (
               <>
