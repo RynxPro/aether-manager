@@ -4,6 +4,7 @@ import React, {
   useEffect,
   useMemo,
   useState,
+  useCallback,
 } from "react";
 import { invoke } from "@tauri-apps/api/core";
 
@@ -20,6 +21,7 @@ type UseStatsReturn = {
   loading: boolean;
   error: string | null;
   fetchStats: (silent?: boolean) => Promise<void>;
+  adjustStats: (type: 'activate' | 'deactivate') => void;
 };
 
 const defaultStats: ModStats = {
@@ -36,7 +38,25 @@ const useStatsInternal = (): UseStatsReturn => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchStats = async (silent: boolean = false) => {
+  const adjustStats = useCallback((type: 'activate' | 'deactivate') => {
+    setStats(prev => {
+      if (type === 'activate') {
+        return {
+          ...prev,
+          activeMods: prev.activeMods + 1,
+          inactiveMods: prev.inactiveMods - 1,
+        };
+      } else {
+        return {
+          ...prev,
+          activeMods: prev.activeMods - 1,
+          inactiveMods: prev.inactiveMods + 1,
+        };
+      }
+    });
+  }, []);
+
+  const fetchStats = useCallback(async (silent: boolean = false) => {
     if (!silent) {
       setLoading(true);
       setError(null);
@@ -56,7 +76,7 @@ const useStatsInternal = (): UseStatsReturn => {
         setLoading(false);
       }
     }
-  };
+  }, []);
 
   useEffect(() => {
     fetchStats();
@@ -67,6 +87,7 @@ const useStatsInternal = (): UseStatsReturn => {
     loading,
     error,
     fetchStats,
+    adjustStats,
   };
 };
 
@@ -76,7 +97,7 @@ export const StatsProvider: React.FC<{ children: React.ReactNode }> = ({
   const value = useStatsInternal();
   const memoized = useMemo(
     () => value,
-    [value.stats, value.loading, value.error]
+    [value.stats, value.loading, value.error, value.fetchStats, value.adjustStats]
   );
   return (
     <StatsContext.Provider value={memoized}>{children}</StatsContext.Provider>

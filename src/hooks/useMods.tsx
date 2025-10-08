@@ -4,6 +4,7 @@ import React, {
   useMemo,
   useState,
   useEffect,
+  useCallback,
 } from "react";
 import { invoke } from "@tauri-apps/api/core";
 import { useSettings } from "./useSettings";
@@ -63,9 +64,9 @@ const useModsInternal = (): UseModsReturn => {
   const [error, setError] = useState<string | null>(null);
   const [togglingSet, setTogglingSet] = useState<Set<string>>(new Set());
   const { isValid } = useSettings();
-  const { fetchStats } = useStats();
+  const { adjustStats, fetchStats } = useStats();
 
-  const fetchMods = async (silent: boolean = false) => {
+  const fetchMods = useCallback(async (silent: boolean = false) => {
     if (!silent) {
       setLoading(true);
       setError(null);
@@ -95,9 +96,9 @@ const useModsInternal = (): UseModsReturn => {
         setLoading(false);
       }
     }
-  };
+  }, []);
 
-  const installMod = async (
+  const installMod = useCallback(async (
     filePath: string,
     title: string,
     character?: string,
@@ -139,9 +140,9 @@ const useModsInternal = (): UseModsReturn => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
-  const toggleModActive = async (modId: string): Promise<boolean> => {
+  const toggleModActive = useCallback(async (modId: string): Promise<boolean> => {
     // Do not flip global loading for a small toggle to avoid page refresh spinners
     setError(null);
     let previousIsActive: boolean | undefined = undefined;
@@ -167,6 +168,7 @@ const useModsInternal = (): UseModsReturn => {
       setTogglingSet((prev) => new Set(prev).add(modId));
 
       // Optimistically update UI
+      adjustStats(currentMod.isActive ? 'deactivate' : 'activate');
       setMods((prev) =>
         prev.map((mod) =>
           mod.id === modId ? { ...mod, isActive: !mod.isActive } : mod
@@ -184,8 +186,7 @@ const useModsInternal = (): UseModsReturn => {
       toast.success(result ? "Mod activated" : "Mod deactivated");
       // Reconcile with backend in background to keep all pages in sync
       fetchMods(true);
-      // Refresh stats silently so dashboard cards reflect accurate active/inactive counts
-      fetchStats(true);
+      fetchStats(true); // Keep this to ensure long-term consistency
       return true;
     } catch (err) {
       console.error("toggleModActive error:", err);
@@ -193,9 +194,14 @@ const useModsInternal = (): UseModsReturn => {
       setError(`Failed to toggle mod: ${errorMsg}`);
       toast.error(`Failed to toggle mod: ${errorMsg}`);
       // Rollback optimistic change to previous state
+      if (previousIsActive !== undefined) {
+        adjustStats(previousIsActive ? 'activate' : 'deactivate');
+      }
       setMods((prev) =>
         prev.map((mod) =>
-          mod.id === modId ? { ...mod, isActive: previousIsActive ?? mod.isActive } : mod
+          mod.id === modId
+            ? { ...mod, isActive: previousIsActive ?? mod.isActive }
+            : mod
         )
       );
       return false;
@@ -206,9 +212,9 @@ const useModsInternal = (): UseModsReturn => {
         return next;
       });
     }
-  };
+  }, [isValid, mods, togglingSet, adjustStats, fetchStats, fetchMods]);
 
-  const deleteMod = async (modId: string): Promise<boolean> => {
+  const deleteMod = useCallback(async (modId: string): Promise<boolean> => {
     setLoading(true);
     setError(null);
     try {
@@ -224,9 +230,9 @@ const useModsInternal = (): UseModsReturn => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
-  const updateMod = async (
+  const updateMod = useCallback(async (
     modId: string,
     updates: {
       title?: string;
@@ -260,7 +266,7 @@ const useModsInternal = (): UseModsReturn => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
     fetchMods();
@@ -285,7 +291,16 @@ export const ModsProvider: React.FC<{ children: React.ReactNode }> = ({
   const value = useModsInternal();
   const memoizedValue = useMemo(
     () => value,
-    [value.mods, value.loading, value.error]
+    [
+      value.mods,
+      value.loading,
+      value.error,
+      value.fetchMods,
+      value.installMod,
+      value.toggleModActive,
+      value.deleteMod,
+      value.updateMod,
+    ]
   );
   return (
     <ModsContext.Provider value={memoizedValue}>
