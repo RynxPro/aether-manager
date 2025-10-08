@@ -54,11 +54,17 @@ export const useSettings = () => {
     try {
       // Prefer Tauri dialog plugin for better cross-platform support (especially Windows)
       const result = await open({ directory: true, multiple: false, title });
-      if (!result) return null;
+
       if (Array.isArray(result)) {
+        // If it's an array (even with one item), return the first element.
         return result[0] ?? null;
+      } else if (typeof result === 'string') {
+        // If it's a single string, return it directly.
+        return result;
       }
-      return result as string;
+
+      // If it's null or any other type, return null.
+      return null;
     } catch (err) {
       setError(err as string);
       return null;
