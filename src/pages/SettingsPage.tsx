@@ -132,7 +132,7 @@ const SettingsPage: React.FC = () => {
                 htmlFor="zzmiModsPath"
                 className="block text-sm font-medium text-[var(--moon-muted)] mb-2"
               >
-                ZZZ Mods Folder
+                ZZMI Mods Folder
               </label>
               <div className="flex gap-3">
                 <input
@@ -157,7 +157,7 @@ const SettingsPage: React.FC = () => {
               </div>
               <p className="mt-2 text-sm text-[var(--moon-muted)]">
                 This is where your ZZZ mods are installed. Usually located in
-                your ZZZ game directory.
+                your ZZMI directory.
               </p>
             </div>
           </div>
