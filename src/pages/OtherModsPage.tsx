@@ -1,4 +1,5 @@
 import React, { useState, useMemo, useCallback } from "react";
+import { listen } from "@tauri-apps/api/event";
 import ModCard from "../components/ModCard";
 import ModInstallDialog from "../components/ModInstallDialog";
 import { useMods } from "../hooks/useMods";
@@ -43,6 +44,7 @@ const OtherModsPage: React.FC<OtherModsPageProps> = ({ onModClick }) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState<SortOptionType>("name-asc");
   const [showInstallDialog, setShowInstallDialog] = useState(false);
+  const [droppedPath, setDroppedPath] = useState<string | undefined>(undefined);
 
   const filteredAndSortedMods = useMemo(() => {
     if (!otherMods) return [];
@@ -111,6 +113,44 @@ const OtherModsPage: React.FC<OtherModsPageProps> = ({ onModClick }) => {
 
   const handleSortChange = useCallback((value: string) => {
     setSortBy(value as SortOptionType);
+  }, []);
+
+  // Drag-and-drop: open install dialog with dropped folder
+  React.useEffect(() => {
+    let unlistenOver: (() => void) | undefined;
+    let unlistenDrop: (() => void) | undefined;
+    let unlistenLeave: (() => void) | undefined;
+    (async () => {
+      try {
+        unlistenOver = await listen<string[]>(
+          "tauri://file-drop-hover",
+          () => {}
+        );
+        unlistenLeave = await listen("tauri://file-drop-cancelled", () => {});
+        unlistenDrop = await listen<string[]>("tauri://file-drop", (event) => {
+          const paths = Array.isArray(event.payload)
+            ? (event.payload as string[])
+            : [];
+          if (paths.length > 0) {
+            setDroppedPath(paths[0]);
+            setShowInstallDialog(true);
+          }
+        });
+      } catch (e) {
+        console.error("Failed to attach file-drop listeners", e);
+      }
+    })();
+    return () => {
+      try {
+        unlistenOver && unlistenOver();
+      } catch {}
+      try {
+        unlistenLeave && unlistenLeave();
+      } catch {}
+      try {
+        unlistenDrop && unlistenDrop();
+      } catch {}
+    };
   }, []);
 
   // Loading state
@@ -229,6 +269,7 @@ const OtherModsPage: React.FC<OtherModsPageProps> = ({ onModClick }) => {
           fetchMods();
           setShowInstallDialog(false);
         }}
+        initialFilePath={droppedPath}
       />
     </PageContainer>
   );

@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { listen } from "@tauri-apps/api/event";
 import { useMods } from "../hooks/useMods";
 import { useCharacters } from "../hooks/useCharacters";
 import ModCard from "../components/ModCard";
@@ -24,6 +25,7 @@ const CharacterModPage: React.FC<CharacterModPageProps> = ({
   const [showInstallDialog, setShowInstallDialog] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState<string>("name-asc");
+  const [droppedPath, setDroppedPath] = useState<string | undefined>(undefined);
 
   // Define sort options
   const SORT_OPTIONS = [
@@ -129,6 +131,45 @@ const CharacterModPage: React.FC<CharacterModPageProps> = ({
     }
   };
 
+  // Drag-and-drop: open install dialog with dropped folder
+  React.useEffect(() => {
+    let unlistenOver: (() => void) | undefined;
+    let unlistenDrop: (() => void) | undefined;
+    let unlistenLeave: (() => void) | undefined;
+    (async () => {
+      try {
+        unlistenOver = await listen<string[]>(
+          "tauri://file-drop-hover",
+          () => {}
+        );
+        unlistenLeave = await listen("tauri://file-drop-cancelled", () => {});
+        unlistenDrop = await listen<string[]>("tauri://file-drop", (event) => {
+          const paths = Array.isArray(event.payload)
+            ? (event.payload as string[])
+            : [];
+          if (paths.length > 0) {
+            // Prefer first path; dialog will validate
+            setDroppedPath(paths[0]);
+            setShowInstallDialog(true);
+          }
+        });
+      } catch (e) {
+        console.error("Failed to attach file-drop listeners", e);
+      }
+    })();
+    return () => {
+      try {
+        unlistenOver && unlistenOver();
+      } catch {}
+      try {
+        unlistenLeave && unlistenLeave();
+      } catch {}
+      try {
+        unlistenDrop && unlistenDrop();
+      } catch {}
+    };
+  }, []);
+
   return (
     <div className="max-w-[1800px] mx-auto px-8 sm:px-12 lg:px-20 py-4">
       {/* Install Dialog */}
@@ -137,6 +178,7 @@ const CharacterModPage: React.FC<CharacterModPageProps> = ({
         onClose={() => setShowInstallDialog(false)}
         onSuccess={handleInstallSuccess}
         initialCharacterId={characterId}
+        initialFilePath={droppedPath}
       />
       {/* Header with Back Button */}
       <div className="mb-8">
