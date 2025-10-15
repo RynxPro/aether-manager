@@ -54,7 +54,8 @@ const ModInstallDialog: React.FC<ModInstallDialogProps> = ({
   React.useEffect(() => {
     if (isOpen && initialFilePath) {
       setFormData((prev) => {
-        const name = initialFilePath.split("/").pop() || "";
+        // Handle both Windows (\\) and Unix (/) path separators
+        const name = initialFilePath.split(/[/\\]/).pop() || "";
         return {
           ...prev,
           filePath: initialFilePath,
@@ -74,7 +75,8 @@ const ModInstallDialog: React.FC<ModInstallDialogProps> = ({
 
         // Auto-generate title from folder name if not set
         if (!formData.title) {
-          const foldername = selected.split("/").pop() || "";
+          // Handle both Windows (\\) and Unix (/) path separators
+          const foldername = selected.split(/[/\\]/).pop() || "";
           setFormData((prev) => ({ ...prev, title: foldername }));
         }
       }
@@ -205,7 +207,9 @@ const ModInstallDialog: React.FC<ModInstallDialogProps> = ({
                 <input
                   type="text"
                   value={
-                    formData.filePath ? formData.filePath.split("/").pop() : ""
+                    formData.filePath
+                      ? formData.filePath.split(/[/\\]/).pop()
+                      : ""
                   }
                   placeholder="No folder selected"
                   readOnly
