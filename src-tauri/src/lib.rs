@@ -69,18 +69,15 @@ async fn install_mod(
     let mod_id = Uuid::new_v4().to_string();
     let now = Utc::now();
 
-    // Validate folder exists
+    // Validate path exists (file or folder)
     if !Path::new(&filePath).exists() {
-        let error = format!("Folder does not exist: {}", filePath);
+        let error = format!("Path does not exist: {}", filePath);
         println!("Error: {}", error);
         return Err(error);
     }
 
-    if !Path::new(&filePath).is_dir() {
-        let error = format!("Path must be a folder, not a file: {}", filePath);
-        println!("Error: {}", error);
-        return Err(error);
-    }
+    // Validate mod structure
+    validate_mod_structure(Path::new(&filePath))?;
 
     // Use app-managed mods folder
     let app_data_path = get_app_config_dir()?
@@ -163,31 +160,19 @@ async fn toggle_mod_active(modId: String) -> Result<bool, String> {
     println!("ZZMI path: {}, File path: {}", zzmi_path, zzmi_file_path);
 
     if mod_ref.is_active {
-        // Deactivate: Remove from zzmi/mods folder
-        println!("Deactivating mod: removing from {}", zzmi_file_path);
-        if Path::new(&zzmi_file_path).exists() {
-            if Path::new(&zzmi_file_path).is_dir() {
-                fs::remove_dir_all(&zzmi_file_path)
-                    .map_err(|e| format!("Failed to remove mod folder from ZZMI: {}", e))?;
-            } else {
-                fs::remove_file(&zzmi_file_path)
-                    .map_err(|e| format!("Failed to remove mod file from ZZMI: {}", e))?;
-            }
-        }
+        // Deactivate: Remove symlink from zzmi/mods folder
+        println!("Deactivating mod: removing symlink from {}", zzmi_file_path);
+        remove_symlink(Path::new(&zzmi_file_path))
+            .map_err(|e| format!("Failed to remove mod symlink from ZZMI: {}", e))?;
         mod_ref.is_active = false;
     } else {
-        // Activate: Copy to zzmi/mods folder
+        // Activate: Create symlink to zzmi/mods folder
         println!(
-            "Activating mod: copying from {} to {}",
+            "Activating mod: creating symlink from {} to {}",
             mod_ref.file_path, zzmi_file_path
         );
-        if Path::new(&mod_ref.file_path).is_dir() {
-            copy_dir_all(&mod_ref.file_path, &zzmi_file_path)
-                .map_err(|e| format!("Failed to copy mod folder to ZZMI: {}", e))?;
-        } else {
-            fs::copy(&mod_ref.file_path, &zzmi_file_path)
-                .map_err(|e| format!("Failed to copy mod file to ZZMI: {}", e))?;
-        }
+        create_symlink(Path::new(&mod_ref.file_path), Path::new(&zzmi_file_path))
+            .map_err(|e| format!("Failed to create mod symlink to ZZMI: {}", e))?;
         mod_ref.is_active = true;
         println!("Mod activated successfully");
     }
@@ -247,15 +232,8 @@ async fn delete_mod(modId: String) -> Result<(), String> {
         let settings = load_settings().await?;
         if let Some(zzmi_path) = settings.zzmi_mods_path {
             let zzmi_file_path = format!("{}/{}", zzmi_path, mod_to_delete.original_name);
-            if Path::new(&zzmi_file_path).exists() {
-                if Path::new(&zzmi_file_path).is_dir() {
-                    fs::remove_dir_all(&zzmi_file_path)
-                        .map_err(|e| format!("Failed to remove mod folder from ZZMI: {}", e))?;
-                } else {
-                    fs::remove_file(&zzmi_file_path)
-                        .map_err(|e| format!("Failed to remove mod file from ZZMI: {}", e))?;
-                }
-            }
+            remove_symlink(Path::new(&zzmi_file_path))
+                .map_err(|e| format!("Failed to remove mod symlink from ZZMI: {}", e))?;
         }
     }
 
@@ -429,6 +407,97 @@ fn copy_dir_all(src: impl AsRef<Path>, dst: impl AsRef<Path>) -> std::io::Result
     Ok(())
 }
 
+// Create symlink (cross-platform)
+fn create_symlink(src: &Path, dst: &Path) -> std::io::Result<()> {
+    // Remove existing file/dir if it exists
+    if dst.exists() {
+        if dst.is_dir() {
+            fs::remove_dir_all(dst)?;
+        } else {
+            fs::remove_file(dst)?;
+        }
+    }
+    
+    // Create parent directory
+    if let Some(parent) = dst.parent() {
+        fs::create_dir_all(parent)?;
+    }
+    
+    #[cfg(windows)]
+    {
+        if src.is_dir() {
+            std::os::windows::fs::symlink_dir(src, dst)
+        } else {
+            std::os::windows::fs::symlink_file(src, dst)
+        }
+    }
+    
+    #[cfg(unix)]
+    {
+        std::os::unix::fs::symlink(src, dst)
+    }
+}
+
+// Remove symlink safely
+fn remove_symlink(path: &Path) -> std::io::Result<()> {
+    if path.exists() {
+        if path.is_dir() {
+            fs::remove_dir_all(path)
+        } else {
+            fs::remove_file(path)
+        }
+    } else {
+        Ok(())
+    }
+}
+
+// Validate mod structure
+fn validate_mod_structure(mod_path: &Path) -> Result<(), String> {
+    if !mod_path.exists() {
+        return Err("Mod path does not exist".to_string());
+    }
+    
+    // Check if it's a directory (for folder mods) or file (for single file mods)
+    if mod_path.is_dir() {
+        // For folder mods, check if directory is not empty
+        let entries = fs::read_dir(mod_path)
+            .map_err(|e| format!("Failed to read mod directory: {}", e))?;
+        
+        let mut has_files = false;
+        for entry in entries {
+            let entry = entry.map_err(|e| format!("Failed to read directory entry: {}", e))?;
+            let file_name = entry.file_name();
+            let file_name_str = file_name.to_string_lossy().to_lowercase();
+            
+            // Skip hidden files and common non-mod files
+            if file_name_str.starts_with('.') || 
+               file_name_str == "thumbs.db" ||
+               file_name_str == "desktop.ini" {
+                continue;
+            }
+            
+            has_files = true;
+            break;
+        }
+        
+        if !has_files {
+            return Err("Mod folder is empty or contains no recognizable files".to_string());
+        }
+    } else if mod_path.is_file() {
+        // For single file mods, just check that it's not empty
+        let metadata = fs::metadata(mod_path)
+            .map_err(|e| format!("Failed to read mod file metadata: {}", e))?;
+            
+        if metadata.len() == 0 {
+            return Err("Mod file is empty".to_string());
+        }
+    } else {
+        return Err("Mod path is neither a file nor a directory".to_string());
+    }
+    
+    Ok(())
+}
+
 // ===== Presets persistence =====
 async fn presets_db_path() -> Result<PathBuf, String> {
     let base = get_app_config_dir()?;
@@ -539,24 +608,12 @@ async fn apply_preset(preset_id: String) -> Result<(), String> {
         let zzmi_file_path = format!("{}/{}", zzmi_path, m.original_name);
 
         if should_be_active && !m.is_active {
-            if Path::new(&m.file_path).is_dir() {
-                copy_dir_all(&m.file_path, &zzmi_file_path)
-                    .map_err(|e| format!("Failed to copy mod folder to ZZMI: {}", e))?;
-            } else {
-                fs::copy(&m.file_path, &zzmi_file_path)
-                    .map_err(|e| format!("Failed to copy mod file to ZZMI: {}", e))?;
-            }
+            create_symlink(Path::new(&m.file_path), Path::new(&zzmi_file_path))
+                .map_err(|e| format!("Failed to create mod symlink to ZZMI: {}", e))?;
             m.is_active = true;
         } else if !should_be_active && m.is_active {
-            if Path::new(&zzmi_file_path).exists() {
-                if Path::new(&zzmi_file_path).is_dir() {
-                    fs::remove_dir_all(&zzmi_file_path)
-                        .map_err(|e| format!("Failed to remove mod folder from ZZMI: {}", e))?;
-                } else {
-                    fs::remove_file(&zzmi_file_path)
-                        .map_err(|e| format!("Failed to remove mod file from ZZMI: {}", e))?;
-                }
-            }
+            remove_symlink(Path::new(&zzmi_file_path))
+                .map_err(|e| format!("Failed to remove mod symlink from ZZMI: {}", e))?;
             m.is_active = false;
         }
     }
